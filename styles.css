@@ -1,0 +1,100 @@
+/* classic-elegant 원본 위에 덮어쓰는 커스텀 스타일 */
+:root {
+  --color-bg: #fffafa;
+  --color-bg-warm: #fff8f5;
+  --color-bg-card: #fffdf9;
+  --color-text: #292725;
+  --color-text-light: #7a726a;
+  --color-text-muted: #a0978f;
+  --color-accent: #b99a55;
+  --color-accent-light: #d8c39a;
+  --color-accent-dark: #8f1d2c;
+  --color-border: #ece3d8;
+  --color-divider: #ded0b4;
+  --color-overlay: rgba(28, 18, 16, 0.34);
+  --color-toast-bg: rgba(41, 39, 37, 0.92);
+}
+
+body {
+  background: linear-gradient(180deg, #fffafa 0%, #fff8f5 100%);
+}
+
+/* 원본 낙화는 숨기고, 새 눈송이 캔버스를 사용 */
+.petal-canvas {
+  opacity: 0 !important;
+}
+.snow-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__overlay {
+  background: linear-gradient(180deg, rgba(40,27,25,.08), rgba(40,27,25,.30) 70%, rgba(40,27,25,.40));
+}
+
+.hero__label,
+.section__title,
+.location__venue,
+.footer__text {
+  color: var(--color-accent-dark);
+}
+
+.hero__divider,
+.ornament,
+.countdown__label,
+.calendar__month,
+.calendar__date--today,
+.calendar__date--wedding,
+.account__desc,
+.accordion__icon {
+  color: var(--color-accent);
+}
+
+.countdown,
+.calendar,
+.story__photo,
+.gallery__item,
+.location__map,
+.accordion,
+.btn--outline,
+.btn--text {
+  background: rgba(255, 253, 249, 0.9);
+  border-color: var(--color-border) !important;
+}
+
+.btn--outline,
+.btn--text,
+.accordion__trigger {
+  color: var(--color-text);
+}
+
+/* 눈송이 느낌을 위해 장식 기호도 눈 결정 스타일로 */
+.ornament {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* 상단 사진이 더 중요하게 보이도록 */
+.hero {
+  min-height: 100svh;
+}
+.hero__photo {
+  object-position: center center;
+}
+
+/* 페이지 전반을 조금 더 따뜻한 크리스마스 이후 겨울 톤으로 */
+.greeting,
+.story,
+.gallery,
+.account,
+.footer {
+  background: linear-gradient(180deg, rgba(255,250,250,.92), rgba(255,248,245,.98));
+}
+.calendar-section,
+.location {
+  background: rgba(255,253,249,.96);
+}
