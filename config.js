@@ -1,10 +1,10 @@
 /**
  * classic-elegant 기반 커스텀 시작본
- * 이번 단계는 원본 구조 유지 + 색상 변경 + 눈송이 효과 변경만 반영한 버전입니다.
- * 실제 이름/계좌/사진은 추후 수정하면 됩니다.
+ * 수정: 커튼 정상 작동 + 원본 스크립트 필수 meta 항목 추가
  */
 const CONFIG = {
-  useCurtain: false,
+  // 초대장 열기 화면 사용
+  useCurtain: true,
 
   groom: {
     name: "신랑",
@@ -54,5 +54,11 @@ const CONFIG = {
     bride: [
       { role: "신부", name: "김영희", bank: "은행명", number: "000-0000-0000" }
     ]
+  },
+
+  // 원본 classic-elegant script.js가 시작 시 반드시 읽는 항목
+  meta: {
+    title: "신랑 ♥ 신부 결혼합니다",
+    description: "2026년 12월 26일 오후 2시, 가천대컨벤션에서 소중한 분들을 초대합니다."
   }
 };
