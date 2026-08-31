@@ -49,6 +49,63 @@
     }, { passive: false });
   }
 
+  function applyExternalHeroMedia() {
+    const hero = document.getElementById('heroPhoto');
+
+    if (!hero ||
+        typeof MEDIA_CONFIG === 'undefined' ||
+        !MEDIA_CONFIG.baseUrl ||
+        !MEDIA_CONFIG.hero ||
+        !MEDIA_CONFIG.hero.primary) {
+      return;
+    }
+
+    const base = MEDIA_CONFIG.baseUrl.replace(/\/+$/, '');
+    const path = String(MEDIA_CONFIG.hero.primary).replace(/^\/+/, '');
+    const externalUrl = `${base}/${path}`;
+
+    hero.dataset.mediaResolved = 'worker-r2';
+
+    // 실제 이미지를 Worker URL로 교체
+    if (hero.src !== externalUrl) {
+      hero.src = externalUrl;
+    }
+
+    hero.addEventListener('load', () => {
+      hero.classList.add('is-media-loaded');
+      hero.classList.remove('is-media-error');
+    }, { once: true });
+
+    hero.addEventListener('error', () => {
+      hero.classList.add('is-media-error');
+      hero.classList.remove('is-media-loaded');
+      console.warn('[Wedding Media] Hero image could not be loaded from Worker/R2.');
+    }, { once: true });
+  }
+
+  /*
+   * 원본 classic-elegant가 DOMContentLoaded에서
+   * images/hero/1.jpg를 지정하므로,
+   * 같은 DOMContentLoaded 큐의 다음 순서에서 Worker URL로 다시 지정합니다.
+   */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyExternalHeroMedia);
+  } else {
+  }
+
+
+  function normalizeHeroNames() {
+    const el = document.getElementById('heroNames');
+    if (!el || typeof CONFIG === 'undefined') return;
+
+    const groom = CONFIG.groom?.name || '';
+    const bride = CONFIG.bride?.name || '';
+
+    // 원본의 middle-dot 대신 일반 glyph인 & 사용.
+    // 실제 이름 입력 후에도 동일하게 유지됨.
+    el.textContent = `${groom}  &  ${bride}`;
+  }
+
 
   /* ═══════════════════════════════════════════
      Photo Modal Scroll / Browser Back Fix
@@ -509,6 +566,8 @@
   window.addEventListener('load', function () {
     initHeroQuickNavigation();
     initMobileZoomLock();
+    enhanceWeddingDayStage1();
+    normalizeHeroNames();
     initPhotoModalScrollFix();
     initSnowflakes();
   });
