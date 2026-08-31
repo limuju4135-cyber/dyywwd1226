@@ -14,7 +14,7 @@ const MEDIA_CONFIG = Object.freeze({
   },
 
   og: {
-    primary: "og/1.webp"
+    primary: "og/2.jpg"
   }
 
   // 이후 단계에서 아래 항목을 확장할 예정입니다.
