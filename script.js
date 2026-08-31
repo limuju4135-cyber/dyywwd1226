@@ -245,8 +245,9 @@
     const minuteText = minute === 0 ? '' : ` ${minute}분`;
 
     if (dateEl) {
+      const weekdayText = ['일', '월', '화', '수', '목', '금', '토'][dt.getDay()];
       dateEl.textContent =
-        `${year}년 ${month}월 ${weddingDate}일 ${period} ${displayHour}시${minuteText}`;
+        `${year}년 ${month}월 ${weddingDate}일(${weekdayText}) ${period} ${displayHour}시${minuteText}`;
     }
 
     const header = grid.querySelector('.calendar__header');
