@@ -2,6 +2,100 @@
   'use strict';
 
 
+  /* ═══════════════════════════════════════════
+     Photo Modal Scroll / Browser Back Fix
+     - 사진을 연 위치를 기억
+     - 모달 종료 후 원래 위치 복원
+     - 모바일 브라우저 뒤로가기는 페이지 이탈보다 먼저 모달을 닫음
+     ═══════════════════════════════════════════ */
+  function initPhotoModalScrollFix() {
+    const modal = document.getElementById('photoModal');
+    if (!modal) return;
+
+    let savedScrollY = 0;
+    let modalHistoryActive = false;
+    let restoringFromPopState = false;
+
+    function rememberScrollPosition() {
+      savedScrollY = window.scrollY || window.pageYOffset || 0;
+    }
+
+    // 원본 gallery/story click handler보다 먼저 현재 위치 저장
+    document.addEventListener('pointerdown', (event) => {
+      if (event.target.closest('.gallery__item, .story__photo-item')) {
+        rememberScrollPosition();
+      }
+    }, true);
+
+    document.addEventListener('click', (event) => {
+      if (event.target.closest('.gallery__item, .story__photo-item')) {
+        rememberScrollPosition();
+
+        if (!history.state || !history.state.__weddingPhotoModal) {
+          history.pushState(
+            { ...(history.state || {}), __weddingPhotoModal: true },
+            '',
+            location.href
+          );
+          modalHistoryActive = true;
+        }
+      }
+    }, true);
+
+    function lockAtSavedPosition() {
+      document.body.style.top = `-${savedScrollY}px`;
+    }
+
+    function restoreScrollPosition() {
+      document.body.style.top = '';
+      requestAnimationFrame(() => {
+        window.scrollTo(0, savedScrollY);
+      });
+    }
+
+    const observer = new MutationObserver(() => {
+      const isOpen = modal.classList.contains('is-open');
+
+      if (isOpen) {
+        lockAtSavedPosition();
+        return;
+      }
+
+      restoreScrollPosition();
+
+      // X 버튼/배경 클릭 등으로 닫은 경우, 우리가 추가한 모달용 history만 제거
+      if (modalHistoryActive && !restoringFromPopState &&
+          history.state && history.state.__weddingPhotoModal) {
+        modalHistoryActive = false;
+        history.back();
+      }
+    });
+
+    observer.observe(modal, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    window.addEventListener('popstate', () => {
+      if (!modal.classList.contains('is-open')) {
+        restoringFromPopState = false;
+        return;
+      }
+
+      restoringFromPopState = true;
+      modalHistoryActive = false;
+
+      modal.classList.remove('is-open');
+      document.body.classList.remove('no-scroll');
+      restoreScrollPosition();
+
+      setTimeout(() => {
+        restoringFromPopState = false;
+      }, 0);
+    });
+  }
+
+
   function enhanceWeddingDayStage1() {
     const grid = document.getElementById('calendarGrid');
     const dateEl = document.getElementById('weddingDayDate');
@@ -358,7 +452,7 @@
 
   window.addEventListener('load', function () {
     enhanceWeddingDayStage1();
-    replaceSmallOrnaments();
+    initPhotoModalScrollFix();
     initSnowflakes();
   });
 })();
