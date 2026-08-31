@@ -1844,3 +1844,244 @@ body {
     padding: 0 .58rem !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 18 — LOCATION COMPLETE
+   ═══════════════════════════════════════════ */
+
+.location-stage18 {
+  max-width: 480px !important;
+}
+
+.location-stage18__info {
+  margin: 0 auto 1.55rem !important;
+  text-align: center !important;
+}
+
+.location-stage18__info .location__venue {
+  margin: 0 0 .48rem !important;
+  color: var(--wedding-burgundy) !important;
+  font-size: 1.08rem !important;
+  font-weight: 650 !important;
+  letter-spacing: -.015em !important;
+}
+
+.location-stage18__info .location__hall {
+  margin: 0 0 .33rem !important;
+  color: #45403C !important;
+  font-size: .90rem !important;
+  font-weight: 500 !important;
+  line-height: 1.55 !important;
+}
+
+.location-stage18__info .location__address {
+  margin: 0 !important;
+  color: #766F69 !important;
+  font-size: .82rem !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+}
+
+.location-stage18__info .location__tel:empty {
+  display: none !important;
+}
+
+
+/* 주소복사 / 카카오 / 네이버 3버튼 */
+.location-stage18__actions {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: .48rem !important;
+
+  margin: 0 auto 2.15rem !important;
+}
+
+.location-stage18__action {
+  min-width: 0 !important;
+  min-height: 45px !important;
+  padding: .58rem .30rem !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: .24rem !important;
+
+  border: 1px solid rgba(222,208,180,.78) !important;
+  border-radius: 8px !important;
+
+  background: rgba(255,253,249,.92) !important;
+  color: #665F59 !important;
+
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif !important;
+  font-size: .70rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+
+  text-decoration: none !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+.location-stage18__action svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#naverMapBtn svg {
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+.location-stage18__action:active {
+  background: rgba(199,166,115,.08) !important;
+  color: var(--wedding-burgundy) !important;
+}
+
+
+/* 교통 안내 */
+.location-stage18__guide {
+  border-top: 1px solid rgba(199,166,115,.30);
+}
+
+.location-guide-card {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 1rem;
+
+  padding: 1.38rem .18rem;
+  border-bottom: 1px solid rgba(222,208,180,.35);
+}
+
+.location-guide-card:last-child {
+  border-bottom: 0;
+}
+
+.location-guide-card__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: .45rem;
+
+  padding-top: .05rem;
+}
+
+.location-guide-card__heading h3 {
+  margin: 0 !important;
+  color: var(--wedding-burgundy) !important;
+
+  font-size: .80rem !important;
+  font-weight: 650 !important;
+  line-height: 1.5 !important;
+  letter-spacing: -.01em !important;
+}
+
+.location-guide-card__icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--wedding-gold);
+}
+
+.location-guide-card__icon svg {
+  width: 18px;
+  height: 18px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.location-guide-card__body {
+  min-width: 0;
+}
+
+.location-guide-card__body p {
+  margin: 0 0 .30rem !important;
+
+  color: #504B47 !important;
+  font-size: .84rem !important;
+  font-weight: 400 !important;
+  line-height: 1.65 !important;
+  letter-spacing: -.015em !important;
+}
+
+.location-guide-card__body p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.location-guide-card__body strong {
+  color: #3B3734 !important;
+  font-weight: 600 !important;
+}
+
+.location-guide-card__note {
+  margin-top: .58rem !important;
+  padding-top: .55rem !important;
+
+  border-top: 1px dashed rgba(199,166,115,.38);
+
+  color: #8A8179 !important;
+  font-size: .75rem !important;
+  line-height: 1.65 !important;
+}
+
+.location-guide-card__note strong {
+  color: #706760 !important;
+  font-weight: 550 !important;
+}
+
+
+/* 기존 임시 LOCATION MAP 영역은 Stage18에서 사용하지 않음 */
+.location__map {
+  display: none !important;
+}
+
+
+@media (max-width: 390px) {
+  .location-stage18__info .location__venue {
+    font-size: 1.03rem !important;
+  }
+
+  .location-stage18__info .location__hall {
+    font-size: .86rem !important;
+  }
+
+  .location-stage18__actions {
+    gap: .38rem !important;
+  }
+
+  .location-stage18__action {
+    min-height: 43px !important;
+    font-size: .67rem !important;
+  }
+
+  .location-guide-card {
+    grid-template-columns: 98px minmax(0, 1fr);
+    gap: .72rem;
+  }
+
+  .location-guide-card__heading h3 {
+    font-size: .77rem !important;
+  }
+
+  .location-guide-card__body p {
+    font-size: .81rem !important;
+  }
+}
