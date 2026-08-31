@@ -456,3 +456,181 @@ body.no-scroll {
 .hero__photo.is-media-loaded {
   object-position: center center;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 4 — HERO TUNING
+   목적:
+   1) 사진 감상 방해 감소
+   2) 텍스트 블록을 조금 위로 이동
+   3) WEDDING INVITATION 약화
+   4) 카운트다운 하단 정리
+   ═══════════════════════════════════════════ */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+/* 중앙부는 너무 탁하게 하지 않고,
+   텍스트가 놓이는 상단/하단만 살짝 더 받쳐줌 */
+.hero__overlay {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 13, 13, .26) 0%,
+      rgba(18, 13, 13, .12) 18%,
+      rgba(18, 13, 13, .08) 38%,
+      rgba(18, 13, 13, .10) 58%,
+      rgba(18, 13, 13, .28) 76%,
+      rgba(18, 13, 13, .46) 100%
+    ) !important;
+}
+
+/* 실제 사진 기준 Hero 크롭 미세 조정
+   - 식물 프레임은 남기고
+   - 인물 상반신이 무너지지 않도록 중앙보다 약간 위 중심
+*/
+.hero__photo,
+.hero__photo.is-media-loaded {
+  object-position: 50% 43% !important;
+}
+
+/* 텍스트 묶음을 기존보다 위로 올려
+   얼굴/부케/가슴선 간섭을 줄임 */
+.hero__content {
+  position: absolute !important;
+  left: 50% !important;
+  top: 46.5% !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(84vw, 380px);
+  z-index: 4;
+  text-align: center;
+}
+
+/* Wedding Invitation는 정보보다 분위기용이므로 약화 */
+.hero__label {
+  margin-bottom: .95rem !important;
+  font-size: .72rem !important;
+  letter-spacing: .34em !important;
+  color: rgba(143, 29, 44, .72) !important;
+  opacity: .74;
+}
+
+/* 이름 줄은 살리고, 약한 그림자로 배경 분리 */
+.hero__names {
+  margin: 0 0 .55rem !important;
+  color: rgba(255,255,255,.97) !important;
+  text-shadow: 0 2px 14px rgba(0,0,0,.16);
+  line-height: 1.18 !important;
+}
+
+/* 구분선 길이/간격 가볍게 정리 */
+.hero__divider {
+  width: 64px !important;
+  margin: .72rem auto .78rem !important;
+  border-color: rgba(255,255,255,.68) !important;
+}
+
+/* 날짜/장소도 사진 위에서 살짝 또렷하게 */
+.hero__date,
+.hero__venue {
+  color: rgba(255,255,255,.93) !important;
+  text-shadow: 0 2px 12px rgba(0,0,0,.18);
+}
+
+.hero__date {
+  margin-bottom: .28rem !important;
+}
+
+.hero__venue {
+  margin-bottom: 0 !important;
+}
+
+/* 카운트다운은 드레스 위에 붕 뜨지 않도록
+   하단 정리된 정보영역처럼 보이게 조정 */
+.hero .countdown {
+  position: absolute !important;
+  left: 50%;
+  bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 10px)) !important;
+  transform: translateX(-50%) !important;
+  width: min(86vw, 360px);
+  padding: .8rem .95rem .55rem !important;
+  border-radius: 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.02),
+    rgba(255,255,255,.03)
+  ) !important;
+  border: 1px solid rgba(255,255,255,.07) !important;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  text-align: center;
+  z-index: 4;
+}
+
+.hero .countdown__label {
+  margin-bottom: .55rem !important;
+  color: rgba(255,255,255,.82) !important;
+  letter-spacing: .06em;
+}
+
+.hero .countdown__timer {
+  justify-content: center;
+  gap: .18rem;
+}
+
+.hero .countdown__item {
+  min-width: 52px;
+}
+
+.hero .countdown__number {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+
+.hero .countdown__unit,
+.hero .countdown__sep {
+  color: rgba(255,255,255,.72) !important;
+}
+
+/* 조금 작은 모바일에서 추가 정리 */
+@media (max-width: 430px) {
+  .hero__content {
+    top: 45.5% !important;
+    width: min(86vw, 350px);
+  }
+
+  .hero__label {
+    font-size: .68rem !important;
+    letter-spacing: .28em !important;
+    margin-bottom: .78rem !important;
+  }
+
+  .hero__divider {
+    width: 58px !important;
+    margin: .62rem auto .68rem !important;
+  }
+
+  .hero .countdown {
+    width: min(88vw, 340px);
+    bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 6px)) !important;
+    padding: .72rem .85rem .48rem !important;
+  }
+
+  .hero .countdown__item {
+    min-width: 48px;
+  }
+}
+
+/* 아주 좁은 기기 보정 */
+@media (max-width: 375px) {
+  .hero__content {
+    top: 44.8% !important;
+  }
+
+  .hero .countdown__item {
+    min-width: 44px;
+  }
+}
