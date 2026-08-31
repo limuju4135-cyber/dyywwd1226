@@ -3597,3 +3597,304 @@ img {
     max-width: 46px !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 30 — ACCOUNT GRID CLEAN REBUILD
+   기존 nested grid / 이전 stage 규칙을 무효화하고
+   계좌 한 행을 단일 4열 grid로 재구성
+   ═══════════════════════════════════════════ */
+
+/*
+   ROW 1 : [역할] [이름──────────────] [복사]
+   ROW 2 : [    ] [은행명] [계좌번호] [복사]
+
+   columns:
+   1 역할
+   2 이름/은행 시작열
+   3 계좌번호
+   4 복사 고정열
+*/
+.account-item {
+  display: grid !important;
+
+  grid-template-columns:
+    3.2rem
+    5.55rem
+    minmax(0, 1fr)
+    52px !important;
+
+  grid-template-rows:
+    auto
+    auto !important;
+
+  column-gap: .58rem !important;
+  row-gap: .46rem !important;
+
+  align-items: center !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  padding: 1.08rem 0 !important;
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+
+  text-align: left !important;
+}
+
+/* 혹시 남아 있는 Stage19~29 nested wrapper는 사용 안 함 */
+.account-item__info,
+.account-item__details,
+.account-item__financial {
+  display: contents !important;
+}
+
+
+/* 역할 */
+.account-item__role {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  align-self: center !important;
+  justify-self: start !important;
+
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #847B74 !important;
+  font-size: .78rem !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+
+  white-space: nowrap !important;
+  text-align: left !important;
+}
+
+
+/* 이름 — 은행과 같은 X축에서 시작 */
+.account-item__name {
+  grid-column: 2 / 4 !important;
+  grid-row: 1 !important;
+
+  align-self: center !important;
+  justify-self: stretch !important;
+
+  min-width: 0 !important;
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #332F2C !important;
+  font-size: .94rem !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+
+  text-align: left !important;
+}
+
+
+/* 은행 */
+.account-item__bank {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+
+  align-self: center !important;
+  justify-self: start !important;
+
+  min-width: 0 !important;
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #3B3632 !important;
+  font-size: .84rem !important;
+  font-weight: 700 !important;
+  line-height: 1.42 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+
+  text-align: left !important;
+}
+
+
+/* 계좌번호 — 모든 행 동일한 X축 */
+.account-item__number {
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+
+  align-self: center !important;
+  justify-self: start !important;
+
+  min-width: 0 !important;
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #3B3632 !important;
+  font-size: .82rem !important;
+  font-weight: 700 !important;
+  line-height: 1.42 !important;
+
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -.018em !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+
+  text-align: left !important;
+}
+
+
+/* 복사 — 두 행을 모두 차지하는 독립 고정열 */
+.account-item__copy {
+  grid-column: 4 !important;
+  grid-row: 1 / 3 !important;
+
+  align-self: center !important;
+  justify-self: center !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(222,208,180,.78) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255,253,249,.94) !important;
+  color: #6C625B !important;
+
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif !important;
+
+  font-size: .74rem !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+
+  text-align: center !important;
+  white-space: nowrap !important;
+
+  box-sizing: border-box !important;
+
+  position: static !important;
+  transform: none !important;
+}
+
+
+/* 구분선은 모든 행에서 동일 폭 */
+.account-item + .account-item {
+  border-top: 1px solid rgba(222,208,180,.52) !important;
+}
+
+
+/* 일반 모바일 */
+@media (max-width: 430px) {
+  .account .accordion__panel-inner {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .account-item {
+    grid-template-columns:
+      2.8rem
+      5.1rem
+      minmax(0, 1fr)
+      48px !important;
+
+    column-gap: .46rem !important;
+    row-gap: .42rem !important;
+
+    padding-top: 1.02rem !important;
+    padding-bottom: 1.02rem !important;
+  }
+
+  .account-item__role {
+    font-size: .74rem !important;
+  }
+
+  .account-item__name {
+    font-size: .90rem !important;
+  }
+
+  .account-item__bank {
+    font-size: .79rem !important;
+  }
+
+  .account-item__number {
+    font-size: .77rem !important;
+    letter-spacing: -.025em !important;
+  }
+
+  .account-item__copy {
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+
+    height: 34px !important;
+    min-height: 34px !important;
+
+    font-size: .71rem !important;
+  }
+}
+
+
+/* 매우 좁은 모바일 */
+@media (max-width: 360px) {
+  .account .accordion__panel-inner {
+    padding-left: .78rem !important;
+    padding-right: .78rem !important;
+  }
+
+  .account-item {
+    grid-template-columns:
+      2.55rem
+      4.65rem
+      minmax(0, 1fr)
+      46px !important;
+
+    column-gap: .36rem !important;
+  }
+
+  .account-item__bank {
+    font-size: .76rem !important;
+  }
+
+  .account-item__number {
+    font-size: .70rem !important;
+    letter-spacing: -.03em !important;
+  }
+
+  .account-item__copy {
+    width: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+
+    height: 33px !important;
+    min-height: 33px !important;
+  }
+}
