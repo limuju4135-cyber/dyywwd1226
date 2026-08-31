@@ -2527,3 +2527,35 @@ img {
     column-gap: .03rem !important;
   }
 }
+
+/* ═══════════════════════════════════════════
+   STAGE 23 — HERO SET2 REPOSITION (A안)
+   목적:
+   1) 사진을 소폭 아래로 내려 인물과 텍스트 간섭 완화
+   2) 텍스트 블록을 소폭 위로 올려 상단 여백 확보
+   3) 기존 버튼 / D-day 구조는 유지
+   ═══════════════════════════════════════════ */
+
+/* A안: 사진은 조금 아래로, 텍스트는 조금 위로 */
+.hero__photo,
+.hero__photo.is-media-loaded {
+  object-position: 50% 35% !important;
+}
+
+.hero__content {
+  top: 34.2% !important;
+  width: min(88vw, 388px) !important;
+}
+
+@media (max-width: 430px) {
+  .hero__content {
+    top: 33.0% !important;
+    width: min(90vw, 356px) !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .hero__content {
+    top: 32.2% !important;
+  }
+}
