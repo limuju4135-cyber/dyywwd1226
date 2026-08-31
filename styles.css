@@ -2281,3 +2281,166 @@ img {
     padding-right: .58rem !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 20 — ALIGNMENT / CONTACT / QUICK NAV / CURTAIN
+   ═══════════════════════════════════════════ */
+
+/* 1. 혼주 · 관계 · 자녀 이름 시작점 고정
+   [아버지] [어머니] [의 아들/딸] [자녀]
+*/
+.greeting__parents {
+  width: 100% !important;
+}
+
+.greeting__parents .parent-row {
+  width: max-content !important;
+  max-width: 100% !important;
+
+  display: grid !important;
+  grid-template-columns:
+    4.6rem
+    4.6rem
+    3.65rem
+    4.6rem !important;
+
+  align-items: baseline !important;
+  justify-content: center !important;
+  column-gap: .28rem !important;
+
+  margin: .64rem auto !important;
+
+  word-spacing: 0 !important;
+  text-align: center !important;
+}
+
+.parent-row__father,
+.parent-row__mother,
+.parent-row__relation,
+.parent-row__child {
+  min-width: 0 !important;
+  white-space: nowrap !important;
+}
+
+.parent-row__father,
+.parent-row__mother {
+  justify-self: center !important;
+  font-weight: 450 !important;
+}
+
+.parent-row__relation {
+  justify-self: center !important;
+  color: #6A635D !important;
+  font-weight: 400 !important;
+}
+
+.parent-row__child {
+  justify-self: center !important;
+  color: #342F2C !important;
+  font-weight: 650 !important;
+}
+
+
+/* 2. 계좌번호 위치 고정
+   1행: [역할] [이름]
+   2행:        [은행명(고정폭)] [계좌번호]
+*/
+.account-item__info {
+  grid-template-columns: 3.35rem minmax(0, 1fr) !important;
+  column-gap: .62rem !important;
+}
+
+.account-item__financial {
+  display: grid !important;
+  grid-template-columns: 6.6rem minmax(0, 1fr) !important;
+  align-items: baseline !important;
+
+  column-gap: .80rem !important;
+  row-gap: 0 !important;
+}
+
+.account-item__bank {
+  min-width: 0 !important;
+  width: 100% !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.account-item__number {
+  min-width: 0 !important;
+  justify-self: start !important;
+  text-align: left !important;
+
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+}
+
+
+/* 3. CONTACT 영문 삭제 후 헤더 여백 정리 */
+.contact-directory__eyebrow {
+  display: none !important;
+}
+
+.contact-directory__header {
+  margin-bottom: 1.72rem !important;
+}
+
+
+/* 4. PC에서 바로가기 버튼과 D-day 사이 간격 확대
+   모바일 위치는 유지 */
+@media (min-width: 431px) {
+  .hero__quick-nav {
+    bottom: max(
+      154px,
+      calc(env(safe-area-inset-bottom, 0px) + 144px)
+    ) !important;
+  }
+}
+
+
+/* 5. 커튼 #861010 확정
+   이전 Stage들의 gradient를 완전히 무효화 */
+#curtain.curtain,
+#curtain .curtain__left,
+#curtain .curtain__right {
+  background-color: #861010 !important;
+  background-image: none !important;
+}
+
+#curtain .curtain__left,
+#curtain .curtain__right {
+  box-shadow:
+    inset 0 0 34px rgba(55, 0, 0, .08) !important;
+}
+
+
+/* 작은 모바일에서도 열 정렬 유지 */
+@media (max-width: 390px) {
+  .greeting__parents .parent-row {
+    grid-template-columns:
+      4.15rem
+      4.15rem
+      3.35rem
+      4.15rem !important;
+
+    column-gap: .20rem !important;
+  }
+
+  .account-item__info {
+    grid-template-columns: 3.0rem minmax(0, 1fr) !important;
+    column-gap: .46rem !important;
+  }
+
+  .account-item__financial {
+    grid-template-columns: 5.9rem minmax(0, 1fr) !important;
+    column-gap: .58rem !important;
+  }
+
+  .account-item__number {
+    font-size: .80rem !important;
+  }
+}
