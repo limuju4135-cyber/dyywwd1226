@@ -84,24 +84,34 @@
     });
   }
 
-  function mediaUrl(path) {
-    if (!path || typeof MEDIA_CONFIG === 'undefined' || !MEDIA_CONFIG.baseUrl) return '';
-    return `${MEDIA_CONFIG.baseUrl.replace(/\/+$/, '')}/${String(path).replace(/^\/+/, '')}`;
-  }
-
   function initHero() {
     const photo = $('#heroPhoto');
-    if (photo) {
-      const external = typeof MEDIA_CONFIG !== 'undefined' && MEDIA_CONFIG.hero
-        ? mediaUrl(MEDIA_CONFIG.hero.primary)
-        : '';
-      if (external) photo.src = external;
+
+    if (photo && typeof SECURE_WEDDING !== 'undefined') {
+      const heroPath = MEDIA_CONFIG.media?.hero || '';
+      const external = SECURE_WEDDING.mediaUrl(heroPath);
+
+      if (external) {
+        photo.dataset.mediaResolved = 'worker-r2-session';
+        photo.src = external;
+
+        photo.addEventListener('load', () => {
+          photo.classList.add('is-media-loaded');
+          photo.classList.remove('is-media-error');
+        }, { once: true });
+
+        photo.addEventListener('error', () => {
+          photo.classList.add('is-media-error');
+          photo.classList.remove('is-media-loaded');
+        }, { once: true });
+      }
     }
 
     const names = $('#heroNames');
     const date = $('#heroDate');
     const venue = $('#heroVenue');
-    if (names) names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
+
+    if (names) names.textContent = `${CONFIG.groom.name || ''} & ${CONFIG.bride.name || ''}`;
     if (date) date.textContent = formatDate(CONFIG.wedding.date, CONFIG.wedding.time);
     if (venue) venue.textContent = CONFIG.wedding.venue;
   }
@@ -319,36 +329,6 @@
     }
   }
 
-  function detectLocalImages(folder, maxAttempts = 30) {
-    return new Promise(resolve => {
-      const found = [];
-      let current = 1;
-      let fails = 0;
-
-      function next() {
-        if (current > maxAttempts || fails >= 3) {
-          resolve(found);
-          return;
-        }
-        const path = `images/${folder}/${current}.jpg`;
-        const img = new Image();
-        img.onload = () => {
-          found.push(path);
-          fails = 0;
-          current += 1;
-          next();
-        };
-        img.onerror = () => {
-          fails += 1;
-          current += 1;
-          next();
-        };
-        img.src = path;
-      }
-      next();
-    });
-  }
-
   let modalImages = [];
   let modalIndex = 0;
 
@@ -426,33 +406,42 @@
     const grid = $('#galleryGrid');
     if (!grid) return;
 
-    // Story 삭제 이후 남던 무한 loading placeholder를 사용하지 않는다.
     grid.innerHTML = '';
 
-    const images = await detectLocalImages('gallery');
-    if (!images.length) {
+    try {
+      const manifest = await SECURE_WEDDING.getGalleryManifest();
+      const paths = Array.isArray(manifest.images) ? manifest.images : [];
+
+      if (!paths.length) {
+        const section = $('#gallery');
+        if (section) section.style.display = 'none';
+        return;
+      }
+
+      const images = paths.map((path) => SECURE_WEDDING.mediaUrl(path));
+
+      images.forEach((src, index) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'gallery__item animate-item';
+        item.setAttribute('data-animate', 'scale-in');
+        item.setAttribute('aria-label', `갤러리 사진 ${index + 1} 크게 보기`);
+
+        const image = document.createElement('img');
+        image.src = src;
+        image.alt = `갤러리 사진 ${index + 1}`;
+        image.loading = 'lazy';
+        image.decoding = 'async';
+
+        item.appendChild(image);
+        item.addEventListener('click', () => openPhotoModal(images, index));
+        grid.appendChild(item);
+      });
+    } catch (error) {
+      console.warn('[Gallery]', error);
       const section = $('#gallery');
       if (section) section.style.display = 'none';
-      return;
     }
-
-    images.forEach((src, index) => {
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'gallery__item animate-item';
-      item.setAttribute('data-animate', 'scale-in');
-      item.setAttribute('aria-label', `갤러리 사진 ${index + 1} 크게 보기`);
-
-      const image = document.createElement('img');
-      image.src = src;
-      image.alt = `갤러리 사진 ${index + 1}`;
-      image.loading = 'lazy';
-      image.decoding = 'async';
-
-      item.appendChild(image);
-      item.addEventListener('click', () => openPhotoModal(images, index));
-      grid.appendChild(item);
-    });
   }
 
   function initLocation() {
@@ -509,10 +498,55 @@
   }
 
   function initAccounts() {
-    renderAccounts(CONFIG.accounts.groom || [], 'groomAccountList');
-    renderAccounts(CONFIG.accounts.bride || [], 'brideAccountList');
     initAccordion('groomAccordion', 'groomAccordionPanel');
     initAccordion('brideAccordion', 'brideAccordionPanel');
+
+    let loaded = false;
+    let loading = false;
+
+    async function loadAccountsOnce() {
+      if (loaded || loading) return;
+      loading = true;
+
+      try {
+        const accounts = await SECURE_WEDDING.getAccounts();
+
+        CONFIG.accounts = {
+          groom: Array.isArray(accounts.groom) ? accounts.groom : [],
+          bride: Array.isArray(accounts.bride) ? accounts.bride : []
+        };
+
+        renderAccounts(CONFIG.accounts.groom, 'groomAccountList');
+        renderAccounts(CONFIG.accounts.bride, 'brideAccountList');
+
+        ['groom', 'bride'].forEach(side => {
+          const trigger = document.getElementById(`${side}Accordion`);
+          const panel = document.getElementById(`${side}AccordionPanel`);
+          if (
+            trigger &&
+            panel &&
+            trigger.getAttribute('aria-expanded') === 'true'
+          ) {
+            panel.style.maxHeight = `${panel.scrollHeight}px`;
+          }
+        });
+
+        loaded = true;
+      } catch (error) {
+        console.warn('[Accounts]', error);
+        showToast('계좌 정보를 불러오지 못했습니다');
+      } finally {
+        loading = false;
+      }
+    }
+
+    ['groomAccordion', 'brideAccordion'].forEach(id => {
+      document.getElementById(id)?.addEventListener(
+        'click',
+        loadAccountsOnce,
+        { capture: true }
+      );
+    });
 
     document.addEventListener('click', e => {
       const btn = e.target.closest('.account-item__copy');
@@ -561,6 +595,12 @@
   }
 
   async function init() {
+    try {
+      await SECURE_WEDDING.init();
+    } catch {
+      return;
+    }
+
     initMeta();
     initCurtain();
     initHero();
