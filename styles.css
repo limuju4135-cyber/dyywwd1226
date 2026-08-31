@@ -1024,3 +1024,124 @@ body.no-scroll {
     height: 240px;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 9 — ALL SANS / KOREAN CALENDAR
+   ═══════════════════════════════════════════ */
+
+:root {
+  --font-display: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+  --font-body: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select,
+.hero__label,
+.hero__names,
+.hero__date,
+.hero__venue,
+.countdown,
+.section__title,
+.greeting__text,
+.greeting__parents,
+.wedding-day-eyebrow,
+.wedding-day-date,
+.calendar,
+.calendar__header,
+.calendar__month-name,
+.calendar__year,
+.calendar__weekday,
+.calendar__day,
+.gallery,
+.location,
+.account,
+.footer,
+.curtain__subtitle,
+.curtain__names,
+.curtain__btn {
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif !important;
+}
+
+/* Hero 영문 보조 제목도 고딕으로 정리 */
+.hero__label {
+  font-weight: 500 !important;
+  letter-spacing: .27em !important;
+}
+
+/* 이름은 고딕 전환 후 너무 무겁지 않도록 */
+.hero__names {
+  font-weight: 300 !important;
+  letter-spacing: .02em !important;
+}
+
+/* Wedding Day */
+.wedding-day-eyebrow {
+  font-weight: 600 !important;
+  letter-spacing: .14em !important;
+}
+
+.wedding-day-date {
+  font-weight: 400 !important;
+  letter-spacing: -.02em !important;
+  font-size: clamp(1.45rem, 5.7vw, 1.85rem) !important;
+}
+
+/* 달력 헤더 */
+#calendarGrid .calendar__month-name,
+#calendarGrid .calendar__year {
+  font-weight: 600 !important;
+  letter-spacing: .02em !important;
+  text-transform: none !important;
+}
+
+#calendarGrid .calendar__month-name {
+  font-size: 1.08rem !important;
+}
+
+#calendarGrid .calendar__year {
+  font-size: .98rem !important;
+}
+
+/* 요일 */
+#calendarGrid .calendar__weekday {
+  font-size: .78rem !important;
+  font-weight: 500 !important;
+}
+
+/* 날짜 */
+#calendarGrid .calendar__day {
+  font-size: .87rem !important;
+  font-weight: 400 !important;
+}
+
+#calendarGrid .calendar__day.is-today {
+  font-weight: 600 !important;
+}
+
+/* Curtain도 고딕 전환 후 균형 보정 */
+.curtain__subtitle {
+  font-weight: 500 !important;
+  letter-spacing: .22em !important;
+}
+
+.curtain__names {
+  font-weight: 300 !important;
+}
+
+.curtain__btn {
+  font-weight: 400 !important;
+}
+
+/* 전체 본문은 너무 두껍지 않게 */
+body {
+  font-weight: 400;
+}
