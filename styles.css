@@ -1599,3 +1599,61 @@ body {
     height: 26px;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 14 — PRIVATE ACCESS GATE
+   ═══════════════════════════════════════════ */
+
+.access-gate[hidden] {
+  display: none !important;
+}
+
+.access-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 28px;
+  background: #FFFAFA;
+}
+
+.access-gate__card {
+  width: min(100%, 380px);
+  padding: 40px 26px;
+
+  border: 1px solid rgba(222,208,180,.72);
+  background: rgba(255,253,249,.96);
+
+  text-align: center;
+}
+
+.access-gate__eyebrow {
+  margin: 0 0 14px;
+  color: #B99A55;
+  font-size: .70rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+}
+
+.access-gate__title {
+  margin: 0 0 14px;
+  color: #292725;
+  font-size: 1.18rem;
+  font-weight: 600;
+}
+
+.access-gate__message {
+  margin: 0;
+  color: #7A726A;
+  font-size: .86rem;
+  line-height: 1.75;
+}
+
+body.access-denied > :not(.access-gate) {
+  visibility: hidden !important;
+}
