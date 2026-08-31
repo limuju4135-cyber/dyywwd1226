@@ -2,6 +2,19 @@
   'use strict';
 
 
+  function normalizeHeroNames() {
+    const el = document.getElementById('heroNames');
+    if (!el || typeof CONFIG === 'undefined') return;
+
+    const groom = CONFIG.groom?.name || '';
+    const bride = CONFIG.bride?.name || '';
+
+    // 원본의 middle-dot 대신 일반 glyph인 & 사용.
+    // 실제 이름 입력 후에도 동일하게 유지됨.
+    el.textContent = `${groom}  &  ${bride}`;
+  }
+
+
   /* ═══════════════════════════════════════════
      Photo Modal Scroll / Browser Back Fix
      - 사진을 연 위치를 기억
@@ -156,7 +169,7 @@
 
     // 이전 버전보다 확실히 적게
     const isMobile = document.documentElement.clientWidth <= 768;
-    const FLAKE_COUNT = isMobile ? 16 : 24;
+    const FLAKE_COUNT = isMobile ? 8 : 12;
 
     /**
      * 핀치 줌 대응 핵심:
@@ -224,8 +237,8 @@
 
         // 전체적으로 더 은은하게
         this.baseOpacity = crystal
-          ? 0.16 + Math.random() * 0.11
-          : 0.11 + Math.random() * 0.10;
+          ? 0.08 + Math.random() * 0.055
+          : 0.055 + Math.random() * 0.05;
 
         this.opacity = this.baseOpacity;
 
@@ -263,7 +276,7 @@
         this.twinkle += this.twinkleSpeed;
         this.opacity =
           this.baseOpacity *
-          (1 + Math.sin(this.twinkle) * 0.025);
+          (1 + Math.sin(this.twinkle) * 0.012);
 
         if (
           this.y > height + 25 ||
@@ -452,6 +465,7 @@
 
   window.addEventListener('load', function () {
     enhanceWeddingDayStage1();
+    normalizeHeroNames();
     initPhotoModalScrollFix();
     initSnowflakes();
   });
