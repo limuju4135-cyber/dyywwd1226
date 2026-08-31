@@ -915,3 +915,112 @@ body.no-scroll {
     font-size: .88rem !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 7 — HERO READABILITY IMPROVEMENT
+   방식:
+   - 전체 사진 밝기는 유지
+   - 텍스트 영역 뒤에만 부드러운 국소 dark veil 추가
+   - WEDDING INVITATION → antique gold
+   - 날짜/장소 → warm ivory
+   ═══════════════════════════════════════════ */
+
+/* Hero 텍스트 영역을 국소적으로만 받쳐주는 부드러운 베일 */
+.hero__content {
+  isolation: isolate;
+}
+
+.hero__content::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 430px);
+  height: 270px;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(28, 22, 20, .44) 0%,
+      rgba(28, 22, 20, .28) 42%,
+      rgba(28, 22, 20, .14) 62%,
+      rgba(28, 22, 20, 0) 84%
+    );
+  filter: blur(10px);
+}
+
+/* 라벨은 골드로 바꿔 존재감은 살리되 고급스럽게 */
+.hero__label {
+  font-size: .80rem !important;
+  letter-spacing: .30em !important;
+  color: rgba(215, 189, 141, .96) !important;
+  opacity: 1 !important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.16),
+    0 3px 14px rgba(0,0,0,.10) !important;
+}
+
+/* 이름은 현재 유지 + 분리감만 약간 보강 */
+.hero__names {
+  color: rgba(255,255,255,.98) !important;
+  text-shadow:
+    0 1px 3px rgba(0,0,0,.28),
+    0 4px 18px rgba(0,0,0,.14) !important;
+}
+
+/* 날짜/장소는 pure white 대신 warm ivory */
+.hero__date {
+  font-size: 1.00rem !important;
+  color: rgba(255, 248, 242, .97) !important;
+  text-shadow:
+    0 1px 3px rgba(0,0,0,.34),
+    0 3px 14px rgba(0,0,0,.18) !important;
+  letter-spacing: .035em !important;
+}
+
+.hero__venue {
+  font-size: .91rem !important;
+  color: rgba(255, 248, 242, .96) !important;
+  text-shadow:
+    0 1px 3px rgba(0,0,0,.33),
+    0 3px 14px rgba(0,0,0,.17) !important;
+  letter-spacing: .03em !important;
+}
+
+/* 구분선도 조금 더 또렷하게 */
+.hero__divider {
+  border-color: rgba(255,255,255,.78) !important;
+}
+
+/* 모바일 보정 */
+@media (max-width: 430px) {
+  .hero__content::before {
+    width: min(96vw, 390px);
+    height: 250px;
+    top: 49%;
+    filter: blur(9px);
+  }
+
+  .hero__label {
+    font-size: .76rem !important;
+    letter-spacing: .28em !important;
+  }
+
+  .hero__date {
+    font-size: .96rem !important;
+  }
+
+  .hero__venue {
+    font-size: .88rem !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .hero__content::before {
+    width: min(98vw, 360px);
+    height: 240px;
+  }
+}
