@@ -2085,3 +2085,199 @@ body {
     font-size: .81rem !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 19 — CURTAIN / SNOW / ACCOUNT / PROTECTION
+   ═══════════════════════════════════════════ */
+
+/* 1. 이미지 저장/드래그 억제 보조
+   우클릭 자체는 script.js에서 desktop fine-pointer 기준 차단 */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+
+/* 2. 대문 커튼 컬러: #861010
+   기본색은 정확히 #861010, 좌우 패널에는 깊이감만 아주 약하게 추가 */
+.curtain {
+  background: #861010 !important;
+}
+
+.curtain__left {
+  background:
+    linear-gradient(
+      105deg,
+      #730D0D 0%,
+      #861010 35%,
+      #941717 72%,
+      #861010 100%
+    ) !important;
+
+  box-shadow:
+    inset -16px 0 34px rgba(42, 0, 0, .10),
+    inset 10px 0 28px rgba(255, 245, 238, .018) !important;
+}
+
+.curtain__right {
+  background:
+    linear-gradient(
+      255deg,
+      #730D0D 0%,
+      #861010 35%,
+      #941717 72%,
+      #861010 100%
+    ) !important;
+
+  box-shadow:
+    inset 16px 0 34px rgba(42, 0, 0, .10),
+    inset -10px 0 28px rgba(255, 245, 238, .018) !important;
+}
+
+
+/* 4. 기존 음표 아이콘 완전 제거 */
+.account .accordion__icon {
+  display: none !important;
+}
+
+
+/* 5. 계좌정보 표기
+   1행: [신랑] [임도영]
+   2행:        [카카오뱅크]   [계좌번호]
+*/
+.account-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  gap: .90rem !important;
+  padding: 1.05rem .05rem !important;
+}
+
+.account-item__info {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 3.25rem minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  align-items: baseline !important;
+
+  column-gap: .55rem !important;
+  row-gap: .48rem !important;
+}
+
+.account-item__role {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  color: #7D756E !important;
+  font-size: .78rem !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+}
+
+.account-item__name {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  color: #342F2C !important;
+  font-size: .94rem !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+}
+
+.account-item__financial {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+
+  min-width: 0 !important;
+
+  display: flex !important;
+  align-items: baseline !important;
+  flex-wrap: wrap !important;
+
+  column-gap: 1.05rem !important;
+  row-gap: .22rem !important;
+}
+
+.account-item__bank,
+.account-item__number {
+  color: #3B3632 !important;
+  font-size: .86rem !important;
+  font-weight: 700 !important;
+  line-height: 1.48 !important;
+}
+
+.account-item__bank {
+  white-space: nowrap !important;
+}
+
+.account-item__number {
+  letter-spacing: .012em !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+.account-item__copy {
+  align-self: center !important;
+
+  min-width: 50px !important;
+  height: 34px !important;
+  padding: 0 .72rem !important;
+}
+
+
+/* 음표가 빠진 accordion title 중앙 균형 보정 */
+.account .accordion__trigger {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 20px !important;
+  align-items: center !important;
+  column-gap: .75rem !important;
+}
+
+.account .accordion__trigger > span:not(.accordion__icon) {
+  text-align: left !important;
+}
+
+.account .accordion__arrow {
+  justify-self: end !important;
+}
+
+
+@media (max-width: 390px) {
+  .account-item {
+    gap: .58rem !important;
+  }
+
+  .account-item__info {
+    grid-template-columns: 2.9rem minmax(0, 1fr) !important;
+    column-gap: .42rem !important;
+  }
+
+  .account-item__role {
+    font-size: .74rem !important;
+  }
+
+  .account-item__name {
+    font-size: .90rem !important;
+  }
+
+  .account-item__financial {
+    column-gap: .78rem !important;
+  }
+
+  .account-item__bank,
+  .account-item__number {
+    font-size: .82rem !important;
+  }
+
+  .account-item__copy {
+    min-width: 46px !important;
+    padding-left: .58rem !important;
+    padding-right: .58rem !important;
+  }
+}
