@@ -1377,3 +1377,225 @@ body {
 .wedding-day-section .btn--outline svg {
   flex: 0 0 auto;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 13 — HERO QUICK NAV + CONTACT DIRECTORY
+   ═══════════════════════════════════════════ */
+
+/* 1/2. 바로가기 버튼을 D-day 카드 바로 위로 내리고,
+        D-day와 동일한 투명 화이트 테두리로 통일 */
+.hero__quick-nav {
+  bottom: max(132px, calc(env(safe-area-inset-bottom, 0px) + 122px)) !important;
+  width: min(88vw, 352px) !important;
+  gap: .42rem !important;
+}
+
+.hero__quick-btn {
+  height: 38px !important;
+  padding: 0 .55rem !important;
+
+  border: 1px solid rgba(255,255,255,.07) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.02),
+      rgba(255,255,255,.03)
+    ) !important;
+
+  color: rgba(255,248,242,.92) !important;
+  box-shadow: none !important;
+
+  -webkit-backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(3px) !important;
+
+  font-size: .73rem !important;
+}
+
+.hero__quick-btn:active {
+  background: rgba(255,255,255,.055) !important;
+}
+
+@media (max-width: 430px) {
+  .hero__quick-nav {
+    bottom: max(128px, calc(env(safe-area-inset-bottom, 0px) + 118px)) !important;
+    width: min(90vw, 344px) !important;
+  }
+
+  .hero__quick-btn {
+    height: 37px !important;
+    font-size: .71rem !important;
+  }
+}
+
+@media (max-height: 700px) {
+  .hero__quick-nav {
+    bottom: 120px !important;
+  }
+}
+
+
+/* 3. Invitation 안 연락처 디렉토리 */
+.contact-directory {
+  margin-top: 3.25rem;
+  padding-top: 2.65rem;
+  border-top: 1px solid rgba(199,166,115,.24);
+  scroll-margin-top: 12px;
+}
+
+.contact-directory__header {
+  margin-bottom: 1.8rem;
+  text-align: center;
+}
+
+.contact-directory__eyebrow {
+  margin: 0 0 .35rem;
+  color: var(--wedding-gold);
+  font-size: .68rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+}
+
+.contact-directory__title {
+  margin: 0;
+  color: var(--wedding-ink);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+}
+
+.contact-directory__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+.contact-side {
+  min-width: 0;
+}
+
+.contact-side:first-child {
+  padding-right: .55rem;
+  border-right: 1px solid rgba(222,208,180,.42);
+}
+
+.contact-side:last-child {
+  padding-left: .55rem;
+}
+
+.contact-side__title {
+  margin: 0 0 1rem;
+  color: var(--wedding-burgundy);
+  font-size: .82rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.contact-side__list {
+  display: grid;
+  gap: .25rem;
+}
+
+.contact-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .25rem;
+  min-height: 46px;
+  padding: .42rem .18rem;
+}
+
+.contact-person + .contact-person {
+  border-top: 1px solid rgba(222,208,180,.22);
+}
+
+.contact-person__identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .10rem;
+}
+
+.contact-person__role {
+  color: var(--wedding-muted);
+  font-size: .65rem;
+  font-weight: 400;
+}
+
+.contact-person__name {
+  overflow: hidden;
+  color: var(--wedding-ink);
+  font-size: .78rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contact-person__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: .22rem;
+}
+
+.contact-person__action {
+  width: 28px;
+  height: 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #8A8179;
+  border: 1px solid rgba(222,208,180,.62);
+  border-radius: 50%;
+  background: rgba(255,253,249,.72);
+  text-decoration: none;
+}
+
+.contact-person__action svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.contact-person__action:active {
+  background: rgba(199,166,115,.10);
+  color: var(--wedding-burgundy);
+}
+
+.contact-person__action--disabled {
+  opacity: .28;
+  pointer-events: none;
+}
+
+#contact {
+  scroll-margin-top: 12px;
+}
+
+@media (max-width: 390px) {
+  .contact-directory__grid {
+    gap: .72rem;
+  }
+
+  .contact-side:first-child {
+    padding-right: .36rem;
+  }
+
+  .contact-side:last-child {
+    padding-left: .36rem;
+  }
+
+  .contact-person__name {
+    font-size: .73rem;
+  }
+
+  .contact-person__action {
+    width: 26px;
+    height: 26px;
+  }
+}
