@@ -3372,3 +3372,23 @@ img {
   margin: 0 auto 1.50rem !important;
   padding-top: 0 !important;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 28 — MINOR TEXT / META CLEANUP
+   ═══════════════════════════════════════════ */
+
+/* 혼주: 아버지 · 어머니 사이 점을 확실히 표시하고 간격은 조밀하게 */
+.parent-row__dot {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #706862 !important;
+}
+
+.greeting__parents .parent-row {
+  column-gap: 0 !important;
+}
