@@ -1,42 +1,28 @@
-/* ═══════════════════════════════════════════
-   Winter Wedding Custom Theme v4
-   classic-elegant 원본 위에 덮어쓰기
-   ═══════════════════════════════════════════ */
+/* classic-elegant 원본 위에 덮어쓰는 커스텀 스타일 */
 :root {
-  --color-bg: #FFFAFA;
-  --color-bg-warm: #FFF8F7;
-  --color-bg-card: #FFFDF9;
+  --color-bg: #fffafa;
+  --color-bg-warm: #fff8f5;
+  --color-bg-card: #fffdf9;
   --color-text: #292725;
-  --color-text-light: #7A726A;
-  --color-text-muted: #A0978F;
-  --color-accent: #C7A673;
-  --color-accent-light: #DED0B4;
-  --color-accent-dark: #6C171C;
-  --color-border: #E9DDCC;
-  --color-divider: #DED0B4;
-  --color-overlay: rgba(28,18,16,.34);
-  --color-toast-bg: rgba(41,39,37,.92);
-  --burgundy: #6C171C;
-  --burgundy-soft: #8F1D2C;
-  --gold: #C7A673;
-  --gold-light: #DED0B4;
-}
-
-html,
-body {
-  background-color: #FFFAFA;
+  --color-text-light: #7a726a;
+  --color-text-muted: #a0978f;
+  --color-accent: #b99a55;
+  --color-accent-light: #d8c39a;
+  --color-accent-dark: #8f1d2c;
+  --color-border: #ece3d8;
+  --color-divider: #ded0b4;
+  --color-overlay: rgba(28, 18, 16, 0.34);
+  --color-toast-bg: rgba(41, 39, 37, 0.92);
 }
 
 body {
-  background-image:
-    radial-gradient(circle at 20% 10%, rgba(199,166,115,.035) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 78% 34%, rgba(108,23,28,.018) 0 1px, transparent 1.4px),
-    linear-gradient(180deg, #FFFAFA 0%, #FFF9F8 100%);
-  background-size: 24px 24px, 31px 31px, 100% 100%;
+  background: linear-gradient(180deg, #fffafa 0%, #fff8f5 100%);
 }
 
-/* ─── Snow ─── */
-.petal-canvas { opacity: 0 !important; }
+/* 원본 낙화는 숨기고, 새 눈송이 캔버스를 사용 */
+.petal-canvas {
+  opacity: 0 !important;
+}
 .snow-canvas {
   position: fixed;
   inset: 0;
@@ -46,271 +32,352 @@ body {
   height: 100%;
 }
 
-/* ─── Hero ─── */
-.hero { min-height: 100svh; }
-.hero__photo { object-position: center center; }
 .hero__overlay {
-  background: linear-gradient(180deg,
-    rgba(31,20,19,.06) 0%,
-    rgba(31,20,19,.18) 48%,
-    rgba(31,20,19,.42) 100%);
+  background: linear-gradient(180deg, rgba(40,27,25,.08), rgba(40,27,25,.30) 70%, rgba(40,27,25,.40));
 }
-.hero__label {
-  color: #FFF8F1 !important;
-  letter-spacing: 4px;
-  text-shadow: 0 1px 10px rgba(0,0,0,.12);
-}
-.hero__divider { background: rgba(199,166,115,.86) !important; }
 
-/* ─── Palette ─── */
+.hero__label,
 .section__title,
 .location__venue,
-.footer__text { color: var(--burgundy); }
+.footer__text {
+  color: var(--color-accent-dark);
+}
 
+.hero__divider,
 .ornament,
 .countdown__label,
+.calendar__month,
+.calendar__date--today,
+.calendar__date--wedding,
 .account__desc,
-.accordion__icon { color: var(--gold); }
+.accordion__icon {
+  color: var(--color-accent);
+}
 
+.countdown,
+.calendar,
+.story__photo,
+.gallery__item,
+.location__map,
+.accordion,
+.btn--outline,
+.btn--text {
+  background: rgba(255, 253, 249, 0.9);
+  border-color: var(--color-border) !important;
+}
+
+.btn--outline,
+.btn--text,
+.accordion__trigger {
+  color: var(--color-text);
+}
+
+/* 눈송이 느낌을 위해 장식 기호도 눈 결정 스타일로 */
+.ornament {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* 상단 사진이 더 중요하게 보이도록 */
+.hero {
+  min-height: 100svh;
+}
+.hero__photo {
+  object-position: center center;
+}
+
+/* 페이지 전반을 조금 더 따뜻한 크리스마스 이후 겨울 톤으로 */
 .greeting,
 .story,
+.gallery,
 .account,
 .footer {
-  background: #FFFAFA;
+  background: linear-gradient(180deg, rgba(255,250,250,.92), rgba(255,248,245,.98));
 }
 .calendar-section,
-.gallery,
 .location {
-  background: #FFFDF9;
+  background: rgba(255,253,249,.96);
 }
 
-.section__inner { position: relative; }
 
-/* ─── Elegant winter decorations ─── */
-.winter-section-inner { position: relative; overflow: visible; }
-.winter-decor {
+/* ═══════════════════════════════════════════
+   STAGE 1 — WEDDING DAY / CALENDAR
+   실제 확정 그래픽 적용
+   ═══════════════════════════════════════════ */
+
+:root {
+  --wedding-bg: #FFFAFA;
+  --wedding-card: #FFFDF9;
+  --wedding-burgundy: #6C171C;
+  --wedding-burgundy-soft: #8F1D2C;
+  --wedding-gold: #C7A673;
+  --wedding-gold-light: #DED0B4;
+  --wedding-ink: #292725;
+  --wedding-muted: #7A726A;
+}
+
+.calendar-section.wedding-day-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--wedding-bg) !important;
+  padding-top: 5.4rem;
+  padding-bottom: 5.25rem;
+}
+
+.wedding-day-inner {
+  position: relative;
+  max-width: 480px;
+  overflow: visible;
+}
+
+.wedding-day-decor {
   position: absolute;
+  display: block;
+  z-index: 0;
   pointer-events: none;
   user-select: none;
-  z-index: 0;
+  -webkit-user-drag: none;
 }
-.winter-decor--botanical {
-  width: 118px;
-  right: -24px;
-  top: -55px;
+
+.wedding-day-decor--top-right {
+  width: clamp(88px, 25vw, 118px);
+  top: -3.55rem;
+  right: -0.7rem;
+  opacity: .84;
+}
+
+.wedding-day-decor--bottom-left {
+  width: clamp(86px, 25vw, 116px);
+  left: -1.0rem;
+  bottom: 3.0rem;
+  opacity: .80;
+}
+
+.wedding-day-title {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin: 0 auto 2rem;
+}
+
+.wedding-day-eyebrow-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .78rem;
+  margin-bottom: .5rem;
+}
+
+.wedding-day-eyebrow {
+  margin: 0;
+  color: var(--wedding-burgundy);
+  font-family: var(--font-display);
+  font-size: .90rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: .085em;
+}
+
+.wedding-day-sparkle {
+  display: block;
+  width: 16px;
+  height: auto;
   opacity: .72;
 }
-.winter-decor--sparkles {
-  width: 112px;
-  left: -22px;
-  top: -30px;
-  opacity: .66;
-}
-.winter-decor--ribbon {
-  width: 84px;
-  left: -7px;
-  top: 122px;
-  transform: rotate(-8deg);
-  opacity: .96;
-  filter: drop-shadow(0 5px 8px rgba(67,14,20,.10));
-}
-.winter-decor--gallery-sparkles {
-  width: 120px;
-  right: -22px;
-  top: -37px;
-  opacity: .55;
+
+.wedding-day-sparkle--right {
+  transform: scaleX(-1);
 }
 
-/* ─── Section headings ─── */
-.wedding-day-heading,
-.section-heading-rich {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-}
-.wedding-day-heading { margin-bottom: 2.3rem; }
-.wedding-day-heading__eyebrow,
-.section-heading-rich__eyebrow {
-  margin: 0 0 .55rem;
-  color: var(--burgundy);
-  font-family: var(--font-display);
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: 2.3px;
-}
-.wedding-day-heading__date {
+.wedding-day-date {
   margin: 0;
-  color: var(--color-text);
+  color: var(--wedding-ink);
   font-family: var(--font-display);
-  font-size: clamp(2rem, 8vw, 2.75rem);
+  font-size: clamp(2.05rem, 8.1vw, 2.72rem);
+  line-height: 1.1;
   font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: .3px;
+  letter-spacing: -.015em;
 }
-.section-heading-rich { margin-bottom: 2.15rem; }
-.section-heading-rich__title {
-  margin: 0;
-  color: var(--color-text);
-  font-size: 1.42rem;
-  font-weight: 400;
-  letter-spacing: .02em;
-}
-.star-divider {
+
+.wedding-day-divider {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: .55rem;
-  margin: 1rem auto 0;
-  color: var(--gold);
+  margin: .95rem auto 0;
 }
-.star-divider span {
-  width: 34px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-light));
-}
-.star-divider span:last-child {
-  background: linear-gradient(90deg, var(--gold-light), transparent);
-}
-.star-divider b { font-size: .64rem; font-weight: 400; }
-.star-divider--small { margin-top: .75rem; }
-.star-divider--small span { width: 24px; }
 
-/* ─── Calendar card inspired by reference ─── */
-.calendar {
+.wedding-day-divider span {
+  width: 31px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(199,166,115,0), rgba(199,166,115,.72));
+}
+
+.wedding-day-divider span:last-child {
+  background: linear-gradient(90deg, rgba(199,166,115,.72), rgba(199,166,115,0));
+}
+
+.wedding-day-divider img {
+  display: block;
+  width: 9px;
+  height: auto;
+  opacity: .72;
+}
+
+.calendar-card-wrap {
   position: relative;
   z-index: 1;
-  max-width: 390px;
-  margin: 0 auto var(--spacing-lg);
-  padding: 1.75rem 1.35rem 1.55rem;
-  background: rgba(255,253,249,.96);
-  border: 1px solid rgba(199,166,115,.58);
-  border-radius: 0;
-  clip-path: polygon(
-    10px 0,
-    calc(100% - 10px) 0,
-    100% 10px,
-    100% calc(100% - 10px),
-    calc(100% - 10px) 100%,
-    10px 100%,
-    0 calc(100% - 10px),
-    0 10px
-  );
-  box-shadow: 0 12px 28px rgba(79,54,34,.08);
+  width: min(100%, 410px);
+  margin: 0 auto;
+  filter: drop-shadow(0 13px 16px rgba(67, 44, 31, .065));
 }
-.calendar::after {
+
+#calendarGrid.calendar {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin: 0 auto 1.75rem;
+  padding: 1.55rem 1.32rem 1.42rem;
+  background: rgba(255,253,249,.97) !important;
+  border: 1px solid rgba(199,166,115,.62) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: polygon(
+    9px 0,
+    calc(100% - 9px) 0,
+    100% 9px,
+    100% calc(100% - 9px),
+    calc(100% - 9px) 100%,
+    9px 100%,
+    0 calc(100% - 9px),
+    0 9px
+  );
+}
+
+#calendarGrid.calendar::before {
   content: "";
   position: absolute;
-  inset: 7px;
+  inset: 6px;
+  border: 1px solid rgba(222,208,180,.22);
   pointer-events: none;
-  border: 1px solid rgba(222,208,180,.24);
   clip-path: inherit;
 }
-.calendar__header {
+
+#calendarGrid .calendar__header {
   display: flex !important;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem !important;
-  padding: 0 .2rem .95rem;
-  border-bottom: 1px solid rgba(199,166,115,.42);
-  font-family: var(--font-display) !important;
+  margin: 0 0 .85rem !important;
+  padding: 0 .15rem .8rem !important;
+  border-bottom: 1px solid rgba(199,166,115,.42) !important;
+  font-family: var(--font-display);
+}
+
+#calendarGrid .calendar__month-name,
+#calendarGrid .calendar__year {
+  color: var(--wedding-burgundy);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: .045em;
   text-transform: uppercase;
 }
-.calendar__month-name,
-.calendar__year {
-  color: var(--burgundy);
-  font-size: 1.03rem;
-  font-weight: 600;
-  letter-spacing: .8px;
+
+#calendarGrid .calendar__weekdays {
+  margin-bottom: .3rem !important;
 }
-.calendar__weekdays { margin-bottom: .35rem !important; }
-.calendar__weekday {
-  padding: .48rem 0 !important;
+
+#calendarGrid .calendar__weekday {
+  padding: .42rem 0 !important;
   color: #9B805A !important;
   font-family: var(--font-display);
-  font-size: .78rem !important;
+  font-size: .77rem !important;
   font-weight: 600 !important;
 }
-.calendar__weekday:first-child { color: var(--burgundy) !important; }
-.calendar__weekday:last-child { color: #9B805A !important; }
-.calendar__day {
-  min-height: 2.58rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: .32rem 0 !important;
-  color: #4B4743 !important;
+
+#calendarGrid .calendar__weekday:first-child {
+  color: var(--wedding-burgundy) !important;
+}
+
+#calendarGrid .calendar__day {
+  min-height: 2.48rem;
+  padding: .24rem 0 !important;
+  color: #47423E !important;
   font-family: var(--font-display);
-  font-size: .92rem !important;
+  font-size: .91rem !important;
   font-weight: 500 !important;
 }
-.calendar__day:nth-child(7n+1) { color: var(--burgundy) !important; }
-.calendar__day:nth-child(7n) { color: #4B4743 !important; }
-.calendar__day.is-christmas {
-  color: var(--burgundy) !important;
+
+#calendarGrid .calendar__day:nth-child(7n+1) {
+  color: var(--wedding-burgundy) !important;
+}
+
+#calendarGrid .calendar__day.is-christmas {
+  color: var(--wedding-burgundy) !important;
   font-weight: 700 !important;
 }
-.calendar__day.is-today {
-  width: 2.45rem;
-  height: 2.45rem;
-  min-height: 2.45rem;
+
+#calendarGrid .calendar__day.is-today {
+  width: 2.36rem !important;
+  height: 2.36rem !important;
+  min-height: 2.36rem !important;
   margin: auto;
   padding: 0 !important;
-  color: #fff !important;
-  background: radial-gradient(circle at 32% 25%, #8D2B33 0%, #6C171C 58%, #501016 100%) !important;
-  border: 2px solid var(--gold) !important;
+  color: #FFFDF9 !important;
+  background: radial-gradient(circle at 33% 27%, #8D2C35 0%, #6C171C 60%, #501016 100%) !important;
+  border: 2px solid var(--wedding-gold) !important;
   border-radius: 50% !important;
   box-shadow:
     0 0 0 2px rgba(255,253,249,.98),
-    0 0 0 3px rgba(199,166,115,.45),
-    0 5px 12px rgba(108,23,28,.12);
+    0 0 0 3px rgba(199,166,115,.35),
+    0 4px 10px rgba(108,23,28,.11) !important;
 }
 
-.calendar-actions { position: relative; z-index: 2; }
-.btn--outline,
-.btn--text,
-.accordion {
-  background: rgba(255,253,249,.94);
-  border-color: var(--color-border) !important;
-}
-.btn--outline:hover,
-.btn--text:hover { border-color: var(--gold) !important; }
-
-/* ─── Gallery ─── */
-.gallery__grid {
+.wedding-day-section .calendar-actions {
   position: relative;
-  z-index: 1;
-  gap: 5px !important;
-}
-.gallery__item {
-  border-radius: 2px !important;
-  box-shadow: 0 2px 10px rgba(75,55,40,.04);
+  z-index: 2;
+  margin-top: .2rem;
 }
 
-/* ─── Location / Account ─── */
-.location__map,
-.accordion {
-  border: 1px solid rgba(222,208,180,.75);
-  box-shadow: 0 7px 20px rgba(75,55,40,.045);
-}
-.accordion__trigger { color: var(--color-text); }
-
-/* ─── Small snow ornament ─── */
-.ornament {
-  color: var(--gold);
-  font-size: 1.28rem;
-  line-height: 1;
-  opacity: .76;
+.wedding-day-section .btn--outline {
+  background: rgba(255,253,249,.88);
+  border-color: rgba(222,208,180,.86) !important;
 }
 
 @media (max-width: 420px) {
-  .winter-decor--botanical { width: 102px; right: -30px; top: -43px; }
-  .winter-decor--sparkles { width: 96px; left: -26px; }
-  .winter-decor--ribbon { width: 70px; left: -8px; top: 128px; }
-  .calendar { padding: 1.55rem 1rem 1.35rem; }
-  .calendar__day { min-height: 2.38rem; }
-  .calendar__day.is-today { width: 2.25rem; height: 2.25rem; min-height: 2.25rem; }
-}
+  .calendar-section.wedding-day-section {
+    padding-top: 4.8rem;
+    padding-bottom: 4.8rem;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  .snow-canvas { display: none; }
+  .wedding-day-decor--top-right {
+    width: 92px;
+    right: -1.25rem;
+    top: -2.9rem;
+  }
+
+  .wedding-day-decor--bottom-left {
+    width: 88px;
+    left: -1.4rem;
+    bottom: 3.4rem;
+  }
+
+  .wedding-day-title {
+    margin-bottom: 1.75rem;
+  }
+
+  #calendarGrid.calendar {
+    padding: 1.42rem .92rem 1.28rem;
+  }
+
+  #calendarGrid .calendar__day {
+    min-height: 2.31rem;
+  }
+
+  #calendarGrid .calendar__day.is-today {
+    width: 2.20rem !important;
+    height: 2.20rem !important;
+    min-height: 2.20rem !important;
+  }
 }
