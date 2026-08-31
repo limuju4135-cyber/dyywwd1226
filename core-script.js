@@ -454,8 +454,58 @@
 
     const kakao = $('#kakaoMapBtn');
     const naver = $('#naverMapBtn');
-    if (kakao) kakao.href = w.mapLinks.kakao || '#';
-    if (naver) naver.href = w.mapLinks.naver || '#';
+
+    if (kakao) {
+      kakao.href = w.mapLinks.kakao || '#';
+    }
+
+    if (naver) {
+      const webUrl = w.mapLinks.naver || '#';
+      const iosUrl = w.mapLinks.naverIOS || '';
+      const ua = navigator.userAgent || '';
+      const isIOS =
+        /iPad|iPhone|iPod/.test(ua) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+      naver.href = webUrl;
+
+      if (isIOS && iosUrl) {
+        naver.removeAttribute('target');
+
+        naver.addEventListener('click', (event) => {
+          event.preventDefault();
+
+          let fallbackTimer = null;
+          let leftPage = false;
+
+          const cancelFallback = () => {
+            leftPage = true;
+            if (fallbackTimer) {
+              clearTimeout(fallbackTimer);
+              fallbackTimer = null;
+            }
+          };
+
+          const onVisibility = () => {
+            if (document.hidden) cancelFallback();
+          };
+
+          document.addEventListener('visibilitychange', onVisibility, { once: true });
+          window.addEventListener('pagehide', cancelFallback, { once: true });
+          window.addEventListener('blur', cancelFallback, { once: true });
+
+          // 네이버지도 앱 직접 호출
+          window.location.href = iosUrl;
+
+          // 앱이 설치되어 있지 않거나 Scheme 호출이 실패할 경우 웹 검색으로 복귀
+          fallbackTimer = window.setTimeout(() => {
+            if (!leftPage && !document.hidden) {
+              window.location.href = webUrl;
+            }
+          }, 1400);
+        });
+      }
+    }
 
     $('#copyAddressBtn')?.addEventListener('click', () => {
       copyToClipboard(w.address, '주소가 복사되었습니다');
