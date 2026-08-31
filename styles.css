@@ -1602,58 +1602,245 @@ body {
 
 
 /* ═══════════════════════════════════════════
-   STAGE 14 — PRIVATE ACCESS GATE
+   STAGE 17 — READABILITY TUNING
+   Greeting / Parents / Contacts / Accounts
    ═══════════════════════════════════════════ */
 
-.access-gate[hidden] {
-  display: none !important;
+/* 1. 초대문 본문 확대 */
+.greeting__text {
+  max-width: 30rem !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  font-size: clamp(.98rem, 3.95vw, 1.06rem) !important;
+  font-weight: 400 !important;
+  line-height: 2.02 !important;
+  letter-spacing: -.012em !important;
+
+  color: #4A4541 !important;
 }
 
-.access-gate {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 28px;
-  background: #FFFAFA;
+/* 2. 혼주명 · 의 아들/딸 · 신랑신부명 확대 */
+.greeting__parents {
+  margin-top: 2.15rem !important;
 }
 
-.access-gate__card {
-  width: min(100%, 380px);
-  padding: 40px 26px;
+.greeting__parents .parent-row {
+  margin: .64rem 0 !important;
 
-  border: 1px solid rgba(222,208,180,.72);
-  background: rgba(255,253,249,.96);
+  font-size: clamp(.91rem, 3.7vw, .98rem) !important;
+  font-weight: 450 !important;
+  line-height: 1.75 !important;
+  letter-spacing: -.015em !important;
 
-  text-align: center;
+  color: #3E3A37 !important;
 }
 
-.access-gate__eyebrow {
-  margin: 0 0 14px;
-  color: #B99A55;
-  font-size: .70rem;
-  font-weight: 600;
-  letter-spacing: .18em;
+
+/* 3. 연락처 가독성 개선 */
+.contact-directory {
+  margin-top: 3.5rem !important;
 }
 
-.access-gate__title {
-  margin: 0 0 14px;
-  color: #292725;
-  font-size: 1.18rem;
-  font-weight: 600;
+.contact-directory__header {
+  margin-bottom: 1.95rem !important;
 }
 
-.access-gate__message {
-  margin: 0;
-  color: #7A726A;
-  font-size: .86rem;
-  line-height: 1.75;
+.contact-directory__title {
+  font-size: 1.06rem !important;
 }
 
-body.access-denied > :not(.access-gate) {
-  visibility: hidden !important;
+.contact-side__title {
+  margin-bottom: 1.12rem !important;
+  font-size: .90rem !important;
+}
+
+.contact-side__list {
+  gap: .34rem !important;
+}
+
+.contact-person {
+  min-height: 55px !important;
+  gap: .38rem !important;
+  padding: .55rem .16rem !important;
+}
+
+.contact-person__identity {
+  gap: .14rem !important;
+}
+
+.contact-person__role {
+  font-size: .72rem !important;
+  line-height: 1.35 !important;
+}
+
+.contact-person__name {
+  font-size: .88rem !important;
+  font-weight: 550 !important;
+  line-height: 1.4 !important;
+}
+
+.contact-person__actions {
+  gap: .30rem !important;
+}
+
+.contact-person__action {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.contact-person__action svg {
+  width: 14px !important;
+  height: 14px !important;
+  stroke-width: 1.7 !important;
+}
+
+
+/* 4. 계좌번호 보기 / 펼침 정보 개선 */
+.account__desc {
+  font-size: .90rem !important;
+  line-height: 1.7 !important;
+}
+
+.account .accordion {
+  margin-top: .78rem !important;
+}
+
+.account .accordion__trigger {
+  min-height: 54px !important;
+  padding: .85rem 1rem !important;
+
+  font-size: .91rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+}
+
+.account .accordion__icon {
+  font-size: 1.02rem !important;
+}
+
+.account .accordion__panel-inner {
+  padding: .25rem 1rem .7rem !important;
+}
+
+.account-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  gap: .8rem !important;
+  padding: 1rem .05rem !important;
+}
+
+.account-item + .account-item {
+  border-top: 1px solid rgba(222,208,180,.32) !important;
+}
+
+/*
+ * 1행: [구분] [예금주]
+ * 2행: [은행] [계좌번호]
+ */
+.account-item__info {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: max-content minmax(0, 1fr) !important;
+  align-items: baseline !important;
+
+  column-gap: .62rem !important;
+  row-gap: .36rem !important;
+}
+
+.account-item__role,
+.account-item__bank {
+  color: #8A8179 !important;
+  font-size: .73rem !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+}
+
+.account-item__name {
+  color: #3D3936 !important;
+  font-size: .88rem !important;
+  font-weight: 550 !important;
+  line-height: 1.45 !important;
+}
+
+.account-item__number {
+  color: #342F2C !important;
+  font-size: .89rem !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+
+  letter-spacing: .012em !important;
+  word-break: break-all !important;
+}
+
+.account-item__copy {
+  flex: 0 0 auto !important;
+
+  min-width: 50px !important;
+  height: 34px !important;
+  padding: 0 .72rem !important;
+
+  border: 1px solid rgba(222,208,180,.72) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255,253,249,.82) !important;
+  color: #6F665F !important;
+
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif !important;
+  font-size: .74rem !important;
+  font-weight: 500 !important;
+}
+
+
+/* 작은 모바일에서도 확대값을 과하게 다시 줄이지 않음 */
+@media (max-width: 390px) {
+  .greeting__text {
+    font-size: .98rem !important;
+    line-height: 1.96 !important;
+  }
+
+  .greeting__parents .parent-row {
+    font-size: .91rem !important;
+  }
+
+  .contact-person__name {
+    font-size: .84rem !important;
+  }
+
+  .contact-person__action {
+    width: 31px !important;
+    height: 31px !important;
+  }
+
+  .account .accordion__panel-inner {
+    padding-left: .82rem !important;
+    padding-right: .82rem !important;
+  }
+
+  .account-item {
+    gap: .55rem !important;
+  }
+
+  .account-item__info {
+    column-gap: .48rem !important;
+  }
+
+  .account-item__name,
+  .account-item__number {
+    font-size: .84rem !important;
+  }
+
+  .account-item__copy {
+    min-width: 46px !important;
+    padding: 0 .58rem !important;
+  }
 }
