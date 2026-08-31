@@ -11,6 +11,12 @@ const CONFIG = {
     nameEn: "Groom",
     father: "아버지",
     mother: "어머니",
+
+    // 연락처 — 실제 번호로 교체
+    phone: "010-0000-0000",
+    fatherPhone: "010-0000-0000",
+    motherPhone: "010-0000-0000",
+
     fatherDeceased: false,
     motherDeceased: false
   },
@@ -20,6 +26,12 @@ const CONFIG = {
     nameEn: "Bride",
     father: "아버지",
     mother: "어머니",
+
+    // 연락처 — 실제 번호로 교체
+    phone: "010-0000-0000",
+    fatherPhone: "010-0000-0000",
+    motherPhone: "010-0000-0000",
+
     fatherDeceased: false,
     motherDeceased: false
   },
