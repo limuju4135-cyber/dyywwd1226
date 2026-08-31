@@ -3,6 +3,54 @@
 
 
   /* ═══════════════════════════════════════════
+     Hero Quick Navigation
+     ═══════════════════════════════════════════ */
+  function initHeroQuickNavigation() {
+    document.querySelectorAll('[data-scroll-target]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = document.getElementById(button.dataset.scrollTarget);
+        if (!target) return;
+
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      });
+    });
+  }
+
+  /* ═══════════════════════════════════════════
+     Mobile Zoom Lock
+     사용자 요청: 청첩장 자체 핀치/더블탭 확대 방지
+     ═══════════════════════════════════════════ */
+  function initMobileZoomLock() {
+    // iOS Safari gesture events
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach((type) => {
+      document.addEventListener(type, (event) => {
+        event.preventDefault();
+      }, { passive: false });
+    });
+
+    // Multi-touch pinch fallback
+    document.addEventListener('touchmove', (event) => {
+      if (event.touches && event.touches.length > 1) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+
+    // Double tap zoom fallback
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', (event) => {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, { passive: false });
+  }
+
+
+  /* ═══════════════════════════════════════════
      External Media — Private R2 via Worker
      Hero Stage
      ═══════════════════════════════════════════ */
@@ -522,6 +570,8 @@
   }
 
   window.addEventListener('load', function () {
+    initHeroQuickNavigation();
+    initMobileZoomLock();
     enhanceWeddingDayStage1();
     normalizeHeroNames();
     initPhotoModalScrollFix();
