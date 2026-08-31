@@ -498,11 +498,19 @@
       item.innerHTML = `
         <div class="account-item__info">
           <span class="account-item__role">${acc.role || ''}</span>
-          <span class="account-item__name">${acc.name || ''}</span>
-          <span class="account-item__bank">${acc.bank || ''}</span>
-          <span class="account-item__number">${acc.number || ''}</span>
+          <strong class="account-item__name">${acc.name || ''}</strong>
+
+          <div class="account-item__financial">
+            <strong class="account-item__bank">${acc.bank || ''}</strong>
+            <strong class="account-item__number">${acc.number || ''}</strong>
+          </div>
         </div>
-        <button type="button" class="account-item__copy" data-account="${acc.bank || ''} ${acc.number || ''}">복사</button>
+
+        <button
+          type="button"
+          class="account-item__copy"
+          data-account="${acc.bank || ''} ${acc.number || ''}"
+        >복사</button>
       `;
       container.appendChild(item);
     });
