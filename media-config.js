@@ -1,24 +1,22 @@
 /**
- * Public media routing configuration.
- *
- * 중요:
- * - 이 파일에는 비밀키가 없습니다.
- * - 실제 웨딩사진은 GitHub에 저장하지 않습니다.
- * - 브라우저는 Cloudflare Worker를 통해 Private R2 이미지를 읽습니다.
+ * PUBLIC MEDIA / API ROUTES
+ * 비밀키는 여기에 두지 않습니다.
  */
 const MEDIA_CONFIG = Object.freeze({
-  baseUrl: "https://dyywwd-media.limuju4135.workers.dev/media",
+  workerBase: "https://dyywwd-media.limuju4135.workers.dev",
 
-  hero: {
-    primary: "hero/1.webp"
+  api: {
+    session: "/api/session",
+    invitation: "/api/invitation",
+    contacts: "/api/contacts",
+    accounts: "/api/accounts",
+    gallery: "/api/gallery"
   },
 
-  og: {
-    primary: "og/2.jpg"
-  }
+  media: {
+    hero: "hero/1.webp"
+  },
 
-  // 이후 단계에서 아래 항목을 확장할 예정입니다.
-  // story: [...],
-  // gallery: [...],
-  // location: "..."
+  // OG는 링크 미리보기 봇이 접근해야 하므로 공개 경로 유지
+  publicOg: "og/2.jpg"
 });
