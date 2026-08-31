@@ -2858,3 +2858,188 @@ img {
   text-align: center !important;
   letter-spacing: -.01em !important;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 25 — HERO ORDER RESET
+   최종 순서:
+   1) 바로가기 버튼
+   2) 사진 감상 영역
+   3) 기본정보
+   4) D-day
+   사진 확대는 완전히 제거
+   ═══════════════════════════════════════════ */
+
+/* 사진: 확대/이동 모두 제거, 원본 크롭 기준으로 복귀 */
+.hero__photo,
+.hero__photo.is-media-loaded {
+  object-position: 50% 50% !important;
+  transform: none !important;
+  scale: 1 !important;
+  transform-origin: center center !important;
+}
+
+/* 하단 정보영역 가독성용: 커튼색 → 투명 그라데이션은 유지하되
+   사진 중앙까지 올라오지 않도록 범위를 줄임 */
+.hero__overlay {
+  background:
+    linear-gradient(
+      to top,
+      rgba(190,133,141,.88) 0%,
+      rgba(190,133,141,.70) 17%,
+      rgba(190,133,141,.43) 31%,
+      rgba(190,133,141,.18) 43%,
+      rgba(190,133,141,.045) 54%,
+      rgba(190,133,141,0) 64%
+    ) !important;
+}
+
+/* 1) 바로가기 버튼 — Hero 최상단 */
+.hero__quick-nav {
+  top: max(28px, calc(env(safe-area-inset-top, 0px) + 18px)) !important;
+  bottom: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(88vw, 356px) !important;
+  gap: .46rem !important;
+  z-index: 6 !important;
+}
+
+.hero__quick-btn {
+  height: 39px !important;
+  border: 1px solid rgba(255,255,255,.34) !important;
+  background: rgba(75,55,58,.18) !important;
+  color: rgba(255,255,255,.97) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.10) !important;
+}
+
+/* 2) 사진 — 중앙은 의도적으로 비워둠 */
+
+/* 3) 기본정보 — D-day 바로 위 */
+.hero__content {
+  top: auto !important;
+  bottom: max(142px, calc(env(safe-area-inset-bottom, 0px) + 128px)) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(90vw, 390px) !important;
+  padding: 0 .65rem !important;
+  z-index: 5 !important;
+}
+
+.hero__content::before {
+  content: none !important;
+  display: none !important;
+}
+
+.hero__label {
+  margin: 0 0 .55rem !important;
+  font-size: .76rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .28em !important;
+  color: rgba(244,221,177,.98) !important;
+  text-shadow: 0 1px 2px rgba(79,54,58,.13) !important;
+}
+
+.hero__names {
+  margin: 0 0 .34rem !important;
+  font-size: clamp(2.00rem, 8.8vw, 2.86rem) !important;
+  font-weight: 300 !important;
+  line-height: 1.10 !important;
+  color: rgba(255,255,255,.99) !important;
+  text-shadow: 0 1px 3px rgba(79,54,58,.16) !important;
+}
+
+.hero__divider {
+  width: 54px !important;
+  margin: .48rem auto .52rem !important;
+  border-color: rgba(255,255,255,.64) !important;
+}
+
+.hero__date {
+  margin: 0 0 .20rem !important;
+  font-size: .91rem !important;
+  font-weight: 500 !important;
+  color: rgba(255,250,246,.98) !important;
+  letter-spacing: -.012em !important;
+  text-shadow: 0 1px 2px rgba(79,54,58,.12) !important;
+}
+
+.hero__venue {
+  margin: 0 !important;
+  font-size: .84rem !important;
+  font-weight: 500 !important;
+  color: rgba(255,245,239,.94) !important;
+  text-shadow: 0 1px 2px rgba(79,54,58,.10) !important;
+}
+
+/* 4) D-day — 최하단 */
+.hero .countdown {
+  bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 6px)) !important;
+  width: min(88vw, 366px) !important;
+  padding: .76rem .95rem .50rem !important;
+  background: rgba(255,255,255,.075) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 20px !important;
+  -webkit-backdrop-filter: blur(7px) !important;
+  backdrop-filter: blur(7px) !important;
+  z-index: 5 !important;
+}
+
+.hero .countdown__label {
+  margin-bottom: .48rem !important;
+}
+
+@media (max-width: 430px) {
+  .hero__quick-nav {
+    top: max(22px, calc(env(safe-area-inset-top, 0px) + 12px)) !important;
+    width: min(90vw, 344px) !important;
+  }
+
+  .hero__quick-btn {
+    height: 37px !important;
+    font-size: .71rem !important;
+  }
+
+  .hero__content {
+    bottom: max(138px, calc(env(safe-area-inset-bottom, 0px) + 124px)) !important;
+    width: min(91vw, 358px) !important;
+  }
+
+  .hero__label {
+    font-size: .70rem !important;
+    margin-bottom: .46rem !important;
+  }
+
+  .hero__names {
+    font-size: clamp(1.92rem, 9.2vw, 2.62rem) !important;
+  }
+
+  .hero__date {
+    font-size: .86rem !important;
+  }
+
+  .hero__venue {
+    font-size: .80rem !important;
+  }
+
+  .hero .countdown {
+    width: min(90vw, 344px) !important;
+    padding: .70rem .86rem .46rem !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .hero__content {
+    bottom: max(132px, calc(env(safe-area-inset-bottom, 0px) + 118px)) !important;
+  }
+
+  .hero__names {
+    font-size: 2.0rem !important;
+  }
+
+  .hero__date {
+    font-size: .82rem !important;
+  }
+}
