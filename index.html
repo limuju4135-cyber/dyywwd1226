@@ -33,7 +33,7 @@
   <!-- 원본 classic-elegant를 그대로 사용 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dongdong39/wedding_templates@main/classic-elegant/styles.css">
   <!-- 이번 작업에서 수정하는 파일 -->
-  <link rel="stylesheet" href="styles.css?v=stage17">
+  <link rel="stylesheet" href="styles.css?v=stage18">
   <script src="config.js"></script>
   <script src="media-config.js"></script>
 </head>
@@ -186,24 +186,98 @@
     </section>
 
     <section class="section location" id="location">
-      <div class="section__inner">
+      <div class="section__inner location-stage18">
         <h2 class="section__title animate-item" data-animate="fade-up">오시는 길</h2>
-        <div class="location__info animate-item" data-animate="fade-up">
+
+        <div class="location__info location-stage18__info animate-item" data-animate="fade-up">
           <p class="location__venue" id="locationVenue"></p>
           <p class="location__hall" id="locationHall"></p>
           <p class="location__address" id="locationAddress"></p>
           <p class="location__tel" id="locationTel"></p>
         </div>
-        <button class="btn btn--text location__copy animate-item" data-animate="fade-up" id="copyAddressBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-          주소 복사
-        </button>
-        <div class="location__map animate-item" data-animate="scale-in">
-          <img class="location__map-img" id="locationMapImg" src="" alt="약도" loading="lazy">
+
+        <div class="location-stage18__actions animate-item" data-animate="fade-up">
+          <button class="location-stage18__action" type="button" id="copyAddressBtn" aria-label="주소 복사">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>주소 복사</span>
+          </button>
+
+          <a class="location-stage18__action" id="kakaoMapBtn" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3c-4.97 0-9 3.18-9 7.1 0 2.55 1.71 4.78 4.28 6.03L6.2 20l4.1-2.72c.55.08 1.12.12 1.7.12 4.97 0 9-3.18 9-7.1S16.97 3 12 3Z"></path>
+            </svg>
+            <span>카카오맵</span>
+          </a>
+
+          <a class="location-stage18__action" id="naverMapBtn" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 4h5.2l3.6 5.3V4H19v16h-5.2l-3.6-5.3V20H5V4Z"></path>
+            </svg>
+            <span>네이버지도</span>
+          </a>
         </div>
-        <div class="location__links animate-item" data-animate="fade-up">
-          <a class="btn btn--kakao" id="kakaoMapBtn" href="#" target="_blank" rel="noopener">카카오맵</a>
-          <a class="btn btn--naver" id="naverMapBtn" href="#" target="_blank" rel="noopener">네이버지도</a>
+
+        <div class="location-stage18__guide animate-item" data-animate="fade-up">
+
+          <article class="location-guide-card">
+            <div class="location-guide-card__heading">
+              <span class="location-guide-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="3" width="16" height="15" rx="4"></rect>
+                  <path d="M8 18l-2 3M16 18l2 3M8 8h8M8 13h.01M16 13h.01"></path>
+                </svg>
+              </span>
+              <h3>지하철</h3>
+            </div>
+
+            <div class="location-guide-card__body">
+              <p><strong>수인분당선 가천대역 1번 출구</strong></p>
+              <p>비전타워 연결통로 이용 · 도보 약 1분</p>
+              <p class="location-guide-card__note">※ <strong>수서역</strong> → 수인분당선 환승 → <strong>가천대역 하차</strong></p>
+            </div>
+          </article>
+
+          <article class="location-guide-card">
+            <div class="location-guide-card__heading">
+              <span class="location-guide-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M5 17h14l-1-6H6l-1 6Z"></path>
+                  <path d="M7 11l1.5-4h7L17 11M7 17v2M17 17v2"></path>
+                  <circle cx="8" cy="15" r=".7"></circle>
+                  <circle cx="16" cy="15" r=".7"></circle>
+                </svg>
+              </span>
+              <h3>자가용 / 주차</h3>
+            </div>
+
+            <div class="location-guide-card__body">
+              <p>가천대학교 교내 주차장 이용</p>
+              <p>약 <strong>1,500대 주차 가능</strong></p>
+              <p><strong>예식 하객 당일 무료</strong></p>
+            </div>
+          </article>
+
+          <article class="location-guide-card">
+            <div class="location-guide-card__heading">
+              <span class="location-guide-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <rect x="5" y="4" width="14" height="15" rx="3"></rect>
+                  <path d="M8 8h8M8 13h8M8 19l-2 2M16 19l2 2"></path>
+                  <circle cx="8.5" cy="16" r=".7"></circle>
+                  <circle cx="15.5" cy="16" r=".7"></circle>
+                </svg>
+              </span>
+              <h3>버스</h3>
+            </div>
+
+            <div class="location-guide-card__body">
+              <p><strong>가천대학교</strong> 또는 <strong>가천대역</strong> 정류장 하차</p>
+            </div>
+          </article>
+
         </div>
       </div>
     </section>
@@ -244,7 +318,7 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage15"></script>
-  <script src="core-script.js?v=stage15"></script>
+  <script src="core-script.js?v=stage18"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage15"></script>
 </body>
