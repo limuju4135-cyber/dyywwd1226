@@ -162,9 +162,24 @@
 
     const g = CONFIG.groom;
     const b = CONFIG.bride;
+
+    const parentName = (name, deceased) =>
+      `${deceased ? '故 ' : ''}${name || ''}`.trim();
+
     parents.innerHTML = `
-      <div class="parent-row">${g.father} · ${g.mother}&nbsp;&nbsp;의 아들&nbsp;&nbsp;${g.name}</div>
-      <div class="parent-row">${b.father} · ${b.mother}&nbsp;&nbsp;의 딸&nbsp;&nbsp;${b.name}</div>
+      <div class="parent-row">
+        <span class="parent-row__father">${parentName(g.father, g.fatherDeceased)}</span>
+        <span class="parent-row__mother">${parentName(g.mother, g.motherDeceased)}</span>
+        <span class="parent-row__relation">의 아들</span>
+        <strong class="parent-row__child">${g.name || ''}</strong>
+      </div>
+
+      <div class="parent-row">
+        <span class="parent-row__father">${parentName(b.father, b.fatherDeceased)}</span>
+        <span class="parent-row__mother">${parentName(b.mother, b.motherDeceased)}</span>
+        <span class="parent-row__relation">의 딸</span>
+        <strong class="parent-row__child">${b.name || ''}</strong>
+      </div>
     `;
   }
 
