@@ -275,7 +275,7 @@
 
     // 이전 버전보다 확실히 적게
     const isMobile = document.documentElement.clientWidth <= 768;
-    const FLAKE_COUNT = isMobile ? 8 : 12;
+    const FLAKE_COUNT = isMobile ? 12 : 18;
 
     /**
      * 핀치 줌 대응 핵심:
