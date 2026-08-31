@@ -433,3 +433,94 @@ body.no-scroll {
     width: 138px;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 2 — HERO GRAPHICS
+   확정 리본 + 소형 골드 스파클만 적용
+   ═══════════════════════════════════════════ */
+
+.hero-ribbon {
+  position: absolute;
+  z-index: 3;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hero-ribbon--top-left {
+  width: clamp(128px, 34vw, 158px);
+  height: auto;
+  top: max(14px, calc(var(--safe-top) + 8px));
+  left: -20px;
+  opacity: .96;
+  transform: rotate(-1.5deg);
+  transform-origin: 35% 30%;
+  filter: drop-shadow(0 5px 10px rgba(45, 12, 17, .08));
+}
+
+/* Wedding Invitation 라인을 하나의 얇은 장식 그룹으로 */
+.hero__label-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .48rem;
+  margin: 0 auto var(--spacing-sm);
+  min-height: 28px;
+}
+
+.hero__label-row .hero__label {
+  margin-bottom: 0 !important;
+}
+
+.hero__title-sparkle {
+  display: block;
+  width: 21px;
+  height: auto;
+  opacity: .58;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform: translateY(-1px);
+}
+
+/* 장식이 들어가도 타이포가 우선 보이도록 */
+.hero__content {
+  position: relative;
+  z-index: 4;
+}
+
+.hero .countdown {
+  z-index: 4;
+}
+
+/* 작은 모바일에서는 리본을 더 얌전하게 */
+@media (max-width: 390px) {
+  .hero-ribbon--top-left {
+    width: 122px;
+    left: -24px;
+    top: max(10px, calc(var(--safe-top) + 6px));
+  }
+
+  .hero__title-sparkle {
+    width: 18px;
+    opacity: .54;
+  }
+
+  .hero__label-row {
+    gap: .36rem;
+  }
+}
+
+/* 480px 고정 모바일 페이지 / 데스크톱 미리보기 */
+@media (min-width: 768px) {
+  .hero-ribbon--top-left {
+    width: 154px;
+    left: -18px;
+  }
+
+  .hero__title-sparkle {
+    width: 23px;
+  }
+}
