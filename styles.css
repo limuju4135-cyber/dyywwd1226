@@ -177,30 +177,6 @@ body {
   letter-spacing: -.015em;
 }
 
-.wedding-day-divider {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: .55rem;
-  margin: .95rem auto 0;
-}
-
-.wedding-day-divider span {
-  width: 31px;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(199,166,115,0), rgba(199,166,115,.72));
-}
-
-.wedding-day-divider span:last-child {
-  background: linear-gradient(90deg, rgba(199,166,115,.72), rgba(199,166,115,0));
-}
-
-.wedding-day-divider img {
-  display: block;
-  width: 9px;
-  height: auto;
-  opacity: .72;
-}
 
 .calendar-card-wrap {
   position: relative;
@@ -297,20 +273,26 @@ body {
 }
 
 #calendarGrid .calendar__day.is-today {
-  width: 2.08rem !important;
-  height: 2.08rem !important;
-  min-height: 2.08rem !important;
+  width: 1.95rem !important;
+  height: 1.95rem !important;
+  min-height: 1.95rem !important;
   margin: auto;
   padding: 0 !important;
 
-  color: var(--wedding-burgundy) !important;
-  background: rgba(199,166,115,.035) !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
 
-  border: 1.35px solid rgba(199,166,115,.92) !important;
+  color: #FFFDF9 !important;
+  background: var(--wedding-burgundy) !important;
+
+  border: 1px solid rgba(199,166,115,.94) !important;
   border-radius: 50% !important;
 
-  font-weight: 700 !important;
-  box-shadow: none !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+
+  box-shadow: 0 2px 5px rgba(108,23,28,.10) !important;
 }
 
 .wedding-day-section .calendar-actions {
@@ -343,9 +325,9 @@ body {
   }
 
   #calendarGrid .calendar__day.is-today {
-    width: 1.98rem !important;
-    height: 1.98rem !important;
-    min-height: 1.98rem !important;
+    width: 1.88rem !important;
+    height: 1.88rem !important;
+    min-height: 1.88rem !important;
   }
 }
 
@@ -373,4 +355,81 @@ body {
 body.no-scroll {
   left: 0;
   right: 0;
+}
+
+
+/* ═══════════════════════════════════════════
+   REVIEW 3
+   ═══════════════════════════════════════════ */
+
+/* 1) Hero의 D-day label만 골드였던 이전 override 제거.
+      카운트다운은 사진 위에서 하나의 화이트 계열로 통일 */
+.hero .countdown {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: rgba(255,255,255,.94) !important;
+}
+
+.hero .countdown__label {
+  color: rgba(255,255,255,.80) !important;
+}
+
+.hero .countdown__number {
+  color: rgba(255,255,255,.96) !important;
+}
+
+.hero .countdown__unit,
+.hero .countdown__sep {
+  color: rgba(255,255,255,.74) !important;
+}
+
+/* 2) Hero 이름 라인: 한글 glyph fallback 강화 */
+.hero__names {
+  font-family:
+    'Noto Serif KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    'Nanum Myeongjo',
+    serif !important;
+}
+
+/* 4) December 26, 2026 아래의 확정 botanical flourish */
+.wedding-day-flourish {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 44px;
+  margin: .25rem auto .95rem;
+  overflow: visible;
+}
+
+.wedding-day-flourish img {
+  width: 150px;
+  max-width: 45vw;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  opacity: .82;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 날짜 카드 안 26일은 큰 배지 대신 작은 burgundy seal로 */
+#calendarGrid .calendar__day.is-today {
+  transform: translateZ(0);
+}
+
+@media (max-width: 420px) {
+  .wedding-day-flourish {
+    height: 40px;
+    margin-top: .15rem;
+    margin-bottom: .8rem;
+  }
+
+  .wedding-day-flourish img {
+    width: 138px;
+  }
 }
