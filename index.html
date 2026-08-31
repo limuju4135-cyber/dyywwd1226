@@ -20,7 +20,7 @@
   <!-- 원본 classic-elegant를 그대로 사용 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dongdong39/wedding_templates@main/classic-elegant/styles.css">
   <!-- 이번 작업에서 수정하는 파일 -->
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=stage1">
   <script src="config.js"></script>
 </head>
 <body>
@@ -97,17 +97,41 @@
       </div>
     </section>
 
-    <section class="section calendar-section" id="calendarSection">
-      <div class="section__inner winter-section-inner">
-        <img class="winter-decor winter-decor--botanical" src="assets/decor/winter-botanical.svg" alt="" aria-hidden="true">
-        <img class="winter-decor winter-decor--sparkles" src="assets/decor/sparkle-cluster.svg" alt="" aria-hidden="true">
-        <img class="winter-decor winter-decor--ribbon" src="assets/decor/ribbon-bow.svg" alt="" aria-hidden="true">
-        <div class="wedding-day-heading animate-item" data-animate="fade-up">
-          <p class="wedding-day-heading__eyebrow">WEDDING DAY</p>
-          <h2 class="wedding-day-heading__date" id="weddingDayDate">December 26, 2026</h2>
-          <div class="star-divider" aria-hidden="true"><span></span><b>✦</b><span></span></div>
+    <section class="section calendar-section wedding-day-section" id="calendarSection">
+      <div class="section__inner wedding-day-inner">
+
+        <img class="wedding-day-decor wedding-day-decor--top-right"
+             src="assets/decor/wedding-day/botanical-corner-top-right-v1.png"
+             alt="" aria-hidden="true">
+
+        <img class="wedding-day-decor wedding-day-decor--bottom-left"
+             src="assets/decor/wedding-day/botanical-sweep-bottom-left-v1.png"
+             alt="" aria-hidden="true">
+
+        <div class="wedding-day-title animate-item" data-animate="fade-up">
+          <div class="wedding-day-eyebrow-row" aria-hidden="true">
+            <img class="wedding-day-sparkle wedding-day-sparkle--left"
+                 src="assets/decor/wedding-day/sparkle-star-small-02-v1.png"
+                 alt="">
+            <p class="wedding-day-eyebrow">WEDDING DAY</p>
+            <img class="wedding-day-sparkle wedding-day-sparkle--right"
+                 src="assets/decor/wedding-day/sparkle-star-small-02-v1.png"
+                 alt="">
+          </div>
+
+          <h2 class="wedding-day-date" id="weddingDayDate">December 26, 2026</h2>
+
+          <div class="wedding-day-divider" aria-hidden="true">
+            <span></span>
+            <img src="assets/decor/wedding-day/sparkle-dot-tiny-01-v1.png" alt="">
+            <span></span>
+          </div>
         </div>
-        <div class="calendar animate-item" data-animate="scale-in" id="calendarGrid"></div>
+
+        <div class="calendar-card-wrap">
+          <div class="calendar animate-item" data-animate="scale-in" id="calendarGrid"></div>
+        </div>
+
         <div class="calendar-actions animate-item" data-animate="fade-up">
           <a class="btn btn--outline" id="googleCalBtn" href="#" target="_blank" rel="noopener">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
@@ -118,6 +142,7 @@
             Apple 캘린더
           </button>
         </div>
+
       </div>
     </section>
 
@@ -130,13 +155,8 @@
     </section>
 
     <section class="section gallery" id="gallery">
-      <div class="section__inner winter-section-inner">
-        <img class="winter-decor winter-decor--gallery-sparkles" src="assets/decor/sparkle-cluster.svg" alt="" aria-hidden="true">
-        <div class="section-heading-rich animate-item" data-animate="fade-up">
-          <p class="section-heading-rich__eyebrow">OUR MOMENTS</p>
-          <h2 class="section-heading-rich__title">우리의 순간들</h2>
-          <div class="star-divider star-divider--small" aria-hidden="true"><span></span><b>✦</b><span></span></div>
-        </div>
+      <div class="section__inner">
+        <h2 class="section__title animate-item" data-animate="fade-up">갤러리</h2>
         <div class="gallery__grid" id="galleryGrid"></div>
       </div>
     </section>
@@ -201,6 +221,6 @@
   <!-- 원본 동작 유지 -->
   <script src="https://cdn.jsdelivr.net/gh/dongdong39/wedding_templates@main/classic-elegant/script.js"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=stage1"></script>
 </body>
 </html>
