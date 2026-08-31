@@ -1,6 +1,16 @@
+# KakaoTalk link preview scraper
+User-agent: kakaotalk-scrap
+Allow: /
+
+# Kakao scraper may also identify with facebookexternalhit
+User-agent: facebookexternalhit
+Allow: /
+
+# Block ordinary crawlers / indexing
 User-agent: *
 Disallow: /
 
+# Explicit AI crawler blocks
 User-agent: GPTBot
 Disallow: /
 
