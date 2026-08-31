@@ -1145,3 +1145,130 @@ select,
 body {
   font-weight: 400;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 11 — DATE / HERO QUICK NAV / GALLERY / ZOOM
+   ═══════════════════════════════════════════ */
+
+/* 1. Wedding Day 바로 위 날짜 크기 축소 */
+.wedding-day-date {
+  font-size: clamp(1.02rem, 4.0vw, 1.18rem) !important;
+  line-height: 1.45 !important;
+  font-weight: 400 !important;
+  letter-spacing: -.01em !important;
+}
+
+/* 2. Gallery: 버튼 reset + 이미지 표시 안정화 */
+.gallery__item {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0 !important;
+  border: 0 !important;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.gallery__item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  object-fit: cover;
+}
+
+/* 무한 로딩 placeholder는 더 이상 사용하지 않음 */
+#galleryGrid .loading-placeholder {
+  display: none !important;
+}
+
+/* 3/4. Hero 하단 갤러리 / 오시는 길 퀵버튼 */
+.hero__quick-nav {
+  position: absolute;
+  left: 50%;
+  bottom: max(176px, calc(env(safe-area-inset-bottom, 0px) + 166px));
+  transform: translateX(-50%);
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .62rem;
+
+  width: min(78vw, 300px);
+}
+
+.hero__quick-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 39px;
+  padding: 0 .85rem;
+
+  border: 1px solid rgba(215, 189, 141, .42);
+  border-radius: 999px;
+
+  background: rgba(35, 27, 25, .23);
+  color: rgba(255, 248, 242, .94);
+
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif !important;
+  font-size: .78rem;
+  font-weight: 400;
+  letter-spacing: .03em;
+
+  box-shadow:
+    0 4px 18px rgba(20, 13, 12, .06),
+    inset 0 0 0 1px rgba(255,255,255,.02);
+
+  cursor: pointer;
+}
+
+.hero__quick-btn:active {
+  transform: scale(.97);
+  background: rgba(35, 27, 25, .32);
+}
+
+#gallery,
+#location {
+  scroll-margin-top: 12px;
+}
+
+/* 5. 확대 방지 보조 */
+html,
+body {
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
+}
+
+@media (max-width: 430px) {
+  .wedding-day-date {
+    font-size: 1.03rem !important;
+  }
+
+  .hero__quick-nav {
+    bottom: max(171px, calc(env(safe-area-inset-bottom, 0px) + 161px));
+    width: min(80vw, 290px);
+    gap: .55rem;
+  }
+
+  .hero__quick-btn {
+    height: 38px;
+    font-size: .76rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .hero__quick-nav {
+    bottom: 158px;
+  }
+
+  .hero__quick-btn {
+    height: 36px;
+  }
+}
