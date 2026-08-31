@@ -33,7 +33,7 @@
   <!-- 원본 classic-elegant를 그대로 사용 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dongdong39/wedding_templates@main/classic-elegant/styles.css">
   <!-- 이번 작업에서 수정하는 파일 -->
-  <link rel="stylesheet" href="styles.css?v=stage12">
+  <link rel="stylesheet" href="styles.css?v=stage13">
   <script src="config.js"></script>
   <script src="media-config.js"></script>
 </head>
@@ -80,6 +80,7 @@
       <nav class="hero__quick-nav" aria-label="초대장 바로가기">
         <button type="button" class="hero__quick-btn" data-scroll-target="gallery">갤러리</button>
         <button type="button" class="hero__quick-btn" data-scroll-target="location">오시는 길</button>
+        <button type="button" class="hero__quick-btn" data-scroll-target="contact">연락처</button>
       </nav>
 
       <div class="countdown animate-item" data-animate="fade-up" id="countdown">
@@ -113,6 +114,26 @@
         <h2 class="section__title animate-item" data-animate="fade-up" id="greetingTitle"></h2>
         <p class="greeting__text animate-item" data-animate="fade-up" id="greetingContent"></p>
         <div class="greeting__parents animate-item" data-animate="fade-up" id="greetingParents"></div>
+
+        <div class="contact-directory animate-item" data-animate="fade-up" id="contact">
+          <div class="contact-directory__header">
+            <p class="contact-directory__eyebrow">CONTACT</p>
+            <h3 class="contact-directory__title">연락처</h3>
+          </div>
+
+          <div class="contact-directory__grid">
+            <div class="contact-side">
+              <p class="contact-side__title">신랑측</p>
+              <div class="contact-side__list" id="groomContactList"></div>
+            </div>
+
+            <div class="contact-side">
+              <p class="contact-side__title">신부측</p>
+              <div class="contact-side__list" id="brideContactList"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -222,8 +243,8 @@
   </main>
 
   <!-- 원본 동작 유지 -->
-  <script src="core-script.js?v=stage12"></script>
+  <script src="core-script.js?v=stage13"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
-  <script src="script.js?v=stage12"></script>
+  <script src="script.js?v=stage13"></script>
 </body>
 </html>
