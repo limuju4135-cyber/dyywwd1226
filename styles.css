@@ -3898,3 +3898,285 @@ img {
     min-height: 33px !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 31 — ACCOUNT LAYOUT STABLE
+   왼쪽 정보를 하나의 main 블록으로 묶고
+   복사 버튼만 독립 고정열로 분리
+   ═══════════════════════════════════════════ */
+
+/* top-level: [정보 전체] [복사] */
+#account .account-item {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 54px !important;
+  grid-template-rows: auto !important;
+  align-items: center !important;
+  column-gap: .85rem !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 1.10rem 0 !important;
+  box-sizing: border-box !important;
+  text-align: left !important;
+}
+
+#account .account-item__main {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  min-width: 0 !important;
+  width: 100% !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  row-gap: .48rem !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 두 줄 모두 동일한 역할열을 사용 */
+#account .account-item__identity,
+#account .account-item__payment {
+  min-width: 0 !important;
+  width: 100% !important;
+
+  display: grid !important;
+  grid-template-columns: 3.25rem minmax(0, 1fr) !important;
+  align-items: baseline !important;
+  column-gap: .72rem !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#account .account-item__role,
+#account .account-item__role-spacer {
+  grid-column: 1 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#account .account-item__role {
+  justify-self: start !important;
+  align-self: baseline !important;
+
+  color: #847B74 !important;
+  font-size: .78rem !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+  text-align: left !important;
+}
+
+/* 이름과 payment-data는 무조건 같은 X축 */
+#account .account-item__name,
+#account .account-item__payment-data {
+  grid-column: 2 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-self: stretch !important;
+}
+
+#account .account-item__name {
+  display: block !important;
+  align-self: baseline !important;
+
+  color: #332F2C !important;
+  font-size: .94rem !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-align: left !important;
+}
+
+/* 은행/계좌번호는 동일한 내부 2열 */
+#account .account-item__payment-data {
+  display: grid !important;
+  grid-template-columns: 5.55rem minmax(0, 1fr) !important;
+  align-items: baseline !important;
+  column-gap: .72rem !important;
+}
+
+#account .account-item__bank,
+#account .account-item__number {
+  min-width: 0 !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  color: #3B3632 !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+  text-align: left !important;
+}
+
+#account .account-item__bank {
+  grid-column: 1 !important;
+  justify-self: start !important;
+  font-size: .84rem !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+#account .account-item__number {
+  grid-column: 2 !important;
+  justify-self: start !important;
+  font-size: .82rem !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -.018em !important;
+  overflow: visible !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+/* 복사 버튼: 독립열 + 버튼 내부 중앙정렬 강제 */
+#account .account-item__copy {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  place-self: center !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  width: 54px !important;
+  min-width: 54px !important;
+  max-width: 54px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 1px solid rgba(222,208,180,.78) !important;
+  border-radius: 999px !important;
+  background: rgba(255,253,249,.95) !important;
+  color: #6C625B !important;
+
+  box-sizing: border-box !important;
+  position: static !important;
+  transform: none !important;
+  vertical-align: middle !important;
+
+  font-family: 'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif !important;
+  font-size: .74rem !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+#account .account-item__copy-label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  line-height: 1 !important;
+  text-align: center !important;
+  transform: none !important;
+}
+
+#account .account-item + .account-item {
+  border-top: 1px solid rgba(222,208,180,.52) !important;
+}
+
+@media (max-width: 430px) {
+  #account .accordion__panel-inner {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  #account .account-item {
+    grid-template-columns: minmax(0, 1fr) 50px !important;
+    column-gap: .68rem !important;
+    padding: 1.04rem 0 !important;
+  }
+
+  #account .account-item__identity,
+  #account .account-item__payment {
+    grid-template-columns: 2.85rem minmax(0, 1fr) !important;
+    column-gap: .58rem !important;
+  }
+
+  #account .account-item__payment-data {
+    grid-template-columns: 5rem minmax(0, 1fr) !important;
+    column-gap: .54rem !important;
+  }
+
+  #account .account-item__role {
+    font-size: .74rem !important;
+  }
+
+  #account .account-item__name {
+    font-size: .90rem !important;
+  }
+
+  #account .account-item__bank {
+    font-size: .79rem !important;
+  }
+
+  #account .account-item__number {
+    font-size: .77rem !important;
+    letter-spacing: -.025em !important;
+  }
+
+  #account .account-item__copy {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    font-size: .71rem !important;
+  }
+}
+
+@media (max-width: 360px) {
+  #account .account-item {
+    grid-template-columns: minmax(0, 1fr) 47px !important;
+    column-gap: .52rem !important;
+  }
+
+  #account .account-item__identity,
+  #account .account-item__payment {
+    grid-template-columns: 2.55rem minmax(0, 1fr) !important;
+    column-gap: .46rem !important;
+  }
+
+  #account .account-item__payment-data {
+    grid-template-columns: 4.55rem minmax(0, 1fr) !important;
+    column-gap: .42rem !important;
+  }
+
+  #account .account-item__number {
+    font-size: .70rem !important;
+    letter-spacing: -.03em !important;
+  }
+
+  #account .account-item__copy {
+    width: 47px !important;
+    min-width: 47px !important;
+    max-width: 47px !important;
+    height: 33px !important;
+    min-height: 33px !important;
+  }
+}
