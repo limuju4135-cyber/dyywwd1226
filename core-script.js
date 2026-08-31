@@ -514,15 +514,9 @@
       item.className = 'account-item';
       item.innerHTML = `
         <span class="account-item__role">${acc.role || ''}</span>
-
-        <div class="account-item__details">
-          <strong class="account-item__name">${acc.name || ''}</strong>
-
-          <div class="account-item__financial">
-            <strong class="account-item__bank">${acc.bank || ''}</strong>
-            <strong class="account-item__number">${acc.number || ''}</strong>
-          </div>
-        </div>
+        <strong class="account-item__name">${acc.name || ''}</strong>
+        <strong class="account-item__bank">${acc.bank || ''}</strong>
+        <strong class="account-item__number">${acc.number || ''}</strong>
 
         <button
           type="button"
