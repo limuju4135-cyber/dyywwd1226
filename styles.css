@@ -3197,3 +3197,178 @@ img {
     bottom: max(118px, calc(env(safe-area-inset-bottom, 0px) + 106px)) !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 27 — HERO MINIMAL + WEDDING DAY INFO
+   요청사항:
+   - Hero 이름/날짜/장소 삭제
+   - Wedding Invitation만 바로가기 버튼 위에 배치
+   - PC에서 바로가기와 D-day 간격 확대
+   - Wedding Day 날짜/장소 2줄 표기
+   - 마음 전하실 곳 제목/설명 간격 축소
+   ═══════════════════════════════════════════ */
+
+/* Hero 사진은 확대/이동 없이 유지 */
+.hero__photo,
+.hero__photo.is-media-loaded {
+  transform: none !important;
+  object-position: 50% 50% !important;
+}
+
+/* 이전 정보용 배경/장식 제거 */
+.hero__content--minimal,
+.hero__content {
+  top: auto !important;
+  left: 50% !important;
+  bottom: max(174px, calc(env(safe-area-inset-bottom, 0px) + 160px)) !important;
+  transform: translateX(-50%) !important;
+  width: min(88vw, 360px) !important;
+  padding: 0 !important;
+  z-index: 6 !important;
+  text-align: center !important;
+}
+
+.hero__content--minimal::before,
+.hero__content::before {
+  content: none !important;
+  display: none !important;
+}
+
+.hero__label {
+  margin: 0 !important;
+  font-size: 1.02rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  letter-spacing: .22em !important;
+  color: rgba(255, 248, 242, .98) !important;
+  text-shadow:
+    0 1px 3px rgba(78, 47, 52, .28),
+    0 4px 14px rgba(78, 47, 52, .14) !important;
+}
+
+/* 혹시 이전 요소가 캐시/DOM에 남더라도 표시하지 않음 */
+.hero__names,
+.hero__divider,
+.hero__date,
+.hero__venue {
+  display: none !important;
+}
+
+/* 바로가기 버튼: D-day와 확실히 분리 */
+.hero__quick-nav {
+  top: auto !important;
+  bottom: max(122px, calc(env(safe-area-inset-bottom, 0px) + 110px)) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: min(90vw, 350px) !important;
+  gap: .46rem !important;
+  z-index: 6 !important;
+}
+
+.hero__quick-btn {
+  height: 38px !important;
+}
+
+/* D-day 최하단 유지 */
+.hero .countdown {
+  bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px)) !important;
+  width: min(90vw, 350px) !important;
+  z-index: 5 !important;
+}
+
+/* PC: 바로가기 버튼을 더 위로 띄워 D-day와 간격 확대 */
+@media (min-width: 431px) {
+  .hero__content--minimal,
+  .hero__content {
+    bottom: max(222px, calc(env(safe-area-inset-bottom, 0px) + 206px)) !important;
+  }
+
+  .hero__label {
+    font-size: 1.12rem !important;
+    letter-spacing: .24em !important;
+  }
+
+  .hero__quick-nav {
+    bottom: max(158px, calc(env(safe-area-inset-bottom, 0px) + 144px)) !important;
+    width: min(82vw, 348px) !important;
+  }
+
+  .hero .countdown {
+    bottom: max(22px, calc(env(safe-area-inset-bottom, 0px) + 10px)) !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero__content--minimal,
+  .hero__content {
+    bottom: max(170px, calc(env(safe-area-inset-bottom, 0px) + 156px)) !important;
+    width: min(90vw, 344px) !important;
+  }
+
+  .hero__label {
+    font-size: .96rem !important;
+    letter-spacing: .20em !important;
+  }
+
+  .hero__quick-nav {
+    bottom: max(120px, calc(env(safe-area-inset-bottom, 0px) + 108px)) !important;
+    width: min(90vw, 344px) !important;
+  }
+
+  .hero .countdown {
+    width: min(90vw, 344px) !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .hero__content--minimal,
+  .hero__content {
+    bottom: max(166px, calc(env(safe-area-inset-bottom, 0px) + 152px)) !important;
+  }
+
+  .hero__label {
+    font-size: .90rem !important;
+  }
+}
+
+/* Wedding Day 정보 */
+.wedding-day-date {
+  margin: 0 !important;
+  font-size: clamp(1.22rem, 4.8vw, 1.55rem) !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  letter-spacing: -.018em !important;
+}
+
+.wedding-day-venue {
+  margin: .42rem 0 0 !important;
+  color: var(--wedding-burgundy) !important;
+  font-size: .96rem !important;
+  font-weight: 500 !important;
+  line-height: 1.45 !important;
+  letter-spacing: -.012em !important;
+}
+
+@media (max-width: 430px) {
+  .wedding-day-date {
+    font-size: 1.12rem !important;
+  }
+
+  .wedding-day-venue {
+    margin-top: .34rem !important;
+    font-size: .90rem !important;
+  }
+}
+
+/* 마음 전하실 곳: 제목과 안내문 간격 축소 */
+.account .section__title {
+  margin-bottom: .46rem !important;
+}
+
+.account__desc,
+.account__desc.animate-item {
+  display: block !important;
+  margin: 0 auto 1.50rem !important;
+  padding-top: 0 !important;
+}
