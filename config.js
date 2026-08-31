@@ -1,8 +1,6 @@
 /**
  * PUBLIC CONFIG
- *
  * GitHub에 공개되어도 되는 정보만 둡니다.
- * 이름 / 혼주명 / 연락처 / 계좌번호는 Private R2에서 로딩합니다.
  */
 const CONFIG = {
   useCurtain: true,
@@ -25,9 +23,10 @@ const CONFIG = {
     content: "서로 다른 길을 걸어온 두 사람이\n이제 같은 길을 함께 걸어가려 합니다.\n\n저희의 새로운 시작을\n축복해 주시면 감사하겠습니다."
   },
 
-  // 아래 데이터는 secure-loader.js가 Private R2에서 받은 값으로 채웁니다.
+  // 아래 값은 Private R2에서 로딩
   groom: {},
   bride: {},
+
   accounts: {
     groom: [],
     bride: []
