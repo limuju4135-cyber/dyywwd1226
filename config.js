@@ -18,7 +18,7 @@ const CONFIG = {
 
     mapLinks: {
       kakao: "https://map.kakao.com/?q=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0",
-      naver: "https://map.naver.com/p/search/%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0"
+      naver: "https://m.map.naver.com/search2/search.naver?query=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0"
     }
   },
 
