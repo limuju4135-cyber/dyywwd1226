@@ -2528,34 +2528,48 @@ img {
   }
 }
 
+
 /* ═══════════════════════════════════════════
-   STAGE 23 — HERO SET2 REPOSITION (A안)
-   목적:
-   1) 사진을 소폭 아래로 내려 인물과 텍스트 간섭 완화
-   2) 텍스트 블록을 소폭 위로 올려 상단 여백 확보
-   3) 기존 버튼 / D-day 구조는 유지
+   STAGE 23.1 — HERO SET2 REPOSITION FIX (A안)
+   object-position Y축이 거의 작동하지 않는 세로 Hero를
+   실제 transform으로 이동시키는 보정본
    ═══════════════════════════════════════════ */
 
-/* A안: 사진은 조금 아래로, 텍스트는 조금 위로 */
+/* 사진: 약 6.5% 확대 + 약 2.3% 아래 이동
+   확대분으로 상단 빈 공간이 생기지 않도록 안전하게 처리 */
 .hero__photo,
 .hero__photo.is-media-loaded {
-  object-position: 50% 35% !important;
+  object-position: 50% 50% !important;
+  transform: translateY(2.3%) scale(1.065) !important;
+  transform-origin: 50% 50% !important;
+  will-change: transform;
 }
 
+/* 텍스트: 기존보다 위로 이동해 거울 속 얼굴과 분리 */
 .hero__content {
-  top: 34.2% !important;
+  top: 34.0% !important;
   width: min(88vw, 388px) !important;
 }
 
+/* 텍스트 뒤 국소 베일도 새 위치에 맞게 조금 위로 */
+.hero__content::before {
+  top: 46% !important;
+}
+
 @media (max-width: 430px) {
+  .hero__photo,
+  .hero__photo.is-media-loaded {
+    transform: translateY(2.6%) scale(1.07) !important;
+  }
+
   .hero__content {
-    top: 33.0% !important;
+    top: 32.8% !important;
     width: min(90vw, 356px) !important;
   }
 }
 
 @media (max-width: 375px) {
   .hero__content {
-    top: 32.2% !important;
+    top: 32.0% !important;
   }
 }
