@@ -18,7 +18,12 @@ const CONFIG = {
 
     mapLinks: {
       kakao: "https://map.kakao.com/?q=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0",
-      naver: "https://m.map.naver.com/search2/search.naver?query=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0"
+
+      // Android / PC / fallback
+      naver: "https://m.map.naver.com/search2/search.naver?query=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0",
+
+      // iOS Safari: 네이버지도 앱에 정확한 위치 마커 전달
+      naverIOS: "nmap://place?lat=37.45008&lng=127.12718&name=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0&appname=https%3A%2F%2Flimuju4135-cyber.github.io%2Fdyywwd1226%2F"
     }
   },
 
