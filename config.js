@@ -9,12 +9,16 @@ const CONFIG = {
     date: "2026-12-26",
     time: "14:00",
     venue: "가천대컨벤션",
-    hall: "",
+
+    // 오시는 길 섹션 표시용
+    locationName: "가천컨벤션센터",
+    hall: "가천대학교 글로벌캠퍼스 비전타워 5층",
     address: "경기도 성남시 수정구 성남대로 1342",
     tel: "",
+
     mapLinks: {
-      kakao: "https://map.kakao.com/",
-      naver: "https://map.naver.com/"
+      kakao: "https://map.kakao.com/?q=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0",
+      naver: "https://map.naver.com/p/search/%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0"
     }
   },
 
