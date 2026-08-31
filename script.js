@@ -166,30 +166,38 @@
     if (!grid || typeof CONFIG === 'undefined' || !CONFIG.wedding) return;
 
     const dt = new Date(`${CONFIG.wedding.date}T${CONFIG.wedding.time || '00:00'}:00`);
-    const monthName = dt.toLocaleString('en-US', { month: 'long' });
     const year = dt.getFullYear();
+    const month = dt.getMonth() + 1;
     const weddingDate = dt.getDate();
 
+    const [hourString, minuteString] = String(CONFIG.wedding.time || '00:00').split(':');
+    let hour = Number(hourString || 0);
+    const minute = Number(minuteString || 0);
+    const period = hour < 12 ? '오전' : '오후';
+    const displayHour = hour % 12 || 12;
+    const minuteText = minute === 0 ? '' : ` ${minute}분`;
+
     if (dateEl) {
-      dateEl.textContent = `${monthName} ${weddingDate}, ${year}`;
+      dateEl.textContent =
+        `${year}년 ${month}월 ${weddingDate}일 ${period} ${displayHour}시${minuteText}`;
     }
 
     const header = grid.querySelector('.calendar__header');
     if (header) {
       header.innerHTML = `
-        <span class="calendar__month-name">${monthName}</span>
+        <span class="calendar__month-name">${month}월</span>
         <span class="calendar__year">${year}</span>
       `;
     }
 
     const weekdayEls = grid.querySelectorAll('.calendar__weekday');
-    const weekdayLetters = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    const weekdayLetters = ['일', '월', '화', '수', '목', '금', '토'];
 
     weekdayEls.forEach((el, index) => {
       if (weekdayLetters[index]) el.textContent = weekdayLetters[index];
     });
 
-    if (dt.getMonth() === 11 && weddingDate === 26) {
+    if (month === 12 && weddingDate === 26) {
       grid.querySelectorAll('.calendar__day:not(.is-empty)').forEach((el) => {
         if (el.textContent.trim() === '25') {
           el.classList.add('is-christmas');
