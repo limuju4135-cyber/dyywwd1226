@@ -87,12 +87,12 @@
   function initHero() {
     const photo = $('#heroPhoto');
 
-    if (photo && typeof SECURE_WEDDING !== 'undefined') {
+    if (photo && typeof PRIVATE_WEDDING !== 'undefined') {
       const heroPath = MEDIA_CONFIG.media?.hero || '';
-      const external = SECURE_WEDDING.mediaUrl(heroPath);
+      const external = PRIVATE_WEDDING.mediaUrl(heroPath);
 
       if (external) {
-        photo.dataset.mediaResolved = 'worker-r2-session';
+        photo.dataset.mediaResolved = 'worker-r2';
         photo.src = external;
 
         photo.addEventListener('load', () => {
@@ -409,7 +409,7 @@
     grid.innerHTML = '';
 
     try {
-      const manifest = await SECURE_WEDDING.getGalleryManifest();
+      const manifest = await PRIVATE_WEDDING.getGalleryManifest();
       const paths = Array.isArray(manifest.images) ? manifest.images : [];
 
       if (!paths.length) {
@@ -418,7 +418,7 @@
         return;
       }
 
-      const images = paths.map((path) => SECURE_WEDDING.mediaUrl(path));
+      const images = paths.map((path) => PRIVATE_WEDDING.mediaUrl(path));
 
       images.forEach((src, index) => {
         const item = document.createElement('button');
@@ -509,7 +509,7 @@
       loading = true;
 
       try {
-        const accounts = await SECURE_WEDDING.getAccounts();
+        const accounts = await PRIVATE_WEDDING.getAccounts();
 
         CONFIG.accounts = {
           groom: Array.isArray(accounts.groom) ? accounts.groom : [],
@@ -522,6 +522,7 @@
         ['groom', 'bride'].forEach(side => {
           const trigger = document.getElementById(`${side}Accordion`);
           const panel = document.getElementById(`${side}AccordionPanel`);
+
           if (
             trigger &&
             panel &&
@@ -596,8 +597,14 @@
 
   async function init() {
     try {
-      await SECURE_WEDDING.init();
-    } catch {
+      await PRIVATE_WEDDING.init();
+    } catch (error) {
+      console.warn('[Private wedding data]', error);
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = '초대장 정보를 불러오지 못했습니다.';
+        toast.classList.add('is-visible');
+      }
       return;
     }
 
