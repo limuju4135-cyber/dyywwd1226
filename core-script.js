@@ -513,16 +513,26 @@
       const item = document.createElement('div');
       item.className = 'account-item';
       item.innerHTML = `
-        <span class="account-item__role">${acc.role || ''}</span>
-        <strong class="account-item__name">${acc.name || ''}</strong>
-        <strong class="account-item__bank">${acc.bank || ''}</strong>
-        <strong class="account-item__number">${acc.number || ''}</strong>
+        <div class="account-item__main">
+          <div class="account-item__identity">
+            <span class="account-item__role">${acc.role || ''}</span>
+            <strong class="account-item__name">${acc.name || ''}</strong>
+          </div>
+
+          <div class="account-item__payment">
+            <span class="account-item__role-spacer" aria-hidden="true"></span>
+            <div class="account-item__payment-data">
+              <strong class="account-item__bank">${acc.bank || ''}</strong>
+              <strong class="account-item__number">${acc.number || ''}</strong>
+            </div>
+          </div>
+        </div>
 
         <button
           type="button"
           class="account-item__copy"
           data-account="${acc.bank || ''} ${acc.number || ''}"
-        >복사</button>
+        ><span class="account-item__copy-label">복사</span></button>
       `;
       container.appendChild(item);
     });
