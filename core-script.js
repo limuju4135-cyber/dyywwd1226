@@ -475,34 +475,9 @@
         naver.addEventListener('click', (event) => {
           event.preventDefault();
 
-          let fallbackTimer = null;
-          let leftPage = false;
-
-          const cancelFallback = () => {
-            leftPage = true;
-            if (fallbackTimer) {
-              clearTimeout(fallbackTimer);
-              fallbackTimer = null;
-            }
-          };
-
-          const onVisibility = () => {
-            if (document.hidden) cancelFallback();
-          };
-
-          document.addEventListener('visibilitychange', onVisibility, { once: true });
-          window.addEventListener('pagehide', cancelFallback, { once: true });
-          window.addEventListener('blur', cancelFallback, { once: true });
-
-          // 네이버지도 앱 직접 호출
+          // iOS에서는 네이버지도 앱만 직접 호출합니다.
+          // 자동 웹 fallback은 사용하지 않습니다.
           window.location.href = iosUrl;
-
-          // 앱이 설치되어 있지 않거나 Scheme 호출이 실패할 경우 웹 검색으로 복귀
-          fallbackTimer = window.setTimeout(() => {
-            if (!leftPage && !document.hidden) {
-              window.location.href = webUrl;
-            }
-          }, 1400);
         });
       }
     }
