@@ -1,6 +1,31 @@
 (function () {
   'use strict';
 
+  /* ═══════════════════════════════════════════
+     Stage 19 — basic content protection
+     - Desktop right-click disabled
+     - Image dragging disabled
+     ※ 브라우저 개발자도구/스크린샷까지 막는 보안 기능은 아님
+     ═══════════════════════════════════════════ */
+  function initBasicContentProtection() {
+    document.addEventListener('contextmenu', (event) => {
+      const finePointer =
+        window.matchMedia &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      if (finePointer || event.button === 2 || event.pointerType === 'mouse') {
+        event.preventDefault();
+      }
+    });
+
+    document.addEventListener('dragstart', (event) => {
+      if (event.target instanceof HTMLImageElement) {
+        event.preventDefault();
+      }
+    });
+  }
+
+
 
   /* ═══════════════════════════════════════════
      Hero Quick Navigation
@@ -269,7 +294,7 @@
 
     // 이전 버전보다 확실히 적게
     const isMobile = document.documentElement.clientWidth <= 768;
-    const FLAKE_COUNT = isMobile ? 12 : 18;
+    const FLAKE_COUNT = isMobile ? 20 : 30;
 
     /**
      * 핀치 줌 대응 핵심:
@@ -321,14 +346,14 @@
       }
 
       reset(initial = false) {
-        const crystal = Math.random() < 0.12; // 결정형 비율 축소
+        const crystal = Math.random() < 0.16; // Stage19: 결정형을 조금 더 자주
 
         this.type = crystal ? 'crystal' : 'soft';
 
         // 전체 크기 축소
         this.size = crystal
-          ? 2.3 + Math.random() * 1.5
-          : 0.65 + Math.random() * 1.45;
+          ? 2.7 + Math.random() * 1.7
+          : 0.8 + Math.random() * 1.6;
 
         this.x = Math.random() * width;
         this.y = initial
@@ -337,8 +362,8 @@
 
         // 전체적으로 더 은은하게
         this.baseOpacity = crystal
-          ? 0.08 + Math.random() * 0.055
-          : 0.055 + Math.random() * 0.05;
+          ? 0.15 + Math.random() * 0.085
+          : 0.10 + Math.random() * 0.075;
 
         this.opacity = this.baseOpacity;
 
@@ -376,7 +401,7 @@
         this.twinkle += this.twinkleSpeed;
         this.opacity =
           this.baseOpacity *
-          (1 + Math.sin(this.twinkle) * 0.012);
+          (1 + Math.sin(this.twinkle) * 0.035);
 
         if (
           this.y > height + 25 ||
@@ -564,6 +589,7 @@
   }
 
   window.addEventListener('load', function () {
+    initBasicContentProtection();
     initHeroQuickNavigation();
     initMobileZoomLock();
     enhanceWeddingDayStage1();
