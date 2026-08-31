@@ -169,6 +169,7 @@
     parents.innerHTML = `
       <div class="parent-row">
         <span class="parent-row__father">${parentName(g.father, g.fatherDeceased)}</span>
+        <span class="parent-row__dot" aria-hidden="true">·</span>
         <span class="parent-row__mother">${parentName(g.mother, g.motherDeceased)}</span>
         <span class="parent-row__relation">의 아들</span>
         <strong class="parent-row__child">${g.name || ''}</strong>
@@ -176,6 +177,7 @@
 
       <div class="parent-row">
         <span class="parent-row__father">${parentName(b.father, b.fatherDeceased)}</span>
+        <span class="parent-row__dot" aria-hidden="true">·</span>
         <span class="parent-row__mother">${parentName(b.mother, b.motherDeceased)}</span>
         <span class="parent-row__relation">의 딸</span>
         <strong class="parent-row__child">${b.name || ''}</strong>
@@ -511,8 +513,9 @@
       const item = document.createElement('div');
       item.className = 'account-item';
       item.innerHTML = `
-        <div class="account-item__info">
-          <span class="account-item__role">${acc.role || ''}</span>
+        <span class="account-item__role">${acc.role || ''}</span>
+
+        <div class="account-item__details">
           <strong class="account-item__name">${acc.name || ''}</strong>
 
           <div class="account-item__financial">
