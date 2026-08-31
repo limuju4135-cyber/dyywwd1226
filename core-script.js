@@ -158,6 +158,81 @@
     `;
   }
 
+
+  function sanitizePhone(phone) {
+    return String(phone || '').replace(/[^\d+]/g, '');
+  }
+
+  function contactActionHtml(phone, personLabel) {
+    const clean = sanitizePhone(phone);
+    if (!clean || clean.replace(/\D/g, '').length < 8) {
+      return `
+        <span class="contact-person__action contact-person__action--disabled" aria-label="${personLabel} 전화번호 미입력">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/></svg>
+        </span>
+        <span class="contact-person__action contact-person__action--disabled" aria-label="${personLabel} 문자번호 미입력">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+        </span>
+      `;
+    }
+
+    return `
+      <a class="contact-person__action" href="tel:${clean}" aria-label="${personLabel}에게 전화하기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/></svg>
+      </a>
+      <a class="contact-person__action" href="sms:${clean}" aria-label="${personLabel}에게 문자 보내기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+      </a>
+    `;
+  }
+
+  function renderContactSide(side, containerId, relationWord) {
+    const container = document.getElementById(containerId);
+    if (!container || !side) return;
+
+    const rows = [
+      {
+        role: relationWord === '아들' ? '신랑' : '신부',
+        name: side.name || '',
+        phone: side.phone || ''
+      },
+      {
+        role: '아버지',
+        name: side.father || '',
+        phone: side.fatherPhone || '',
+        deceased: side.fatherDeceased
+      },
+      {
+        role: '어머니',
+        name: side.mother || '',
+        phone: side.motherPhone || '',
+        deceased: side.motherDeceased
+      }
+    ];
+
+    container.innerHTML = rows.map((person) => {
+      const displayName = `${person.deceased ? '故 ' : ''}${person.name}`.trim();
+      const label = `${person.role} ${displayName}`.trim();
+
+      return `
+        <div class="contact-person">
+          <div class="contact-person__identity">
+            <span class="contact-person__role">${person.role}</span>
+            <span class="contact-person__name">${displayName}</span>
+          </div>
+          <div class="contact-person__actions">
+            ${contactActionHtml(person.phone, label)}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function initContacts() {
+    renderContactSide(CONFIG.groom, 'groomContactList', '아들');
+    renderContactSide(CONFIG.bride, 'brideContactList', '딸');
+  }
+
   function initCalendar() {
     const dt = weddingDateTime();
     const year = dt.getFullYear();
@@ -491,6 +566,7 @@
     initHero();
     initCountdown();
     initGreeting();
+    initContacts();
     initCalendar();
     initPhotoModal();
     initLocation();
