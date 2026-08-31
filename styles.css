@@ -130,28 +130,6 @@ body {
   overflow: visible;
 }
 
-.wedding-day-decor {
-  position: absolute;
-  display: block;
-  z-index: 0;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-.wedding-day-decor--top-right {
-  width: clamp(88px, 25vw, 118px);
-  top: -3.55rem;
-  right: -0.7rem;
-  opacity: .84;
-}
-
-.wedding-day-decor--bottom-left {
-  width: clamp(86px, 25vw, 116px);
-  left: -1.0rem;
-  bottom: 3.0rem;
-  opacity: .80;
-}
 
 .wedding-day-title {
   position: relative;
@@ -319,19 +297,20 @@ body {
 }
 
 #calendarGrid .calendar__day.is-today {
-  width: 2.36rem !important;
-  height: 2.36rem !important;
-  min-height: 2.36rem !important;
+  width: 2.08rem !important;
+  height: 2.08rem !important;
+  min-height: 2.08rem !important;
   margin: auto;
   padding: 0 !important;
-  color: #FFFDF9 !important;
-  background: radial-gradient(circle at 33% 27%, #8D2C35 0%, #6C171C 60%, #501016 100%) !important;
-  border: 2px solid var(--wedding-gold) !important;
+
+  color: var(--wedding-burgundy) !important;
+  background: rgba(199,166,115,.035) !important;
+
+  border: 1.35px solid rgba(199,166,115,.92) !important;
   border-radius: 50% !important;
-  box-shadow:
-    0 0 0 2px rgba(255,253,249,.98),
-    0 0 0 3px rgba(199,166,115,.35),
-    0 4px 10px rgba(108,23,28,.11) !important;
+
+  font-weight: 700 !important;
+  box-shadow: none !important;
 }
 
 .wedding-day-section .calendar-actions {
@@ -351,18 +330,6 @@ body {
     padding-bottom: 4.8rem;
   }
 
-  .wedding-day-decor--top-right {
-    width: 92px;
-    right: -1.25rem;
-    top: -2.9rem;
-  }
-
-  .wedding-day-decor--bottom-left {
-    width: 88px;
-    left: -1.4rem;
-    bottom: 3.4rem;
-  }
-
   .wedding-day-title {
     margin-bottom: 1.75rem;
   }
@@ -376,8 +343,34 @@ body {
   }
 
   #calendarGrid .calendar__day.is-today {
-    width: 2.20rem !important;
-    height: 2.20rem !important;
-    min-height: 2.20rem !important;
+    width: 1.98rem !important;
+    height: 1.98rem !important;
+    min-height: 1.98rem !important;
   }
+}
+
+
+/* ═══════════════════════════════════════════
+   REVIEW FIX 2
+   ═══════════════════════════════════════════ */
+
+/* Greeting 위 단독 눈송이 장식은 사용하지 않음 */
+.greeting .ornament {
+  display: none !important;
+}
+
+/* 혼주명과 '의 아들/의 딸' 사이의 ● 기호 제거 */
+.greeting__parents .parent-dot {
+  display: none !important;
+}
+
+.greeting__parents .parent-row {
+  word-spacing: .02em;
+}
+
+/* 원본 body.no-scroll의 position:fixed는 모달 종료 후 위치 이동을 유발할 수 있음.
+   top 값은 script.js에서 모달 오픈 직전의 scrollY에 맞춰 설정한다. */
+body.no-scroll {
+  left: 0;
+  right: 0;
 }
