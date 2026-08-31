@@ -2573,3 +2573,288 @@ img {
     top: 32.0% !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 24 — HERO BOTTOM FOCUS + PARENT DOT + ACCOUNT DESC
+   방향:
+   - Hero 텍스트/버튼/D-day를 하단 정보영역으로 집중
+   - 검정 오버레이 대신 커튼 색상(#BE858D) → 투명 그라데이션
+   - 사진은 조금 더 확대하고 아래로 내려 상단을 더 크롭
+   ═══════════════════════════════════════════ */
+
+:root {
+  --stage24-curtain-rgb: 190, 133, 141;
+}
+
+.hero {
+  min-height: 100svh !important;
+  overflow: hidden !important;
+}
+
+.hero__overlay {
+  background:
+    linear-gradient(
+      to top,
+      rgba(var(--stage24-curtain-rgb), .92) 0%,
+      rgba(var(--stage24-curtain-rgb), .78) 19%,
+      rgba(var(--stage24-curtain-rgb), .54) 37%,
+      rgba(var(--stage24-curtain-rgb), .28) 55%,
+      rgba(var(--stage24-curtain-rgb), .10) 68%,
+      rgba(var(--stage24-curtain-rgb), .02) 80%,
+      rgba(var(--stage24-curtain-rgb), 0) 100%
+    ) !important;
+}
+
+.hero__photo,
+.hero__photo.is-media-loaded {
+  object-position: 50% 50% !important;
+  transform: translateY(4.2%) scale(1.145) !important;
+  transform-origin: 50% 50% !important;
+  will-change: transform;
+}
+
+.hero__content {
+  top: auto !important;
+  left: 50% !important;
+  bottom: max(255px, calc(env(safe-area-inset-bottom, 0px) + 238px)) !important;
+  transform: translateX(-50%) !important;
+  width: min(88vw, 392px) !important;
+  padding: 0 .7rem !important;
+  text-align: center !important;
+  z-index: 5 !important;
+}
+
+.hero__content::before {
+  content: none !important;
+  display: none !important;
+}
+
+.hero__label {
+  margin-bottom: .78rem !important;
+  font-size: .94rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .24em !important;
+  color: rgba(242, 221, 178, .98) !important;
+  text-shadow: 0 1px 2px rgba(67, 39, 43, .10) !important;
+}
+
+.hero__names {
+  margin-bottom: .42rem !important;
+  color: rgba(255,255,255,.985) !important;
+  font-size: clamp(2.45rem, 7.2vw, 3.45rem) !important;
+  font-weight: 300 !important;
+  letter-spacing: -.035em !important;
+  line-height: 1.10 !important;
+  text-shadow: 0 1px 2px rgba(77, 50, 54, .12) !important;
+}
+
+.hero__divider {
+  width: 72px !important;
+  margin: .72rem auto .80rem !important;
+  border-color: rgba(255,255,255,.68) !important;
+}
+
+.hero__date {
+  margin-bottom: .30rem !important;
+  font-size: 1.08rem !important;
+  font-weight: 500 !important;
+  color: rgba(255,250,246,.985) !important;
+  letter-spacing: -.015em !important;
+  text-shadow: 0 1px 2px rgba(77, 50, 54, .10) !important;
+}
+
+.hero__venue {
+  margin-bottom: 0 !important;
+  font-size: .97rem !important;
+  font-weight: 500 !important;
+  color: rgba(255,245,239,.94) !important;
+  letter-spacing: -.01em !important;
+  text-shadow: 0 1px 2px rgba(77, 50, 54, .08) !important;
+}
+
+.hero__quick-nav {
+  bottom: max(132px, calc(env(safe-area-inset-bottom, 0px) + 118px)) !important;
+  width: min(88vw, 356px) !important;
+  gap: .48rem !important;
+  z-index: 5 !important;
+}
+
+.hero__quick-btn {
+  height: 39px !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.06)) !important;
+  color: rgba(255,250,246,.96) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03) !important;
+  font-size: .76rem !important;
+  font-weight: 500 !important;
+}
+
+.hero__quick-btn:active {
+  background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08)) !important;
+}
+
+.hero .countdown {
+  bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 8px)) !important;
+  width: min(88vw, 368px) !important;
+  padding: .86rem 1rem .58rem !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  border-radius: 22px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.065)) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: none !important;
+}
+
+.hero .countdown__label {
+  margin-bottom: .62rem !important;
+  color: rgba(255,250,246,.82) !important;
+  font-weight: 400 !important;
+}
+
+.hero .countdown__number {
+  color: rgba(255,255,255,.985) !important;
+}
+
+.hero .countdown__unit,
+.hero .countdown__sep {
+  color: rgba(255,245,239,.72) !important;
+}
+
+@media (min-width: 431px) {
+  .hero__photo,
+  .hero__photo.is-media-loaded {
+    transform: translateY(4.8%) scale(1.16) !important;
+  }
+
+  .hero__content {
+    bottom: max(275px, calc(env(safe-area-inset-bottom, 0px) + 260px)) !important;
+  }
+
+  .hero__quick-nav {
+    bottom: max(150px, calc(env(safe-area-inset-bottom, 0px) + 136px)) !important;
+  }
+
+  .hero .countdown {
+    bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 12px)) !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero__photo,
+  .hero__photo.is-media-loaded {
+    transform: translateY(4.8%) scale(1.17) !important;
+  }
+
+  .hero__content {
+    width: min(90vw, 358px) !important;
+    bottom: max(244px, calc(env(safe-area-inset-bottom, 0px) + 228px)) !important;
+  }
+
+  .hero__label {
+    font-size: .84rem !important;
+    letter-spacing: .22em !important;
+  }
+
+  .hero__names {
+    font-size: clamp(2.10rem, 10vw, 2.86rem) !important;
+  }
+
+  .hero__date {
+    font-size: .96rem !important;
+  }
+
+  .hero__venue {
+    font-size: .90rem !important;
+  }
+
+  .hero__divider {
+    width: 64px !important;
+    margin: .62rem auto .70rem !important;
+  }
+
+  .hero__quick-nav {
+    bottom: max(124px, calc(env(safe-area-inset-bottom, 0px) + 112px)) !important;
+    width: min(90vw, 344px) !important;
+    gap: .42rem !important;
+  }
+
+  .hero__quick-btn {
+    height: 38px !important;
+    font-size: .73rem !important;
+  }
+
+  .hero .countdown {
+    width: min(90vw, 344px) !important;
+    padding: .78rem .92rem .52rem !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .hero__photo,
+  .hero__photo.is-media-loaded {
+    transform: translateY(5.2%) scale(1.185) !important;
+  }
+
+  .hero__content {
+    bottom: max(236px, calc(env(safe-area-inset-bottom, 0px) + 220px)) !important;
+  }
+
+  .hero__label {
+    font-size: .80rem !important;
+  }
+
+  .hero__date {
+    font-size: .92rem !important;
+  }
+}
+
+/* 혼주 문구: 점 넣고 간격을 조금 더 조밀하게 */
+.greeting__parents .parent-row {
+  grid-template-columns: 4.02rem .40rem 4.02rem 3.52rem 4.25rem !important;
+  column-gap: 0 !important;
+}
+
+.parent-row__father {
+  justify-self: end !important;
+  padding-right: .02rem !important;
+}
+
+.parent-row__dot {
+  justify-self: center !important;
+}
+
+.parent-row__mother {
+  justify-self: start !important;
+  padding-left: .02rem !important;
+}
+
+.parent-row__relation {
+  justify-self: center !important;
+}
+
+.parent-row__child {
+  justify-self: center !important;
+}
+
+@media (max-width: 390px) {
+  .greeting__parents .parent-row {
+    grid-template-columns: 3.72rem .36rem 3.72rem 3.10rem 3.78rem !important;
+  }
+}
+
+/* 마음 전하실 곳 설명문 복구 + 문구 변경 */
+.account__desc,
+.account__desc.animate-item {
+  display: block !important;
+  margin: .44rem auto 1.65rem !important;
+  max-width: 20.5rem !important;
+  color: #7A726A !important;
+  font-size: .89rem !important;
+  line-height: 1.72 !important;
+  text-align: center !important;
+  letter-spacing: -.01em !important;
+}
