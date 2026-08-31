@@ -3392,3 +3392,208 @@ img {
 .greeting__parents .parent-row {
   column-gap: 0 !important;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 29 — ACCOUNT GRID FIX
+   PC / Android / iOS 공통:
+   [역할] [이름 + 은행/계좌번호] [복사]
+   복사 버튼은 독립 고정열로 확보
+   ═══════════════════════════════════════════ */
+
+.account-item {
+  display: grid !important;
+  grid-template-columns: 3.1rem minmax(0, 1fr) 52px !important;
+  grid-template-rows: auto !important;
+  align-items: center !important;
+
+  column-gap: .62rem !important;
+  row-gap: 0 !important;
+
+  padding: 1.05rem .05rem !important;
+}
+
+.account-item__role {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+
+  align-self: start !important;
+  justify-self: start !important;
+
+  padding-top: .06rem !important;
+
+  color: #7D756E !important;
+  font-size: .78rem !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  white-space: nowrap !important;
+}
+
+.account-item__details {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  min-width: 0 !important;
+
+  display: grid !important;
+  grid-template-rows: auto auto !important;
+  row-gap: .44rem !important;
+
+  align-items: baseline !important;
+}
+
+.account-item__name {
+  min-width: 0 !important;
+
+  color: #342F2C !important;
+  font-size: .94rem !important;
+  font-weight: 700 !important;
+  line-height: 1.45 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.account-item__financial {
+  min-width: 0 !important;
+
+  display: grid !important;
+  grid-template-columns: 5.35rem minmax(0, 1fr) !important;
+  align-items: baseline !important;
+
+  column-gap: .56rem !important;
+  row-gap: 0 !important;
+}
+
+.account-item__bank {
+  min-width: 0 !important;
+
+  color: #3B3632 !important;
+  font-size: .84rem !important;
+  font-weight: 700 !important;
+  line-height: 1.48 !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.account-item__number {
+  min-width: 0 !important;
+
+  justify-self: start !important;
+  text-align: left !important;
+
+  color: #3B3632 !important;
+  font-size: clamp(.76rem, 2.9vw, .84rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.48 !important;
+
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -.022em !important;
+
+  white-space: nowrap !important;
+  overflow: visible !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+}
+
+.account-item__copy {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+
+  align-self: center !important;
+  justify-self: end !important;
+
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+  height: 34px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+  flex: none !important;
+
+  border: 1px solid rgba(222,208,180,.72) !important;
+  border-radius: 999px !important;
+
+  background: rgba(255,253,249,.88) !important;
+  color: #6F665F !important;
+
+  font-size: .74rem !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* 430px 이하: 역할/은행 열만 조금 축소해 계좌번호 공간 확보 */
+@media (max-width: 430px) {
+  .account .accordion__panel-inner {
+    padding-left: .82rem !important;
+    padding-right: .82rem !important;
+  }
+
+  .account-item {
+    grid-template-columns: 2.75rem minmax(0, 1fr) 48px !important;
+    column-gap: .48rem !important;
+  }
+
+  .account-item__role {
+    font-size: .74rem !important;
+  }
+
+  .account-item__name {
+    font-size: .90rem !important;
+  }
+
+  .account-item__financial {
+    grid-template-columns: 4.85rem minmax(0, 1fr) !important;
+    column-gap: .44rem !important;
+  }
+
+  .account-item__bank {
+    font-size: .80rem !important;
+  }
+
+  .account-item__number {
+    font-size: clamp(.72rem, 3.05vw, .80rem) !important;
+    letter-spacing: -.03em !important;
+  }
+
+  .account-item__copy {
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    height: 33px !important;
+    font-size: .72rem !important;
+  }
+}
+
+/* 매우 좁은 화면에서도 버튼 영역은 끝까지 보존 */
+@media (max-width: 360px) {
+  .account-item {
+    grid-template-columns: 2.55rem minmax(0, 1fr) 46px !important;
+    column-gap: .40rem !important;
+  }
+
+  .account-item__financial {
+    grid-template-columns: 4.45rem minmax(0, 1fr) !important;
+    column-gap: .36rem !important;
+  }
+
+  .account-item__number {
+    font-size: .70rem !important;
+    letter-spacing: -.035em !important;
+  }
+
+  .account-item__copy {
+    width: 46px !important;
+    min-width: 46px !important;
+    max-width: 46px !important;
+  }
+}
