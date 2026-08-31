@@ -787,3 +787,131 @@ body.no-scroll {
 .curtain__right::after {
   left: 0;
 }
+
+
+/* ═══════════════════════════════════════════
+   STAGE 6 — SOFT WARM CURTAIN + HERO TYPE TUNE
+   ═══════════════════════════════════════════ */
+
+/* -------------------------------------------------
+   CURTAIN: 강렬한 레드 대신 따뜻한 muted wine
+   ------------------------------------------------- */
+
+.curtain {
+  background: #563138 !important;
+}
+
+.curtain__left {
+  background:
+    linear-gradient(
+      105deg,
+      #4A282E 0%,
+      #5A3239 34%,
+      #6A3A42 72%,
+      #74444B 100%
+    ) !important;
+
+  box-shadow:
+    inset -16px 0 34px rgba(35, 19, 21, .08),
+    inset 10px 0 28px rgba(255, 247, 240, .018) !important;
+}
+
+.curtain__right {
+  background:
+    linear-gradient(
+      255deg,
+      #4A282E 0%,
+      #5A3239 34%,
+      #6A3A42 72%,
+      #74444B 100%
+    ) !important;
+
+  box-shadow:
+    inset 16px 0 34px rgba(35, 19, 21, .08),
+    inset -10px 0 28px rgba(255, 247, 240, .018) !important;
+}
+
+/* 중앙 골드 라인 완전 제거 */
+.curtain__left::after,
+.curtain__right::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* 텍스트는 따뜻한 아이보리와 차분한 샴페인 골드 */
+.curtain__content {
+  color: #FFF8F2 !important;
+  text-shadow: 0 2px 14px rgba(30, 18, 19, .14);
+}
+
+.curtain__subtitle {
+  color: #D7BD8D !important;
+  opacity: .90;
+}
+
+.curtain__names {
+  color: #FFF8F2 !important;
+}
+
+/* 버튼도 골드를 너무 세게 쓰지 않음 */
+.curtain__btn {
+  color: #FFF8F2 !important;
+  border-color: rgba(215,189,141,.55) !important;
+  background: rgba(255,255,255,.018) !important;
+  box-shadow: none !important;
+}
+
+.curtain__btn:hover,
+.curtain__btn:focus {
+  background: rgba(215,189,141,.075) !important;
+  border-color: rgba(225,205,165,.78) !important;
+}
+
+
+/* -------------------------------------------------
+   HERO TYPOGRAPHY
+   ------------------------------------------------- */
+
+/* WEDDING INVITATION: 이전보다 약 10~12% 확대 */
+.hero__label {
+  font-size: .79rem !important;
+  letter-spacing: .30em !important;
+  color: rgba(143, 29, 44, .78) !important;
+  opacity: .82 !important;
+}
+
+/* 날짜/장소는 크기와 그림자를 아주 미세하게 보강 */
+.hero__date {
+  font-size: 1.00rem !important;
+  color: rgba(255,255,255,.95) !important;
+  text-shadow: 0 2px 14px rgba(0,0,0,.24) !important;
+  letter-spacing: .045em;
+}
+
+.hero__venue {
+  font-size: .91rem !important;
+  color: rgba(255,255,255,.94) !important;
+  text-shadow: 0 2px 13px rgba(0,0,0,.22) !important;
+  letter-spacing: .045em;
+}
+
+/* 이름과 날짜 사이 여백 조금 더 확보 */
+.hero__divider {
+  margin-bottom: .72rem !important;
+}
+
+/* 모바일에서는 WEDDING INVITATION이 너무 커지지 않도록 */
+@media (max-width: 430px) {
+  .hero__label {
+    font-size: .75rem !important;
+    letter-spacing: .27em !important;
+  }
+
+  .hero__date {
+    font-size: .96rem !important;
+  }
+
+  .hero__venue {
+    font-size: .88rem !important;
+  }
+}
