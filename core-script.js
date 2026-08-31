@@ -446,13 +446,11 @@
 
   function initLocation() {
     const w = CONFIG.wedding;
-    $('#locationVenue') && ($('#locationVenue').textContent = w.venue);
+    $('#locationVenue') && ($('#locationVenue').textContent = w.locationName || w.venue);
     $('#locationHall') && ($('#locationHall').textContent = w.hall || '');
     $('#locationAddress') && ($('#locationAddress').textContent = w.address);
     $('#locationTel') && ($('#locationTel').textContent = w.tel ? `Tel. ${w.tel}` : '');
 
-    const mapImg = $('#locationMapImg');
-    if (mapImg) mapImg.src = 'images/location/1.jpg';
 
     const kakao = $('#kakaoMapBtn');
     const naver = $('#naverMapBtn');
