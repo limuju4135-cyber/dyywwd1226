@@ -53,6 +53,8 @@
     }
   </style>
 
+  <!-- Stage 33: curtain / mobile image protection / ending responsive fixes -->
+  <link rel="stylesheet" href="stage33-fixes.css?v=stage33-fixes-1">
 
   <!-- Stage 18.1: iOS Safari location fallback / critical CSS -->
   <style id="location-stage18-critical">
@@ -294,7 +296,7 @@
   <main id="mainContent" class="main-content">
     <section class="section hero" id="hero">
       <div class="hero__overlay"></div>
-      <img class="hero__photo" id="heroPhoto" src="" alt="웨딩 사진" loading="eager" data-media-source="r2">
+      <img class="hero__photo" id="heroPhoto" src="" alt="웨딩 사진" loading="eager" data-media-source="r2" draggable="false">
       <div class="hero__content hero__content--minimal">
         <p class="hero__label animate-item" data-animate="fade-up">초대합니다</p>
       </div>
@@ -361,17 +363,7 @@
     <section class="section calendar-section wedding-day-section" id="calendarSection">
       <div class="section__inner wedding-day-inner">
 <div class="wedding-day-title animate-item" data-animate="fade-up">
-          <div class="wedding-day-eyebrow-row" aria-hidden="true">
-            <img class="wedding-day-sparkle wedding-day-sparkle--left"
-                 src="assets/decor/wedding-day/sparkle-star-small-02-v1.png"
-                 alt="">
-            <p class="wedding-day-eyebrow">결혼식 안내</p>
-            <img class="wedding-day-sparkle wedding-day-sparkle--right"
-                 src="assets/decor/wedding-day/sparkle-star-small-02-v1.png"
-                 alt="">
-          </div>
-
-          <h2 class="wedding-day-date" id="weddingDayDate">2026년 12월 26일(토) 오후 2시</h2>
+<h2 class="wedding-day-date" id="weddingDayDate">2026년 12월 26일(토) 오후 2시</h2>
           <p class="wedding-day-venue">가천컨벤션센터</p>
 
           <div class="wedding-day-flourish" aria-hidden="true">
@@ -513,7 +505,9 @@
                 <h3>주차</h3>
               </div>
               <div class="transport-card__body">
-                <p>가천대학교 <strong>교내 주차장 이용</strong> (약 1,500대 주차 가능)</p>
+                <p>가천대학교 <strong>교내 주차장 이용</strong><br>
+                  <span class="transport-card__parking-capacity">(약 1,500대 주차 가능)</span>
+                </p>
                 <p class="transport-card__note">※ 예식 하객 당일 무료</p>
               </div>
             </article>
@@ -537,7 +531,7 @@
             </div>
 
             <div class="guest-guide-card__photo" id="guestMealPhotoWrap">
-              <img id="guestMealPhoto" src="" alt="연회장 식사 한상차림" loading="lazy">
+              <img id="guestMealPhoto" src="" alt="연회장 식사 한상차림" loading="lazy" draggable="false">
               <div class="guest-guide-card__photo-placeholder" id="guestMealPlaceholder">
                 <span>식사 한상차림 사진</span>
               </div>
@@ -668,7 +662,7 @@
 
     <section class="section ending-section" id="ending">
       <div class="ending-section__media">
-        <img class="ending-section__photo" id="endingPhoto" src="" alt="웨딩 사진" loading="lazy">
+        <img class="ending-section__photo" id="endingPhoto" src="" alt="웨딩 사진" loading="lazy" draggable="false">
         <div class="ending-section__overlay"></div>
       </div>
       <div class="ending-section__content animate-item" data-animate="fade-up">
@@ -689,5 +683,6 @@
   <script src="script.js?v=stage28-text-meta"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
   <script src="stage32-major.js?v=stage32-major-1"></script>
+  <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
 </body>
 </html>
