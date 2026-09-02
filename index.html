@@ -34,6 +34,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/dongdong39/wedding_templates@main/classic-elegant/styles.css">
   <!-- 이번 작업에서 수정하는 파일 -->
   <link rel="stylesheet" href="styles.css?v=stage31-account-stable">
+  <!-- Stage 32: 통합 대규모 개편 -->
+  <link rel="stylesheet" href="stage32-major.css?v=stage32-major-1">
 
   <!-- Stage 20: curtain color critical override -->
   <style id="stage20-curtain-critical">
@@ -266,8 +268,8 @@
     <div class="curtain__left"></div>
     <div class="curtain__right"></div>
     <div class="curtain__content">
-      <p class="curtain__subtitle">Wedding Invitation</p>
-      <p class="curtain__names" id="curtainNames"></p>
+      <p class="curtain__subtitle">2026.12.26</p>
+      <p class="curtain__names curtain__typing" id="curtainNames" aria-live="polite"></p>
       <button class="curtain__btn" id="curtainBtn">초대장 열기</button>
     </div>
   </div>
@@ -294,7 +296,7 @@
       <div class="hero__overlay"></div>
       <img class="hero__photo" id="heroPhoto" src="" alt="웨딩 사진" loading="eager" data-media-source="r2">
       <div class="hero__content hero__content--minimal">
-        <p class="hero__label animate-item" data-animate="fade-up">Wedding Invitation</p>
+        <p class="hero__label animate-item" data-animate="fade-up">초대합니다</p>
       </div>
 
       <nav class="hero__quick-nav" aria-label="초대장 바로가기">
@@ -363,7 +365,7 @@
             <img class="wedding-day-sparkle wedding-day-sparkle--left"
                  src="assets/decor/wedding-day/sparkle-star-small-02-v1.png"
                  alt="">
-            <p class="wedding-day-eyebrow">WEDDING DAY</p>
+            <p class="wedding-day-eyebrow">결혼식 안내</p>
             <img class="wedding-day-sparkle wedding-day-sparkle--right"
                  src="assets/decor/wedding-day/sparkle-star-small-02-v1.png"
                  alt="">
@@ -402,102 +404,237 @@
       <div class="section__inner">
         <h2 class="section__title animate-item" data-animate="fade-up">갤러리</h2>
         <div class="gallery__grid" id="galleryGrid"></div>
+        <div class="gallery-progress" id="galleryProgress" aria-hidden="true">
+          <div class="gallery-progress__track">
+            <span class="gallery-progress__thumb" id="galleryProgressThumb"></span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="section location" id="location">
-      <div class="section__inner location-stage18">
+    <section class="section location location-stage32" id="location">
+      <div class="section__inner location-stage32__inner">
         <h2 class="section__title animate-item" data-animate="fade-up">오시는 길</h2>
 
-        <div class="location__info location-stage18__info animate-item" data-animate="fade-up">
-          <p class="location__venue" id="locationVenue"></p>
-          <p class="location__hall" id="locationHall"></p>
-          <p class="location__address" id="locationAddress"></p>
-          <p class="location__tel" id="locationTel"></p>
+        <div class="location-stage32__layout">
+          <div class="location-stage32__summary animate-item" data-animate="fade-up">
+            <div class="location-stage32__venue-block">
+              <p class="location-stage32__venue" id="locationVenue"></p>
+
+              <div class="location-stage32__address-row">
+                <p class="location-stage32__address" id="locationAddress"></p>
+                <button
+                  class="location-stage32__copy"
+                  type="button"
+                  id="copyAddressBtn"
+                  aria-label="예식장 주소 복사"
+                >주소 복사</button>
+              </div>
+
+              <p class="location-stage32__hall" id="locationHall"></p>
+
+              <a class="location-stage32__tel" href="tel:0317553000" aria-label="가천컨벤션센터 전화하기">
+                <span class="location-stage32__tel-label">예식장 연락처</span>
+                <strong>031-755-3000</strong>
+              </a>
+            </div>
+
+            <div class="location-stage32__map-actions" aria-label="지도 앱에서 보기">
+              <a class="location-stage32__map-btn location-stage32__map-btn--tmap"
+                 id="tmapBtn"
+                 href="tmap://?rGoName=%EA%B0%80%EC%B2%9C%EC%BB%A8%EB%B2%A4%EC%85%98%EC%84%BC%ED%84%B0&rGoX=127.12718&rGoY=37.45008">
+                <span class="location-stage32__map-mark">T</span>
+                <span>티맵</span>
+              </a>
+
+              <a class="location-stage32__map-btn"
+                 id="kakaoMapBtn"
+                 href="#"
+                 target="_blank"
+                 rel="noopener">
+                <span class="location-stage32__map-mark">K</span>
+                <span>카카오맵</span>
+              </a>
+
+              <a class="location-stage32__map-btn"
+                 id="naverMapBtn"
+                 href="#"
+                 target="_blank"
+                 rel="noopener">
+                <span class="location-stage32__map-mark">N</span>
+                <span>네이버지도</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="location-stage32__transport animate-item" data-animate="fade-up">
+            <article class="transport-card">
+              <div class="transport-card__title">
+                <span class="transport-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="15" rx="4"/><path d="M8 18l-2 3M16 18l2 3M8 8h8M8 13h.01M16 13h.01"/></svg>
+                </span>
+                <h3>기차(KTX)</h3>
+              </div>
+              <div class="transport-card__body">
+                <p><strong>수서역</strong>에 내리셔서 지하철 <strong class="line-suinnbundang">수인분당선</strong>(하행)으로 환승</p>
+                <p class="transport-card__note">※ <strong>가천대역</strong>까지 2정거장(7분)</p>
+              </div>
+            </article>
+
+            <article class="transport-card">
+              <div class="transport-card__title">
+                <span class="transport-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M8 9h8M8 15h8M9 6l-2 12M15 6l2 12"/></svg>
+                </span>
+                <h3>지하철</h3>
+              </div>
+              <div class="transport-card__body">
+                <p><strong><span class="line-suinnbundang">수인분당선</span> 가천대역</strong> 1번 출구 또는 연결통로</p>
+              </div>
+            </article>
+
+            <article class="transport-card">
+              <div class="transport-card__title">
+                <span class="transport-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="15" rx="3"/><path d="M8 8h8M8 13h8M8 19l-2 2M16 19l2 2"/><circle cx="8.5" cy="16" r=".7"/><circle cx="15.5" cy="16" r=".7"/></svg>
+                </span>
+                <h3>버스</h3>
+              </div>
+              <div class="transport-card__body">
+                <p><strong>가천대학교</strong> 또는 <strong>가천대역</strong> 정류장 하차</p>
+              </div>
+            </article>
+
+            <article class="transport-card">
+              <div class="transport-card__title">
+                <span class="transport-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M5 17h14l-1-6H6l-1 6Z"/><path d="M7 11l1.5-4h7L17 11M7 17v2M17 17v2"/><circle cx="8" cy="15" r=".7"/><circle cx="16" cy="15" r=".7"/></svg>
+                </span>
+                <h3>주차</h3>
+              </div>
+              <div class="transport-card__body">
+                <p>가천대학교 <strong>교내 주차장 이용</strong> (약 1,500대 주차 가능)</p>
+                <p class="transport-card__note">※ 예식 하객 당일 무료</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section guest-guide" id="guestGuide">
+      <div class="section__inner guest-guide__inner">
+        <div class="guest-guide__header animate-item" data-animate="fade-up">
+          <h2 class="section__title">안내</h2>
+          <p class="guest-guide__desc">예식 당일 이용에 도움이 되는 정보를 모았습니다.</p>
         </div>
 
-        <div class="location-stage18__actions animate-item" data-animate="fade-up">
-          <button class="location-stage18__action" type="button" id="copyAddressBtn" aria-label="주소 복사">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            <span>주소 복사</span>
-          </button>
+        <div class="guest-guide__scroller animate-item" data-animate="fade-up" id="guestGuideScroller">
+          <article class="guest-guide-card guest-guide-card--meal">
+            <div class="guest-guide-card__top">
+              <span class="guest-guide-card__number">01</span>
+              <h3>식사안내</h3>
+            </div>
 
-          <a class="location-stage18__action" id="kakaoMapBtn" href="#" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" aria-hidden="true">
-              <path d="M12 3c-4.97 0-9 3.18-9 7.1 0 2.55 1.71 4.78 4.28 6.03L6.2 20l4.1-2.72c.55.08 1.12.12 1.7.12 4.97 0 9-3.18 9-7.1S16.97 3 12 3Z"></path>
-            </svg>
-            <span>카카오맵</span>
-          </a>
+            <div class="guest-guide-card__photo" id="guestMealPhotoWrap">
+              <img id="guestMealPhoto" src="" alt="연회장 식사 한상차림" loading="lazy">
+              <div class="guest-guide-card__photo-placeholder" id="guestMealPlaceholder">
+                <span>식사 한상차림 사진</span>
+              </div>
+            </div>
 
-          <a class="location-stage18__action" id="naverMapBtn" href="#" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
-              <path d="M5 4h5.2l3.6 5.3V4H19v16h-5.2l-3.6-5.3V20H5V4Z"></path>
-            </svg>
-            <span>네이버지도</span>
-          </a>
+            <div class="guest-guide-card__content">
+              <div class="guest-guide-card__key">
+                <div>
+                  <strong>7F 연회장</strong>
+                  <span>13:40 — 15:40</span>
+                </div>
+                <div>
+                  <strong>소인 기준</strong>
+                  <span>5세 ~ 7세</span>
+                </div>
+              </div>
+
+              <div class="guest-guide-card__divider"></div>
+
+              <p><strong>스테이크 · 모듬회</strong><br>추가 리필은 제공되지 않습니다.</p>
+              <p><strong>소주 · 맥주 · 콜라 · 사이다 · 생수</strong><br>자유롭게 이용 가능합니다.</p>
+            </div>
+          </article>
+
+          <article class="guest-guide-card guest-guide-card--waiting">
+            <div class="guest-guide-card__top">
+              <span class="guest-guide-card__number">02</span>
+              <h3>대기공간</h3>
+            </div>
+
+            <div class="guest-guide-card__visual" aria-hidden="true">
+              <svg viewBox="0 0 120 80">
+                <path d="M15 60h90M27 60V32h66v28M37 32V20h46v12"/>
+                <path d="M45 60V44h30v16M37 41h8M75 41h8"/>
+                <circle cx="30" cy="20" r="4"/><circle cx="90" cy="20" r="4"/>
+              </svg>
+            </div>
+
+            <div class="guest-guide-card__content">
+              <div class="facility-row">
+                <span class="facility-row__floor">1F</span>
+                <div><strong>스타벅스</strong></div>
+              </div>
+              <div class="facility-row">
+                <span class="facility-row__floor">B3</span>
+                <div><strong>투썸플레이스</strong></div>
+              </div>
+              <div class="facility-row">
+                <span class="facility-row__floor">7F</span>
+                <div>
+                  <strong>연회장 앞 대기공간</strong>
+                  <p>연회장 앞에도 대기하실 수 있는 공간이 마련되어 있습니다.</p>
+                </div>
+              </div>
+
+              <!-- 홀 입장 가능 시간 확인 후 이 카드에 추가 -->
+            </div>
+          </article>
+
+          <article class="guest-guide-card guest-guide-card--facility">
+            <div class="guest-guide-card__top">
+              <span class="guest-guide-card__number">03</span>
+              <h3>편의시설</h3>
+            </div>
+
+            <div class="guest-guide-card__visual" aria-hidden="true">
+              <svg viewBox="0 0 120 80">
+                <rect x="25" y="18" width="70" height="46" rx="5"/>
+                <rect x="34" y="27" width="52" height="13" rx="2"/>
+                <circle cx="42" cy="51" r="3"/><circle cx="52" cy="51" r="3"/><circle cx="62" cy="51" r="3"/>
+                <path d="M73 48h13M73 54h13"/>
+              </svg>
+            </div>
+
+            <div class="guest-guide-card__content">
+              <div class="facility-row">
+                <span class="facility-row__floor">1F</span>
+                <div>
+                  <strong>ATM</strong>
+                  <p>우체국 ATM · NICE ATM · 하나은행 ATM</p>
+                </div>
+              </div>
+
+              <!-- 편의점 위치 확인 후 아래와 같은 형식으로 추가
+              <div class="facility-row">
+                <span class="facility-row__floor">?</span>
+                <div><strong>편의점</strong></div>
+              </div>
+              -->
+            </div>
+          </article>
         </div>
 
-        <div class="location-stage18__guide animate-item" data-animate="fade-up">
-
-          <article class="location-guide-card">
-            <div class="location-guide-card__heading">
-              <span class="location-guide-card__icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55">
-                  <rect x="4" y="3" width="16" height="15" rx="4"></rect>
-                  <path d="M8 18l-2 3M16 18l2 3M8 8h8M8 13h.01M16 13h.01"></path>
-                </svg>
-              </span>
-              <h3>지하철</h3>
-            </div>
-
-            <div class="location-guide-card__body">
-              <p><strong>수인분당선 가천대역 1번 출구</strong></p>
-              <p>비전타워 연결통로 이용 · 도보 약 1분</p>
-              <p class="location-guide-card__note">※ <strong>수서역</strong> → 수인분당선 환승 → <strong>가천대역 하차</strong></p>
-            </div>
-          </article>
-
-          <article class="location-guide-card">
-            <div class="location-guide-card__heading">
-              <span class="location-guide-card__icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55">
-                  <path d="M5 17h14l-1-6H6l-1 6Z"></path>
-                  <path d="M7 11l1.5-4h7L17 11M7 17v2M17 17v2"></path>
-                  <circle cx="8" cy="15" r=".7"></circle>
-                  <circle cx="16" cy="15" r=".7"></circle>
-                </svg>
-              </span>
-              <h3>자가용 / 주차</h3>
-            </div>
-
-            <div class="location-guide-card__body">
-              <p>가천대학교 교내 주차장 이용</p>
-              <p>약 <strong>1,500대 주차 가능</strong></p>
-              <p><strong>예식 하객 당일 무료</strong></p>
-            </div>
-          </article>
-
-          <article class="location-guide-card">
-            <div class="location-guide-card__heading">
-              <span class="location-guide-card__icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55">
-                  <rect x="5" y="4" width="14" height="15" rx="3"></rect>
-                  <path d="M8 8h8M8 13h8M8 19l-2 2M16 19l2 2"></path>
-                  <circle cx="8.5" cy="16" r=".7"></circle>
-                  <circle cx="15.5" cy="16" r=".7"></circle>
-                </svg>
-              </span>
-              <h3>버스</h3>
-            </div>
-
-            <div class="location-guide-card__body">
-              <p><strong>가천대학교</strong> 또는 <strong>가천대역</strong> 정류장 하차</p>
-            </div>
-          </article>
-
+        <div class="guest-guide-progress" aria-hidden="true">
+          <div class="guest-guide-progress__track">
+            <span class="guest-guide-progress__thumb" id="guestGuideProgressThumb"></span>
+          </div>
         </div>
       </div>
     </section>
@@ -529,6 +666,17 @@
       </div>
     </section>
 
+    <section class="section ending-section" id="ending">
+      <div class="ending-section__media">
+        <img class="ending-section__photo" id="endingPhoto" src="" alt="웨딩 사진" loading="lazy">
+        <div class="ending-section__overlay"></div>
+      </div>
+      <div class="ending-section__content animate-item" data-animate="fade-up">
+        <h2>함께해 주셔서 감사합니다</h2>
+        <p>2026년 12월 26일</p>
+      </div>
+    </section>
+
     <footer class="footer">
       <p class="footer__text" id="footerText"></p>
     </footer>
@@ -539,5 +687,7 @@
   <script src="core-script.js?v=stage31-account-stable"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage28-text-meta"></script>
+  <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
+  <script src="stage32-major.js?v=stage32-major-1"></script>
 </body>
 </html>
