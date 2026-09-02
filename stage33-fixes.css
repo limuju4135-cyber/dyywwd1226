@@ -1,0 +1,209 @@
+/* ============================================================
+   STAGE 33 — CURTAIN / MOBILE IMAGE PROTECTION / ENDING FIXES
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. CURTAIN
+   좌우 패널이 실제로 열리면서 동시에 투명해짐.
+   Stage32의 "부모 전체 opacity 0" 방식은 무효화.
+   ------------------------------------------------------------ */
+
+#curtain.curtain {
+  background: transparent !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: visibility 0s linear 1.4s !important;
+  overflow: hidden !important;
+}
+
+#curtain .curtain__left,
+#curtain .curtain__right {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 50.15% !important;
+  opacity: 1 !important;
+  transform: translate3d(0, 0, 0) !important;
+  will-change: transform, opacity !important;
+
+  transition:
+    transform 1.28s cubic-bezier(.65, 0, .22, 1),
+    opacity 1.02s cubic-bezier(.22, .61, .36, 1) .10s !important;
+}
+
+#curtain .curtain__left {
+  left: 0 !important;
+  right: auto !important;
+  background-color: #BE858D !important;
+  background-image: none !important;
+}
+
+#curtain .curtain__right {
+  right: 0 !important;
+  left: auto !important;
+  background-color: #BE858D !important;
+  background-image: none !important;
+}
+
+#curtain .curtain__content {
+  opacity: 1 !important;
+  transition:
+    opacity .52s ease,
+    filter .52s ease !important;
+  will-change: opacity, filter !important;
+}
+
+#curtain.curtain.is-open {
+  opacity: 1 !important;
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+#curtain.curtain.is-open .curtain__left {
+  transform: translate3d(-100%, 0, 0) !important;
+  opacity: 0 !important;
+}
+
+#curtain.curtain.is-open .curtain__right {
+  transform: translate3d(100%, 0, 0) !important;
+  opacity: 0 !important;
+}
+
+#curtain.curtain.is-open .curtain__content {
+  opacity: 0 !important;
+  filter: blur(1.5px) !important;
+}
+
+#curtain.curtain.is-hidden {
+  opacity: 1 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ------------------------------------------------------------
+   2 / 4. MOBILE IMAGE SAVE / LONG-PRESS DETERRENCE
+   Android Chrome context menu는 JS에서도 capture 단계에서 차단.
+   ------------------------------------------------------------ */
+
+#heroPhoto,
+#galleryGrid img,
+#photoModal img,
+#endingPhoto,
+#guestMealPhoto,
+.gallery__item img,
+.photo-modal__img {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+  touch-action: manipulation;
+}
+
+#galleryGrid .gallery__item {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* ------------------------------------------------------------
+   3. '결혼식 안내' 문구는 HTML에서 삭제.
+   혹시 캐시된 구버전 DOM이 남아도 화면에는 보이지 않게 보조.
+   ------------------------------------------------------------ */
+
+.wedding-day-eyebrow-row,
+.wedding-day-eyebrow {
+  display: none !important;
+}
+
+/* 제목 삭제 후 날짜가 위로 너무 붙지 않도록 밸런스 */
+.wedding-day-title {
+  padding-top: .1rem !important;
+}
+
+/* ------------------------------------------------------------
+   5. 주차 수용대수 줄바꿈
+   ------------------------------------------------------------ */
+
+.transport-card__parking-capacity {
+  display: inline-block;
+  margin-top: .22rem;
+  color: #746C65;
+  font-size: .80em;
+  font-weight: 450;
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------
+   6. ENDING — MOBILE / DESKTOP를 명시적으로 분리
+   ------------------------------------------------------------ */
+
+/* 기본(태블릿 포함): 세로에 가까운 안정적 프레임 */
+.ending-section {
+  width: 100% !important;
+}
+
+.ending-section__photo {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* 모바일: 4:5 세로형 엔딩 */
+@media (max-width: 599px) {
+  .ending-section {
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 4 / 5 !important;
+    max-height: none !important;
+  }
+
+  .ending-section__photo {
+    object-position: 50% 50% !important;
+  }
+
+  .ending-section__content {
+    bottom: max(38px, calc(env(safe-area-inset-bottom, 0px) + 30px)) !important;
+    width: min(86%, 360px) !important;
+  }
+
+  .ending-section__content h2 {
+    font-size: clamp(1.18rem, 5.2vw, 1.48rem) !important;
+  }
+}
+
+/* 태블릿: 4:3 */
+@media (min-width: 600px) and (max-width: 899px) {
+  .ending-section {
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+}
+
+/* PC: 넓은 가로형 유지 */
+@media (min-width: 900px) {
+  .ending-section {
+    width: 100vw !important;
+    height: min(78dvh, 900px) !important;
+    min-height: 620px !important;
+    aspect-ratio: auto !important;
+  }
+
+  .ending-section__photo {
+    object-position: 50% 46% !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #curtain .curtain__left,
+  #curtain .curtain__right {
+    transition-duration: .35s !important;
+  }
+
+  #curtain .curtain__content {
+    transition-duration: .18s !important;
+  }
+}
