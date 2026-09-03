@@ -156,28 +156,68 @@
   function initMealPhoto() {
     const wrap = $('#guestMealPhotoWrap');
     const img = $('#guestMealPhoto');
+    const placeholder = $('#guestMealPlaceholder');
+
     if (!wrap || !img) return;
+    if (typeof PRIVATE_WEDDING === 'undefined' || !PRIVATE_WEDDING.mediaUrl) return;
 
-    try {
-      const configuredPath =
-        (typeof MEDIA_CONFIG !== 'undefined') &&
-        MEDIA_CONFIG.media &&
-        MEDIA_CONFIG.media.meal;
+    const configuredPath =
+      (typeof MEDIA_CONFIG !== 'undefined') &&
+      MEDIA_CONFIG.media &&
+      MEDIA_CONFIG.media.meal;
 
-      /* 기본 권장 경로도 fallback으로 사용 */
-      const path = configuredPath || 'gallery/meal.webp';
+    /*
+     * R2 업로드 시 파일명/확장자가 달라 생기는 미표출 문제를 줄이기 위해
+     * 설정값을 최우선으로 하고, 일반적인 후보 경로를 순차 확인.
+     */
+    const candidates = [
+      configuredPath,
+      'gallery/meal.webp',
+      'gallery/meal.jpg',
+      'gallery/meal.jpeg',
+      'gallery/1000301479.webp',
+      'gallery/1000301479.jpg',
+      'gallery/1000301479.jpeg'
+    ].filter(Boolean);
 
-      if (!path || typeof PRIVATE_WEDDING === 'undefined') return;
+    const unique = [...new Set(candidates)];
 
+    const tryCandidate = (index) => {
+      if (index >= unique.length) {
+        wrap.classList.remove('has-image');
+        wrap.classList.add('is-image-missing');
+        if (placeholder) placeholder.textContent = '식사 한상차림 사진';
+        console.warn('[Stage37.4 meal] 사용 가능한 한상차림 이미지를 찾지 못했습니다.', unique);
+        return;
+      }
+
+      const path = unique[index];
       const src = PRIVATE_WEDDING.mediaUrl(path);
-      if (!src) return;
+      if (!src) {
+        tryCandidate(index + 1);
+        return;
+      }
 
-      img.addEventListener('load', () => wrap.classList.add('has-image'), { once: true });
-      img.addEventListener('error', () => wrap.classList.remove('has-image'), { once: true });
-      img.src = src;
-    } catch (error) {
-      console.warn('[Stage32 meal photo]', error);
-    }
+      const probe = new Image();
+      probe.decoding = 'async';
+
+      probe.addEventListener('load', () => {
+        img.src = src;
+        img.dataset.mediaPath = path;
+        wrap.classList.add('has-image');
+        wrap.classList.remove('is-image-missing');
+        if (placeholder) placeholder.hidden = true;
+        console.info('[Stage37.4 meal] loaded:', path);
+      }, { once: true });
+
+      probe.addEventListener('error', () => {
+        tryCandidate(index + 1);
+      }, { once: true });
+
+      probe.src = src;
+    };
+
+    tryCandidate(0);
   }
 
   /* ------------------------------------------------------------
