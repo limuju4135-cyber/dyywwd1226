@@ -1,0 +1,294 @@
+/* ============================================================
+   STAGE 34
+   - Hero soft reveal
+   - Protected background media
+   - Horizontal calendar
+   - Guide cleanup
+   - Ending responsive/position correction
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   Hero / gallery / modal: <img> 대신 background media
+   카카오톡 인앱 브라우저의 이미지 길게누르기 저장 메뉴 억제
+   ------------------------------------------------------------ */
+.hero__photo--protected,
+.gallery__item,
+.photo-modal__img--protected,
+.ending-section__photo--protected {
+  background-repeat: no-repeat !important;
+  background-position: center center !important;
+  background-size: cover !important;
+
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.hero__photo--protected {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  transform: scale(1.008) !important;
+  transition:
+    opacity 1.45s cubic-bezier(.22,.61,.36,1),
+    transform 1.8s cubic-bezier(.22,.61,.36,1) !important;
+  will-change: opacity, transform !important;
+}
+
+/* 커튼이 열리기 시작할 때 Hero도 천천히 나타남 */
+#curtain.is-open ~ #mainContent .hero__photo--protected.is-media-loaded,
+#curtain.is-hidden ~ #mainContent .hero__photo--protected.is-media-loaded {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* Hero crop — background-image용 */
+@media (max-width: 899px) {
+  .hero__photo--protected {
+    background-position: 50% 50% !important;
+  }
+}
+@media (min-width: 900px) {
+  .hero__photo--protected {
+    background-position: 50% 46% !important;
+  }
+}
+
+/* Gallery background tiles */
+#galleryGrid .gallery__item {
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  color: transparent !important;
+}
+
+/* Modal background photo */
+.photo-modal__img--protected {
+  width: min(88vw, 900px) !important;
+  height: min(82vh, 900px) !important;
+  max-width: 100% !important;
+  border-radius: inherit;
+  background-size: contain !important;
+  background-position: center center !important;
+}
+
+/* ------------------------------------------------------------
+   CALENDAR — 첨부 샘플처럼 월을 왼쪽, 달력을 오른쪽에 배치
+   색상/26일 강조는 기존 스타일 유지
+   ------------------------------------------------------------ */
+
+.calendar-card-wrap {
+  width: min(100%, 560px) !important;
+  max-width: 560px !important;
+}
+
+#calendarGrid.calendar {
+  display: grid !important;
+  grid-template-columns: 92px minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 1.1rem !important;
+  row-gap: .15rem !important;
+
+  width: 100% !important;
+  padding: 1.35rem 1.4rem 1.25rem !important;
+  box-sizing: border-box !important;
+}
+
+#calendarGrid .calendar__header {
+  grid-column: 1 !important;
+  grid-row: 1 / 3 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+  border-bottom: 0 !important;
+}
+
+#calendarGrid .calendar__month-name {
+  display: block !important;
+  color: #3E3935 !important;
+  font-size: 1.72rem !important;
+  line-height: 1 !important;
+  font-weight: 650 !important;
+  letter-spacing: -.05em !important;
+}
+
+#calendarGrid .calendar__year {
+  display: none !important;
+}
+
+#calendarGrid .calendar__weekdays {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0,1fr)) !important;
+  align-items: center !important;
+
+  margin: 0 0 .22rem !important;
+}
+
+#calendarGrid .calendar__days {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0,1fr)) !important;
+  align-items: center !important;
+}
+
+#calendarGrid .calendar__weekday {
+  min-width: 0 !important;
+  padding: .26rem 0 .42rem !important;
+  text-align: center !important;
+  font-size: .72rem !important;
+}
+
+#calendarGrid .calendar__day {
+  min-width: 0 !important;
+  min-height: 2.02rem !important;
+  padding: .14rem 0 !important;
+  text-align: center !important;
+  font-size: .83rem !important;
+}
+
+#calendarGrid .calendar__day.is-today {
+  width: 1.82rem !important;
+  height: 1.82rem !important;
+  min-height: 1.82rem !important;
+}
+
+@media (max-width: 430px) {
+  .calendar-card-wrap {
+    width: min(100%, 410px) !important;
+  }
+
+  #calendarGrid.calendar {
+    grid-template-columns: 72px minmax(0,1fr) !important;
+    column-gap: .58rem !important;
+    padding: 1.12rem .72rem 1.08rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    font-size: 1.48rem !important;
+  }
+
+  #calendarGrid .calendar__weekday {
+    font-size: .65rem !important;
+  }
+
+  #calendarGrid .calendar__day {
+    min-height: 1.86rem !important;
+    font-size: .77rem !important;
+  }
+
+  #calendarGrid .calendar__day.is-today {
+    width: 1.72rem !important;
+    height: 1.72rem !important;
+    min-height: 1.72rem !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .calendar-card-wrap {
+    width: min(100%, 640px) !important;
+    max-width: 640px !important;
+  }
+
+  #calendarGrid.calendar {
+    grid-template-columns: 112px minmax(0,1fr) !important;
+    column-gap: 1.45rem !important;
+    padding: 1.55rem 1.8rem 1.45rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    font-size: 2rem !important;
+  }
+
+  #calendarGrid .calendar__day {
+    min-height: 2.25rem !important;
+    font-size: .9rem !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   Location
+   ------------------------------------------------------------ */
+.transport-card__subline {
+  display: inline-block;
+  margin-top: .14rem;
+}
+
+/* ------------------------------------------------------------
+   안내
+   설명문 삭제 후 제목 여백 정돈
+   ------------------------------------------------------------ */
+.guest-guide__header {
+  margin-bottom: 1.6rem !important;
+}
+
+.guest-guide__header .section__title {
+  margin-bottom: 0 !important;
+}
+
+/* ------------------------------------------------------------
+   ENDING
+   - 이미지도 background 기반
+   - 모바일 문구 중심 정렬 고정
+   - animate-item transform과 left:50% 충돌 제거
+   ------------------------------------------------------------ */
+.ending-section__photo--protected {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.ending-section__content {
+  left: 0 !important;
+  right: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 auto !important;
+  padding-left: 1.35rem !important;
+  padding-right: 1.35rem !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+  text-align: center !important;
+}
+
+@media (max-width: 599px) {
+  .ending-section {
+    aspect-ratio: 4 / 5 !important;
+  }
+
+  .ending-section__photo--protected {
+    background-position: 50% 50% !important;
+  }
+
+  .ending-section__content {
+    bottom: max(34px, calc(env(safe-area-inset-bottom, 0px) + 26px)) !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .ending-section__photo--protected {
+    background-position: 50% 50% !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .ending-section__photo--protected {
+    background-position: 50% 46% !important;
+  }
+
+  .ending-section__content {
+    bottom: 68px !important;
+  }
+}
