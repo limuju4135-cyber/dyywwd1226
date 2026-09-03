@@ -29,14 +29,7 @@
     const start = () => {
       if (started) return;
 
-      const groom = (window.CONFIG && CONFIG.groom && CONFIG.groom.name) || '임도영';
-      const bride = (window.CONFIG && CONFIG.bride && CONFIG.bride.name) || '전여울';
-
-      /* Core has loaded if it has written names or CONFIG already has names. */
-      if (!target.textContent.trim() && !(groom && bride)) return;
-
-      started = true;
-      const text = `${groom}♥${bride} 결혼합니다.`;
+      const text = '도영 ♥ 여울, 저희 결혼합니다!';
 
       target.textContent = '';
       target.classList.remove('is-complete');
