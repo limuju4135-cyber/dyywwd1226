@@ -170,7 +170,7 @@
       if (CONFIG.greeting.acrostic) {
         content.replaceChildren();
 
-        greetingText.split('\\n').forEach((rawLine) => {
+        greetingText.split(/\r?\n/).forEach((rawLine) => {
           const line = rawLine.trim();
 
           if (!line) return;
