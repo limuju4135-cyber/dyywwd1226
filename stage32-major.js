@@ -29,7 +29,7 @@
     const start = () => {
       if (started) return;
 
-      const text = '도영 ♥ 여울,\n저희 결혼합니다';
+      const text = '도영 ♥ 여울,\n저희 결혼합니다!';
 
       target.textContent = '';
       target.classList.remove('is-complete');
@@ -159,10 +159,13 @@
     if (!wrap || !img) return;
 
     try {
-      const path =
+      const configuredPath =
         (typeof MEDIA_CONFIG !== 'undefined') &&
         MEDIA_CONFIG.media &&
         MEDIA_CONFIG.media.meal;
+
+      /* 기본 권장 경로도 fallback으로 사용 */
+      const path = configuredPath || 'gallery/meal.webp';
 
       if (!path || typeof PRIVATE_WEDDING === 'undefined') return;
 
