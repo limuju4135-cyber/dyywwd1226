@@ -93,17 +93,23 @@
 
       if (external) {
         photo.dataset.mediaResolved = 'worker-r2';
-        photo.src = external;
+        photo.dataset.protectedSrc = external;
 
-        photo.addEventListener('load', () => {
+        const preload = new Image();
+        preload.decoding = 'async';
+
+        preload.addEventListener('load', () => {
+          photo.style.backgroundImage = `url("${external.replace(/"/g, '%22')}")`;
           photo.classList.add('is-media-loaded');
           photo.classList.remove('is-media-error');
         }, { once: true });
 
-        photo.addEventListener('error', () => {
+        preload.addEventListener('error', () => {
           photo.classList.add('is-media-error');
           photo.classList.remove('is-media-loaded');
         }, { once: true });
+
+        preload.src = external;
       }
     }
 
@@ -352,7 +358,10 @@
   function showModalImage() {
     const img = $('#modalImg');
     if (!img || !modalImages.length) return;
-    img.src = modalImages[modalIndex];
+
+    const src = modalImages[modalIndex];
+    img.dataset.protectedSrc = src;
+    img.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`;
 
     const counter = $('#modalCounter');
     if (counter) counter.textContent = `${modalIndex + 1} / ${modalImages.length}`;
@@ -444,13 +453,9 @@
         item.setAttribute('data-animate', 'scale-in');
         item.setAttribute('aria-label', `갤러리 사진 ${index + 1} 크게 보기`);
 
-        const image = document.createElement('img');
-        image.src = src;
-        image.alt = `갤러리 사진 ${index + 1}`;
-        image.loading = 'lazy';
-        image.decoding = 'async';
+        item.dataset.protectedSrc = src;
+        item.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`;
 
-        item.appendChild(image);
         item.addEventListener('click', () => openPhotoModal(images, index));
         grid.appendChild(item);
       });
