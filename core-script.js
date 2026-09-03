@@ -80,7 +80,7 @@
     btn.addEventListener('click', () => {
       curtain.classList.add('is-open');
       document.body.classList.remove('no-scroll');
-      window.setTimeout(() => curtain.classList.add('is-hidden'), 1400);
+      window.setTimeout(() => curtain.classList.add('is-hidden'), 2200);
     });
   }
 
