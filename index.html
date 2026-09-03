@@ -56,6 +56,7 @@
   <!-- Stage 33: curtain / mobile image protection / ending responsive fixes -->
   <link rel="stylesheet" href="stage33-fixes.css?v=stage33-fixes-1">
   <link rel="stylesheet" href="stage34-fixes.css?v=stage34-fixes-1">
+  <link rel="stylesheet" href="stage35-fixes.css?v=stage35-hero-ios-spacing-1">
 
   <!-- Stage 18.1: iOS Safari location fallback / critical CSS -->
   <style id="location-stage18-critical">
@@ -298,6 +299,7 @@
     <section class="section hero" id="hero">
       <div class="hero__overlay"></div>
       <div class="hero__photo hero__photo--protected" id="heroPhoto" role="img" aria-label="웨딩 사진" data-media-source="r2"></div>
+      <div class="hero__touch-shield" id="heroTouchShield" aria-hidden="true"></div>
       <div class="hero__content hero__content--minimal">
         <p class="hero__label animate-item" data-animate="fade-up">초대합니다</p>
       </div>
@@ -681,12 +683,13 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage15"></script>
-  <script src="core-script.js?v=stage34-protected-media"></script>
+  <script src="core-script.js?v=stage35-slow-curtain"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage28-text-meta"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
   <script src="stage32-major.js?v=stage34-1-media-hotfix"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
+  <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
 </body>
 </html>
