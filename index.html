@@ -58,7 +58,7 @@
   <link rel="stylesheet" href="stage34-fixes.css?v=stage34-fixes-1">
   <link rel="stylesheet" href="stage35-fixes.css?v=stage35-hero-ios-spacing-1">
   <link rel="stylesheet" href="stage36-fixes.css?v=stage36-spacing-titles-location-1">
-  <link rel="stylesheet" href="stage37-fixes.css?v=stage37-2-curtain-calendar-location">
+  <link rel="stylesheet" href="stage37-fixes.css?v=stage37-3-location-meal-ending">
 
   <!-- Stage 18.1: iOS Safari location fallback / critical CSS -->
   <style id="location-stage18-critical">
@@ -267,7 +267,7 @@
   </style>
 
   <script src="config.js?v=stage28-text-meta"></script>
-  <script src="media-config.js?v=stage34-1-media-hotfix"></script>
+  <script src="media-config.js?v=stage37-3-meal"></script>
 </head>
 <body>
   <div id="curtain" class="curtain">
@@ -473,7 +473,10 @@
                 <h3>기차(KTX)</h3>
               </div>
               <div class="transport-card__body">
-                <p><strong>수서역</strong>에 내리셔서 지하철 <strong class="line-suinnbundang">수인분당선</strong>(하행)으로 환승</p>
+                <p>
+                  <strong>수서역</strong>에 내리셔서<br>
+                  지하철 <strong class="line-suinnbundang">수인분당선</strong>(하행)으로 환승
+                </p>
                 <p class="transport-card__note">※ <strong>가천대역</strong>까지 2정거장(7분)</p>
               </div>
             </article>
@@ -534,7 +537,7 @@
           <article class="guest-guide-card guest-guide-card--meal">
             <div class="guest-guide-card__top">
               <span class="guest-guide-card__number">01</span>
-              <h3>식사안내</h3>
+              <h3>식사안내 <span class="guest-guide-card__title-note">(한상차림)</span></h3>
             </div>
 
             <div class="guest-guide-card__photo" id="guestMealPhotoWrap">
@@ -558,7 +561,7 @@
 
               <div class="guest-guide-card__divider"></div>
 
-              <p><strong>스테이크 · 모듬회</strong><br>추가 리필은 제공되지 않습니다.</p>
+              <p><strong>스테이크 · 모듬회</strong><br>제외 나머지 음식은 리필 가능합니다.</p>
               <p><strong>소주 · 맥주 · 콜라 · 사이다 · 생수</strong><br>자유롭게 이용 가능합니다.</p>
             </div>
           </article>
@@ -579,12 +582,12 @@
 
             <div class="guest-guide-card__content">
               <div class="facility-row">
-                <span class="facility-row__floor">1F</span>
-                <div><strong>스타벅스</strong></div>
-              </div>
-              <div class="facility-row">
                 <span class="facility-row__floor">B3</span>
                 <div><strong>투썸플레이스</strong></div>
+              </div>
+              <div class="facility-row">
+                <span class="facility-row__floor">1F</span>
+                <div><strong>스타벅스</strong></div>
               </div>
               <div class="facility-row">
                 <span class="facility-row__floor">5F</span>
@@ -677,7 +680,10 @@
         <div class="ending-section__overlay"></div>
       </div>
       <div class="ending-section__content animate-item" data-animate="fade-up">
-        <h2>함께해 주셔서 감사합니다</h2>
+        <h2 class="ending-message">
+          <span>예쁘게 잘 살겠습니다.</span>
+          <strong>감사합니다!</strong>
+        </h2>
       </div>
     </section>
 
@@ -692,7 +698,7 @@
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage28-text-meta"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
-  <script src="stage32-major.js?v=stage37-2-curtain-calendar-location"></script>
+  <script src="stage32-major.js?v=stage37-3-location-meal-ending"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
