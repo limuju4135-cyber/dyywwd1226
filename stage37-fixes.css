@@ -147,9 +147,9 @@
     display: block !important;
 
     min-width: 0 !important;
-    min-height: 0 !important;
+    min-height: 112px !important;
 
-    padding: .72rem .68rem .70rem !important;
+    padding: .82rem .72rem .78rem !important;
     margin: 0 !important;
 
     border: 1px solid rgba(222,208,180,.58) !important;
@@ -168,7 +168,7 @@
     align-items: center !important;
 
     gap: .34rem !important;
-    margin: 0 0 .48rem !important;
+    margin: 0 0 .56rem !important;
   }
 
   #location .transport-card__title h3 {
@@ -244,7 +244,8 @@
   }
 
   #location .transport-card {
-    padding: .58rem .54rem !important;
+    min-height: 104px !important;
+    padding: .66rem .58rem !important;
   }
 
   #location .transport-card__title {
