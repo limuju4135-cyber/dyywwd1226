@@ -1,0 +1,262 @@
+/* ============================================================
+   STAGE 37
+   1. 연락처 사람별 세로 간격 약 1.3배 확대
+   2. 모바일 오시는 길을 2×2 교통카드로 재구성
+      → 글씨/여백은 키우고 전체 세로길이는 줄임
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. CONTACT
+   기존:
+   min-height 55px / padding .55rem
+   약 1.3배:
+   min-height 약 71px / padding .72rem
+   ------------------------------------------------------------ */
+
+.contact-side__list {
+  gap: .40rem !important;
+}
+
+.contact-person {
+  min-height: 71px !important;
+  padding: .72rem .16rem !important;
+  box-sizing: border-box !important;
+}
+
+.contact-person__identity {
+  gap: .17rem !important;
+}
+
+/* 이름/역할 자체 크기는 현재 Stage36 유지 */
+
+
+/* ------------------------------------------------------------
+   2. MOBILE LOCATION
+   세로 압축이 아니라 레이아웃 자체를 효율화.
+   Summary는 읽기 편하게 다시 키우고,
+   교통수단 4개를 2×2 카드로 배치.
+   ------------------------------------------------------------ */
+
+@media (max-width: 599px) {
+
+  #location.location-stage32 {
+    padding-top: 2.30rem !important;
+    padding-bottom: 2.20rem !important;
+  }
+
+  #location .section__title {
+    margin-bottom: 1.00rem !important;
+    font-size: 1.16rem !important;
+  }
+
+  #location .location-stage32__inner {
+    width: min(calc(100% - 1.65rem), 520px) !important;
+  }
+
+  #location .location-stage32__layout {
+    margin-top: 0 !important;
+  }
+
+
+  /* ---- Venue summary: Stage36보다 조금 더 넉넉하게 ---- */
+
+  #location .location-stage32__venue-block {
+    padding: .88rem .08rem .82rem !important;
+  }
+
+  #location .location-stage32__venue {
+    margin-bottom: .42rem !important;
+    font-size: 1.00rem !important;
+    line-height: 1.42 !important;
+  }
+
+  #location .location-stage32__address-row {
+    gap: .50rem !important;
+  }
+
+  #location .location-stage32__address {
+    font-size: .75rem !important;
+    line-height: 1.52 !important;
+  }
+
+  #location .location-stage32__copy {
+    min-width: 59px !important;
+    height: 30px !important;
+    padding: 0 .52rem !important;
+    font-size: .65rem !important;
+  }
+
+  #location .location-stage32__hall {
+    margin-top: .28rem !important;
+    font-size: .72rem !important;
+    line-height: 1.48 !important;
+  }
+
+  #location .location-stage32__tel {
+    gap: .48rem !important;
+    margin-top: .58rem !important;
+    font-size: .72rem !important;
+    line-height: 1.35 !important;
+  }
+
+  #location .location-stage32__tel-label {
+    font-size: .66rem !important;
+  }
+
+  #location .location-stage32__tel strong {
+    font-size: .78rem !important;
+  }
+
+
+  /* ---- Map buttons: 살짝 더 여유 있게 ---- */
+
+  #location .location-stage32__map-actions {
+    gap: .46rem !important;
+    margin-top: .68rem !important;
+  }
+
+  #location .location-stage32__map-btn {
+    height: 37px !important;
+    padding: 0 .34rem !important;
+    gap: .34rem !important;
+    border-radius: 9px !important;
+    font-size: .68rem !important;
+  }
+
+  #location .location-stage32__map-mark {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: .56rem !important;
+  }
+
+
+  /* ---- 핵심: 4개 교통정보를 2×2 카드로 ---- */
+
+  #location .location-stage32__transport {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: .58rem !important;
+
+    margin-top: .85rem !important;
+    padding-top: 0 !important;
+    border-top: 0 !important;
+  }
+
+  #location .transport-card {
+    display: block !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    padding: .72rem .68rem .70rem !important;
+    margin: 0 !important;
+
+    border: 1px solid rgba(222,208,180,.58) !important;
+    border-radius: 12px !important;
+    background: rgba(255,255,255,.60) !important;
+
+    box-sizing: border-box !important;
+  }
+
+  #location .transport-card:last-child {
+    border-bottom: 1px solid rgba(222,208,180,.58) !important;
+  }
+
+  #location .transport-card__title {
+    display: flex !important;
+    align-items: center !important;
+
+    gap: .34rem !important;
+    margin: 0 0 .48rem !important;
+  }
+
+  #location .transport-card__title h3 {
+    font-size: .76rem !important;
+    line-height: 1.35 !important;
+  }
+
+  #location .transport-card__icon {
+    width: 17px !important;
+    height: 17px !important;
+    flex: 0 0 17px !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .74rem !important;
+    line-height: 1.52 !important;
+    letter-spacing: -.010em !important;
+  }
+
+  #location .transport-card__note {
+    margin-top: .30rem !important;
+    font-size: .66rem !important;
+    line-height: 1.42 !important;
+  }
+
+  #location .transport-card__subline {
+    margin-top: .11rem !important;
+  }
+
+  #location .transport-card__parking-capacity {
+    display: block !important;
+    margin-top: .13rem !important;
+
+    font-size: .91em !important;
+    line-height: 1.40 !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   작은 iPhone
+   2×2 구조 덕분에 과도한 축소는 하지 않음.
+   외곽 여백만 아주 조금 조정.
+   ------------------------------------------------------------ */
+
+@media (max-width: 380px) and (max-height: 740px) {
+
+  #location.location-stage32 {
+    padding-top: 1.75rem !important;
+    padding-bottom: 1.65rem !important;
+  }
+
+  #location .section__title {
+    margin-bottom: .72rem !important;
+  }
+
+  #location .location-stage32__venue-block {
+    padding-top: .66rem !important;
+    padding-bottom: .62rem !important;
+  }
+
+  #location .location-stage32__map-actions {
+    margin-top: .50rem !important;
+  }
+
+  #location .location-stage32__map-btn {
+    height: 34px !important;
+  }
+
+  #location .location-stage32__transport {
+    gap: .46rem !important;
+    margin-top: .62rem !important;
+  }
+
+  #location .transport-card {
+    padding: .58rem .54rem !important;
+  }
+
+  #location .transport-card__title {
+    margin-bottom: .36rem !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .70rem !important;
+    line-height: 1.45 !important;
+  }
+
+  #location .transport-card__note {
+    font-size: .63rem !important;
+  }
+}
