@@ -883,3 +883,33 @@
     padding-bottom: 4.8rem !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 37.7
+   - 달력 12월 정렬/색상 보정
+   - Hero '초대합니다' 제거 보조
+   ============================================================ */
+
+/* 1. 캘린더 '12월'
+   왼쪽 월 영역의 정확한 가운데에 위치시켜 쏠림 제거.
+   주변 버건디/골드 톤과 섞이는 muted rose-brown 사용. */
+#calendarGrid .calendar__header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+#calendarGrid .calendar__month-name {
+  margin: 0 auto !important;
+  text-align: center !important;
+
+  color: #9A7378 !important;
+  font-weight: 500 !important;
+}
+
+/* Android / 캐시 상황에서도 Hero 문구가 재노출되지 않도록 최종 보조 */
+.hero__label {
+  display: none !important;
+}
