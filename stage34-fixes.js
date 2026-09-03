@@ -111,7 +111,10 @@
 
     const apply = () => {
       const desktop = query.matches;
-      const media = (window.MEDIA_CONFIG && MEDIA_CONFIG.media) || {};
+      const media =
+        (typeof MEDIA_CONFIG !== 'undefined' && MEDIA_CONFIG.media)
+          ? MEDIA_CONFIG.media
+          : {};
 
       const path = desktop
         ? (media.endingDesktop || media.ending || '')
