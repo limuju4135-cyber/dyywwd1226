@@ -444,3 +444,217 @@
     font-size: .67rem !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 37.3
+   Calendar refinement / Location readability /
+   Guest guide / Ending message
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   캘린더: 가로 구조 유지 + 작은 월 캡슐
+   ------------------------------------------------------------ */
+#calendarGrid.calendar {
+  grid-template-columns: 58px minmax(0, 1fr) !important;
+  column-gap: 1.62rem !important;
+}
+
+#calendarGrid .calendar__header {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#calendarGrid .calendar__month-name {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 46px !important;
+  min-height: 29px !important;
+  padding: 0 .20rem !important;
+
+  border: 1px solid rgba(199,166,115,.50) !important;
+  border-radius: 999px !important;
+  background: rgba(143,29,44,.045) !important;
+
+  color: #8F1D2C !important;
+  font-size: .92rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: -.025em !important;
+
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 430px) {
+  #calendarGrid.calendar {
+    grid-template-columns: 52px minmax(0,1fr) !important;
+    column-gap: 1.42rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    width: 43px !important;
+    min-height: 27px !important;
+    font-size: .86rem !important;
+  }
+}
+
+@media (min-width: 900px) {
+  #calendarGrid.calendar {
+    grid-template-columns: 64px minmax(0,1fr) !important;
+    column-gap: 1.92rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    width: 49px !important;
+    min-height: 31px !important;
+    font-size: .98rem !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   오시는 길: 세로형 안정화 + 가독성 향상
+   모든 교통 행 동일한 상하 padding
+   ------------------------------------------------------------ */
+@media (max-width: 599px) {
+
+  #location .transport-card {
+    grid-template-columns: 90px minmax(0,1fr) !important;
+    gap: .76rem !important;
+
+    padding-top: .88rem !important;
+    padding-bottom: .88rem !important;
+  }
+
+  #location .transport-card__title {
+    align-items: center !important;
+  }
+
+  #location .transport-card__title h3 {
+    font-size: .84rem !important;
+    line-height: 1.48 !important;
+  }
+
+  #location .transport-card__icon {
+    width: 19px !important;
+    height: 19px !important;
+    flex-basis: 19px !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .84rem !important;
+    line-height: 1.62 !important;
+    letter-spacing: -.005em !important;
+  }
+
+  #location .transport-card__note {
+    margin-top: .28rem !important;
+    font-size: .73rem !important;
+    line-height: 1.48 !important;
+  }
+
+  #location .transport-card__subline {
+    margin-top: .12rem !important;
+  }
+}
+
+/* 작은 iPhone에서도 행 간격은 동일하게 유지하되,
+   외부 섹션 여백만 조정 */
+@media (max-width: 380px) and (max-height: 740px) {
+
+  #location .transport-card {
+    grid-template-columns: 82px minmax(0,1fr) !important;
+    gap: .62rem !important;
+
+    padding-top: .70rem !important;
+    padding-bottom: .70rem !important;
+  }
+
+  #location .transport-card__title h3 {
+    font-size: .79rem !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .79rem !important;
+    line-height: 1.55 !important;
+  }
+
+  #location .transport-card__note {
+    font-size: .69rem !important;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   식사안내
+   ------------------------------------------------------------ */
+.guest-guide-card__title-note {
+  color: #8C8178 !important;
+  font-size: .72em !important;
+  font-weight: 450 !important;
+  letter-spacing: -.015em !important;
+}
+
+/* 사진이 표시될 때 카드 안에서 더 자연스럽게 */
+.guest-guide-card__photo.has-image {
+  background: #F8F2ED !important;
+}
+
+.guest-guide-card__photo.has-image img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+
+/* ------------------------------------------------------------
+   대기공간 층수 시인성
+   ------------------------------------------------------------ */
+.guest-guide-card--waiting .facility-row__floor {
+  min-height: 30px !important;
+  border-color: rgba(143,29,44,.30) !important;
+  background: rgba(143,29,44,.055) !important;
+  color: #8F1D2C !important;
+
+  font-size: .72rem !important;
+  font-weight: 750 !important;
+  letter-spacing: .02em !important;
+}
+
+
+/* ------------------------------------------------------------
+   엔딩 문구
+   현재 전체 디자인과 통일하기 위해 Noto Sans KR 사용.
+   손글씨체보다 깨끗하고, 사진 위 가독성도 안정적.
+   ------------------------------------------------------------ */
+.ending-message {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: .24rem !important;
+
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif !important;
+
+  font-size: clamp(1.20rem, 5vw, 1.58rem) !important;
+  font-weight: 450 !important;
+  line-height: 1.62 !important;
+  letter-spacing: .035em !important;
+}
+
+.ending-message span {
+  font-weight: 450 !important;
+}
+
+.ending-message strong {
+  font-size: 1.07em !important;
+  font-weight: 650 !important;
+  letter-spacing: .055em !important;
+}
