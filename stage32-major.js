@@ -29,7 +29,7 @@
     const start = () => {
       if (started) return;
 
-      const text = '도영 ♥ 여울, 저희 결혼합니다!';
+      const text = '도영 ♥ 여울,\n저희 결혼합니다';
 
       target.textContent = '';
       target.classList.remove('is-complete');
