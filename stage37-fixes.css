@@ -261,3 +261,186 @@
     font-size: .63rem !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 37.2 — 기존 stage37-fixes.css에 통합
+   - 커튼 2줄 중앙정렬
+   - 캘린더 월 축소 / 간격 확대
+   - 오시는 길 2×2 폐기 → 세로형 복귀
+   ============================================================ */
+
+/* 1. 커튼 타이핑: 정확히 2줄 + 가운데 정렬 */
+#curtain .curtain__names {
+  width: 100% !important;
+  min-height: 3.25em !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  white-space: pre-line !important;
+  text-align: center !important;
+}
+
+#curtain .curtain__typing {
+  display: block !important;
+}
+
+
+/* 2. 캘린더
+   '12월'은 더 작게,
+   월 표시와 실제 달력 사이의 시각적 간격은 더 넓게 */
+
+/* 기본 / 태블릿 */
+#calendarGrid.calendar {
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  column-gap: 1.55rem !important;
+}
+
+#calendarGrid .calendar__month-name {
+  font-size: 1.08rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -.03em !important;
+}
+
+/* 모바일 */
+@media (max-width: 430px) {
+  #calendarGrid.calendar {
+    grid-template-columns: 46px minmax(0, 1fr) !important;
+    column-gap: 1.30rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    font-size: .96rem !important;
+  }
+}
+
+/* PC */
+@media (min-width: 900px) {
+  #calendarGrid.calendar {
+    grid-template-columns: 60px minmax(0, 1fr) !important;
+    column-gap: 1.85rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    font-size: 1.16rem !important;
+  }
+}
+
+
+/* 3. 오시는 길 — 모바일 2×2 폐기, 다시 세로형
+   정보량은 그대로 두고 폰트를 Stage37보다 키움 */
+@media (max-width: 599px) {
+
+  #location .location-stage32__transport {
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+
+    margin-top: .82rem !important;
+    padding-top: .08rem !important;
+
+    border-top: 1px solid rgba(199,166,115,.28) !important;
+  }
+
+  #location .transport-card {
+    display: grid !important;
+    grid-template-columns: 86px minmax(0, 1fr) !important;
+    align-items: start !important;
+
+    gap: .72rem !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    margin: 0 !important;
+    padding: .72rem .08rem !important;
+
+    border: 0 !important;
+    border-bottom: 1px solid rgba(222,208,180,.40) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  #location .transport-card:last-child {
+    border-bottom: 0 !important;
+  }
+
+  #location .transport-card__title {
+    display: flex !important;
+    align-items: flex-start !important;
+
+    gap: .36rem !important;
+    margin: 0 !important;
+  }
+
+  #location .transport-card__title h3 {
+    font-size: .80rem !important;
+    line-height: 1.46 !important;
+  }
+
+  #location .transport-card__icon {
+    width: 18px !important;
+    height: 18px !important;
+    flex: 0 0 18px !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .80rem !important;
+    line-height: 1.58 !important;
+    letter-spacing: -.008em !important;
+  }
+
+  #location .transport-card__note {
+    margin-top: .24rem !important;
+    font-size: .70rem !important;
+    line-height: 1.46 !important;
+  }
+
+  #location .transport-card__subline {
+    display: inline-block !important;
+    margin-top: .10rem !important;
+  }
+
+  #location .transport-card__parking-capacity {
+    display: block !important;
+    margin-top: .10rem !important;
+    font-size: .92em !important;
+    line-height: 1.45 !important;
+  }
+}
+
+/* 작은 iPhone에서도 2×2로 돌아가지 않도록 명시적 재정의.
+   폰트는 지나치게 작게 줄이지 않음. */
+@media (max-width: 380px) and (max-height: 740px) {
+
+  #location .location-stage32__transport {
+    display: block !important;
+    margin-top: .60rem !important;
+  }
+
+  #location .transport-card {
+    display: grid !important;
+    grid-template-columns: 78px minmax(0, 1fr) !important;
+    gap: .56rem !important;
+
+    min-height: 0 !important;
+    padding: .57rem .04rem !important;
+  }
+
+  #location .transport-card__title {
+    margin: 0 !important;
+  }
+
+  #location .transport-card__title h3 {
+    font-size: .75rem !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .75rem !important;
+    line-height: 1.50 !important;
+  }
+
+  #location .transport-card__note {
+    font-size: .67rem !important;
+  }
+}
