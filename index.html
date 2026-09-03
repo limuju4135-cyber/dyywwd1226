@@ -55,6 +55,7 @@
 
   <!-- Stage 33: curtain / mobile image protection / ending responsive fixes -->
   <link rel="stylesheet" href="stage33-fixes.css?v=stage33-fixes-1">
+  <link rel="stylesheet" href="stage34-fixes.css?v=stage34-fixes-1">
 
   <!-- Stage 18.1: iOS Safari location fallback / critical CSS -->
   <style id="location-stage18-critical">
@@ -288,7 +289,7 @@
     <button class="photo-modal__nav photo-modal__nav--prev" id="modalPrev" aria-label="이전 사진">&#8249;</button>
     <button class="photo-modal__nav photo-modal__nav--next" id="modalNext" aria-label="다음 사진">&#8250;</button>
     <div class="photo-modal__container" id="modalContainer">
-      <img class="photo-modal__img" id="modalImg" src="" alt="사진" draggable="false">
+      <div class="photo-modal__img photo-modal__img--protected" id="modalImg" role="img" aria-label="갤러리 사진"></div>
     </div>
     <div class="photo-modal__counter" id="modalCounter"></div>
   </div>
@@ -296,7 +297,7 @@
   <main id="mainContent" class="main-content">
     <section class="section hero" id="hero">
       <div class="hero__overlay"></div>
-      <img class="hero__photo" id="heroPhoto" src="" alt="웨딩 사진" loading="eager" data-media-source="r2" draggable="false">
+      <div class="hero__photo hero__photo--protected" id="heroPhoto" role="img" aria-label="웨딩 사진" data-media-source="r2"></div>
       <div class="hero__content hero__content--minimal">
         <p class="hero__label animate-item" data-animate="fade-up">초대합니다</p>
       </div>
@@ -481,7 +482,10 @@
                 <h3>지하철</h3>
               </div>
               <div class="transport-card__body">
-                <p><strong><span class="line-suinnbundang">수인분당선</span> 가천대역</strong> 1번 출구 또는 연결통로</p>
+                <p>
+                  <strong><span class="line-suinnbundang">수인분당선</span> 가천대역</strong><br>
+                  <span class="transport-card__subline">1번 출구 또는 연결통로</span>
+                </p>
               </div>
             </article>
 
@@ -520,7 +524,6 @@
       <div class="section__inner guest-guide__inner">
         <div class="guest-guide__header animate-item" data-animate="fade-up">
           <h2 class="section__title">안내</h2>
-          <p class="guest-guide__desc">예식 당일 이용에 도움이 되는 정보를 모았습니다.</p>
         </div>
 
         <div class="guest-guide__scroller animate-item" data-animate="fade-up" id="guestGuideScroller">
@@ -583,7 +586,6 @@
                 <span class="facility-row__floor">7F</span>
                 <div>
                   <strong>연회장 앞 대기공간</strong>
-                  <p>연회장 앞에도 대기하실 수 있는 공간이 마련되어 있습니다.</p>
                 </div>
               </div>
 
@@ -615,12 +617,13 @@
                 </div>
               </div>
 
-              <!-- 편의점 위치 확인 후 아래와 같은 형식으로 추가
               <div class="facility-row">
-                <span class="facility-row__floor">?</span>
-                <div><strong>편의점</strong></div>
+                <span class="facility-row__floor">안내</span>
+                <div>
+                  <strong>편의점</strong>
+                  <p>위치는 확인 후 안내드릴 예정입니다.</p>
+                </div>
               </div>
-              -->
             </div>
           </article>
         </div>
@@ -662,7 +665,7 @@
 
     <section class="section ending-section" id="ending">
       <div class="ending-section__media">
-        <img class="ending-section__photo" id="endingPhoto" src="" alt="웨딩 사진" loading="lazy" draggable="false">
+        <div class="ending-section__photo ending-section__photo--protected" id="endingPhoto" role="img" aria-label="엔딩 웨딩 사진"></div>
         <div class="ending-section__overlay"></div>
       </div>
       <div class="ending-section__content animate-item" data-animate="fade-up">
@@ -678,11 +681,12 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage15"></script>
-  <script src="core-script.js?v=stage31-account-stable"></script>
+  <script src="core-script.js?v=stage34-protected-media"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage28-text-meta"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
-  <script src="stage32-major.js?v=stage32-major-1"></script>
+  <script src="stage32-major.js?v=stage34-curtain-copy"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
+  <script src="stage34-fixes.js?v=stage34-fixes-1"></script>
 </body>
 </html>
