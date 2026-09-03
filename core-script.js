@@ -163,7 +163,46 @@
     const content = $('#greetingContent');
     const parents = $('#greetingParents');
     if (title) title.textContent = CONFIG.greeting.title;
-    if (content) content.textContent = CONFIG.greeting.content;
+
+    if (content) {
+      const greetingText = String(CONFIG.greeting.content || '');
+
+      if (CONFIG.greeting.acrostic) {
+        content.replaceChildren();
+
+        greetingText.split('\\n').forEach((rawLine) => {
+          const line = rawLine.trim();
+
+          if (!line) return;
+
+          if (line === '♥') {
+            const heart = document.createElement('div');
+            heart.className = 'greeting-poem__heart';
+            heart.setAttribute('aria-hidden', 'true');
+            heart.textContent = '♥';
+            content.appendChild(heart);
+            return;
+          }
+
+          const row = document.createElement('div');
+          row.className = 'greeting-poem__line';
+
+          const initial = document.createElement('span');
+          initial.className = 'greeting-poem__initial';
+          initial.textContent = line.charAt(0);
+
+          const sentence = document.createElement('span');
+          sentence.className = 'greeting-poem__sentence';
+          sentence.textContent = line.slice(1);
+
+          row.append(initial, sentence);
+          content.appendChild(row);
+        });
+      } else {
+        content.textContent = greetingText;
+      }
+    }
+
     if (!parents) return;
 
     const g = CONFIG.groom;
