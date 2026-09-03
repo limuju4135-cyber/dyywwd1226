@@ -19,6 +19,6 @@ const MEDIA_CONFIG = Object.freeze({
   },
 
   og: {
-    primary: "og/3.jpg"
+    primary: "og/4.jpg"
   }
 });
