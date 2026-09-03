@@ -160,7 +160,7 @@
 
     try {
       const path =
-        window.MEDIA_CONFIG &&
+        (typeof MEDIA_CONFIG !== 'undefined') &&
         MEDIA_CONFIG.media &&
         MEDIA_CONFIG.media.meal;
 
@@ -190,7 +190,7 @@
     const setFromMediaConfig = () => {
       try {
         const endingPath =
-          window.MEDIA_CONFIG &&
+          (typeof MEDIA_CONFIG !== 'undefined') &&
           MEDIA_CONFIG.media &&
           MEDIA_CONFIG.media.ending;
 
