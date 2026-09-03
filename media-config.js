@@ -13,7 +13,7 @@ const MEDIA_CONFIG = Object.freeze({
   },
 
   media: {
-    hero: "hero/2.webp"
+    hero: "hero/2.webp",
     ending: "ending/1.webp"
   },
 
