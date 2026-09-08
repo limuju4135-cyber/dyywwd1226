@@ -1,9 +1,9 @@
 /**
- * PUBLIC ROUTES
- * 비밀키나 개인정보는 없습니다.
+ * SAME-ORIGIN ROUTES
+ * R2/Worker origin is intentionally not exposed to the browser.
  */
 const MEDIA_CONFIG = Object.freeze({
-  workerBase: "https://dyywwd-media.limuju4135.workers.dev",
+  workerBase: "",
 
   api: {
     invitation: "/api/invitation",
