@@ -134,6 +134,28 @@
     max-width: 410px !important;
   }
 
+  /* Match the actual mobile typography instead of desktop viewport-based vw.
+     Keep the full wedding date/time on one line inside the phone frame. */
+  .wedding-day-title {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .wedding-day-date {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 1.12rem !important;
+    line-height: 1.45 !important;
+    letter-spacing: -.018em !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  .wedding-day-venue {
+    font-size: .90rem !important;
+    white-space: nowrap !important;
+  }
+
   #calendarGrid.calendar {
     grid-template-columns: 46px minmax(0,1fr) !important;
     column-gap: 1.30rem !important;
