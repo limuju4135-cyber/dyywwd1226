@@ -102,7 +102,7 @@
 
   .hero__quick-nav {
     top: auto !important;
-    bottom: max(120px, calc(env(safe-area-inset-bottom, 0px) + 108px)) !important;
+    bottom: max(156px, calc(env(safe-area-inset-bottom, 0px) + 144px)) !important;
     width: min(80%, 344px) !important;
     gap: .42rem !important;
   }
@@ -383,5 +383,74 @@
   .ending-section__content h2,
   .ending-message {
     font-size: clamp(1.18rem, 3vw, 1.48rem) !important;
+  }
+
+  /* Keep only the requested phrases intact on desktop. */
+  .pc-nowrap {
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+  }
+
+  /* Mouse-drag affordance for horizontal scrollers. */
+  #galleryGrid.gallery__grid,
+  #guestGuideScroller.guest-guide__scroller {
+    cursor: grab !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+
+  #galleryGrid.gallery__grid.is-dragging,
+  #guestGuideScroller.guest-guide__scroller.is-dragging {
+    cursor: grabbing !important;
+    scroll-snap-type: none !important;
+  }
+
+  /* Account: copy button shares the name row; payment gets the full width below. */
+  #account .account-item {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #account .account-item__main {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #account .account-item__identity {
+    padding-right: 62px !important;
+    box-sizing: border-box !important;
+  }
+
+  #account .account-item__payment {
+    width: 100% !important;
+    padding-right: 0 !important;
+  }
+
+  #account .account-item__copy {
+    position: absolute !important;
+    top: 1.02rem !important;
+    right: 0 !important;
+
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  #account .account-item__payment-data {
+    grid-template-columns: 5.25rem minmax(0, 1fr) !important;
+    column-gap: .58rem !important;
+  }
+
+  #account .account-item__number {
+    font-size: .78rem !important;
+    letter-spacing: -.025em !important;
+    white-space: nowrap !important;
   }
 }
