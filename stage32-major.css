@@ -640,6 +640,22 @@ body {
   line-height: 1.65;
 }
 
+/* Waiting-area card: illustration removed; use the vertical space for floor guidance. */
+.guest-guide-card--waiting .guest-guide-card__content {
+  padding-top: .55rem;
+  padding-bottom: 1.45rem;
+}
+
+.guest-guide-card--waiting .facility-row {
+  min-height: 64px;
+  align-items: center;
+  padding: 1.08rem 0;
+}
+
+.guest-guide-card--waiting .facility-row__floor {
+  min-height: 30px;
+}
+
 .guest-guide-progress {
   width: min(58%, 170px);
   margin: .55rem auto 0;
@@ -656,7 +672,7 @@ body {
 .guest-guide-progress__thumb {
   position: absolute;
   inset: 0 auto 0 0;
-  width: 33.333%;
+  width: 50%;
   border-radius: inherit;
   background: rgba(108,23,28,.60);
   transform: translateX(0);
@@ -998,8 +1014,11 @@ body {
 
   .guest-guide__scroller {
     display: grid;
-    grid-template-columns: repeat(3,minmax(0,1fr));
+    grid-template-columns: repeat(2,minmax(0,1fr));
     gap: 1.15rem;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
     overflow: visible;
     padding: 0;
   }
