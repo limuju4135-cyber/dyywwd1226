@@ -1,0 +1,365 @@
+/* ============================================================
+   STAGE 39 — DESKTOP USES THE SAME PORTRAIT/MOBILE COMPOSITION
+   Desktop no longer expands into a full-width layout.
+   ============================================================ */
+
+@media (min-width: 900px) {
+  :root {
+    --desktop-mobile-frame: 430px;
+  }
+
+  html {
+    background: #F2ECE9 !important;
+  }
+
+  body {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    background: #F2ECE9 !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Keep the invitation itself at a phone-sized width. */
+  #mainContent.main-content {
+    width: min(100%, var(--desktop-mobile-frame)) !important;
+    max-width: var(--desktop-mobile-frame) !important;
+    margin: 0 auto !important;
+    background: #FFFAFA !important;
+    box-shadow: 0 0 34px rgba(65, 43, 39, .10) !important;
+    overflow: hidden !important;
+  }
+
+  /* Opening curtain follows the same phone frame on desktop. */
+  #curtain.curtain {
+    width: var(--desktop-mobile-frame) !important;
+    max-width: 100vw !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  /* Undo desktop-wide spacing. */
+  .section:not(.hero):not(.ending-section) {
+    padding-top: 4.5rem !important;
+    padding-bottom: 4.5rem !important;
+  }
+
+  .section__inner {
+    width: min(calc(100% - 2rem), 398px) !important;
+    max-width: 398px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .section__title,
+  .contact-directory__title {
+    font-size: 1.12rem !important;
+  }
+
+  /* ----------------------------------------------------------
+     HERO — portrait phone ratio, not desktop fullscreen.
+     The tall frame keeps the full vertical composition visible;
+     excess crop happens mainly on the left/right.
+     ---------------------------------------------------------- */
+  #hero.hero {
+    width: 100% !important;
+    max-width: var(--desktop-mobile-frame) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: 9 / 19.5 !important;
+    margin: 0 auto !important;
+  }
+
+  #heroPhoto.hero__photo--protected,
+  .hero__photo,
+  .hero__photo.is-media-loaded {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-position: 50% 50% !important;
+    object-fit: cover !important;
+    object-position: 50% 50% !important;
+  }
+
+  .hero__overlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(51,31,35,.05) 0%,
+        rgba(51,31,35,.08) 46%,
+        rgba(97,53,60,.28) 72%,
+        rgba(97,53,60,.62) 100%
+      ) !important;
+  }
+
+  .hero__content--minimal,
+  .hero__content {
+    width: min(91%, 358px) !important;
+    bottom: max(138px, calc(env(safe-area-inset-bottom, 0px) + 124px)) !important;
+  }
+
+  .hero__quick-nav {
+    top: auto !important;
+    bottom: max(120px, calc(env(safe-area-inset-bottom, 0px) + 108px)) !important;
+    width: min(80%, 344px) !important;
+    gap: .42rem !important;
+  }
+
+  .hero__quick-btn {
+    height: 37px !important;
+    font-size: .71rem !important;
+  }
+
+  .hero .countdown {
+    bottom: max(14px, calc(env(safe-area-inset-bottom, 0px) + 6px)) !important;
+    width: min(80%, 344px) !important;
+    padding: .70rem .86rem .46rem !important;
+  }
+
+  /* ----------------------------------------------------------
+     CALENDAR / CONTACT — use mobile scale.
+     ---------------------------------------------------------- */
+  .greeting > .section__inner,
+  .calendar-section > .section__inner,
+  .contact-section > .section__inner,
+  .account > .section__inner {
+    width: min(calc(100% - 2rem), 398px) !important;
+    max-width: 398px !important;
+  }
+
+  .calendar-card-wrap {
+    width: 100% !important;
+    max-width: 410px !important;
+  }
+
+  #calendarGrid.calendar {
+    grid-template-columns: 46px minmax(0,1fr) !important;
+    column-gap: 1.30rem !important;
+  }
+
+  #calendarGrid .calendar__month-name {
+    font-size: .96rem !important;
+  }
+
+  .contact-directory__grid {
+    max-width: 100% !important;
+  }
+
+  /* ----------------------------------------------------------
+     GALLERY — same horizontal portrait cards as mobile.
+     ---------------------------------------------------------- */
+  .gallery > .section__inner {
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .gallery .section__title {
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+  }
+
+  #galleryGrid.gallery__grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: .72rem !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: .2rem 1.2rem .75rem !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-padding-left: 1.2rem !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #galleryGrid.gallery__grid::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  #galleryGrid .gallery__item {
+    flex: 0 0 76% !important;
+    width: 76% !important;
+    max-width: 310px !important;
+    aspect-ratio: 4 / 5 !important;
+    scroll-snap-align: center !important;
+    border-radius: 13px !important;
+    background-size: cover !important;
+    background-position: center center !important;
+  }
+
+  .gallery-progress {
+    display: block !important;
+  }
+
+  /* ----------------------------------------------------------
+     LOCATION — restore the single-column phone layout.
+     ---------------------------------------------------------- */
+  .location-stage32__inner {
+    width: min(calc(100% - 2rem), 398px) !important;
+    max-width: 398px !important;
+  }
+
+  .location-stage32__layout {
+    display: block !important;
+    margin-top: 0 !important;
+  }
+
+  .location-stage32__summary {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    position: static !important;
+  }
+
+  .location-stage32__venue-block {
+    padding: .8rem .2rem !important;
+  }
+
+  .location-stage32__venue {
+    font-size: 1.08rem !important;
+  }
+
+  .location-stage32__map-actions {
+    margin-top: .65rem !important;
+  }
+
+  #location .location-stage32__transport {
+    display: block !important;
+    grid-template-columns: none !important;
+    gap: 0 !important;
+    margin-top: .82rem !important;
+    padding-top: .08rem !important;
+    border-top: 1px solid rgba(199,166,115,.28) !important;
+  }
+
+  #location .transport-card {
+    display: grid !important;
+    grid-template-columns: 94px minmax(0,1fr) !important;
+    align-items: center !important;
+    gap: .80rem !important;
+    min-width: 0 !important;
+    min-height: 92px !important;
+    margin: 0 !important;
+    padding: .94rem .10rem !important;
+    border: 0 !important;
+    border-bottom: 1px solid rgba(222,208,180,.40) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  #location .transport-card:last-child {
+    border-bottom: 0 !important;
+  }
+
+  #location .transport-card__title {
+    display: flex !important;
+    align-items: center !important;
+    gap: .36rem !important;
+    margin: 0 !important;
+  }
+
+  #location .transport-card__title h3 {
+    font-size: .88rem !important;
+    line-height: 1.48 !important;
+  }
+
+  #location .transport-card__icon {
+    width: 19px !important;
+    height: 19px !important;
+    flex: 0 0 19px !important;
+  }
+
+  #location .transport-card__body {
+    align-self: center !important;
+  }
+
+  #location .transport-card__body p {
+    font-size: .87rem !important;
+    line-height: 1.62 !important;
+  }
+
+  #location .transport-card__note {
+    margin-top: .30rem !important;
+    font-size: .75rem !important;
+    line-height: 1.48 !important;
+  }
+
+  /* ----------------------------------------------------------
+     GUIDE — same horizontal card behavior as mobile.
+     ---------------------------------------------------------- */
+  .guest-guide__inner {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .guest-guide__header {
+    padding: 0 1.2rem !important;
+    margin-bottom: 1.6rem !important;
+  }
+
+  .guest-guide__scroller {
+    display: flex !important;
+    grid-template-columns: none !important;
+    gap: .85rem !important;
+    max-width: none !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+    padding: .15rem 1.2rem .9rem !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-padding-left: 1.2rem !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .guest-guide__scroller::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .guest-guide-card {
+    flex: 0 0 84% !important;
+    width: 84% !important;
+    max-width: 350px !important;
+    min-height: 0 !important;
+    scroll-snap-align: start !important;
+  }
+
+  .guest-guide-progress {
+    display: block !important;
+  }
+
+  /* ----------------------------------------------------------
+     ENDING — portrait 4:5 just like mobile.
+     ---------------------------------------------------------- */
+  .ending-section {
+    width: 100% !important;
+    max-width: var(--desktop-mobile-frame) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: 4 / 5 !important;
+  }
+
+  .ending-section__photo,
+  .ending-section__photo--protected {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-position: 50% 50% !important;
+    object-fit: cover !important;
+    object-position: 50% 50% !important;
+  }
+
+  .ending-section__content {
+    bottom: 34px !important;
+    padding-left: 1.35rem !important;
+    padding-right: 1.35rem !important;
+  }
+
+  .ending-section__content h2,
+  .ending-message {
+    font-size: clamp(1.18rem, 3vw, 1.48rem) !important;
+  }
+}
