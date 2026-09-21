@@ -467,19 +467,39 @@
     }, { passive: true });
   }
 
+  function renderGalleryComingSoon() {
+    const section = $('#gallery');
+    const grid = $('#galleryGrid');
+    if (!section || !grid) return;
+
+    section.style.display = '';
+    section.classList.add('is-coming-soon');
+    grid.innerHTML = `
+      <div class="gallery__coming-soon" role="status" aria-live="polite">
+        <span class="gallery__coming-soon-kicker">PHOTO GALLERY</span>
+        <strong>Coming soon</strong>
+        <span>사진을 준비하고 있습니다.</span>
+      </div>
+    `;
+  }
+
   async function initGallery() {
     const grid = $('#galleryGrid');
+    const section = $('#gallery');
     if (!grid) return;
 
     grid.innerHTML = '';
+    if (section) {
+      section.style.display = '';
+      section.classList.remove('is-coming-soon');
+    }
 
     try {
       const manifest = await PRIVATE_WEDDING.getGalleryManifest();
       const paths = Array.isArray(manifest.images) ? manifest.images : [];
 
       if (!paths.length) {
-        const section = $('#gallery');
-        if (section) section.style.display = 'none';
+        renderGalleryComingSoon();
         return;
       }
 
@@ -500,8 +520,7 @@
       });
     } catch (error) {
       console.warn('[Gallery]', error);
-      const section = $('#gallery');
-      if (section) section.style.display = 'none';
+      renderGalleryComingSoon();
     }
   }
 
