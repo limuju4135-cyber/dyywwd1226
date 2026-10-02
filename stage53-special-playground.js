@@ -13,7 +13,7 @@
     'assets/special/ornament-4.svg?v=stage57'
   ];
 
-  // Percent positions over the 2D tree image. One slot is always reserved.
+  // Percent positions over the 2D tree image. One slot is always reserved internally, but never shown.
   const TREE_SLOTS = [
     { x: 50, y: 23, s: 10 },
     { x: 36, y: 31, s: 9 },
@@ -246,28 +246,6 @@
       holder.appendChild(button);
     }
 
-    const reservedSlot = TREE_SLOTS[treeState.reservedSlot];
-
-    if (reservedSlot) {
-      const reserved = document.createElement('span');
-      const ghost = document.createElement('img');
-
-      reserved.className = 'message-tree__reserved';
-      reserved.style.setProperty('--slot-x', reservedSlot.x + '%');
-      reserved.style.setProperty('--slot-y', reservedSlot.y + '%');
-      reserved.style.setProperty('--slot-size', reservedSlot.s + '%');
-      reserved.setAttribute('aria-hidden', 'true');
-
-      ghost.src =
-        ORNAMENT_ASSETS[
-          (treeState.reservedSlot + treeState.assignments.size) %
-          ORNAMENT_ASSETS.length
-        ];
-      ghost.alt = '';
-      reserved.appendChild(ghost);
-      holder.appendChild(reserved);
-    }
-
     if (empty) {
       empty.hidden = messages.length !== 0;
     }
@@ -325,8 +303,8 @@
     // The new message always occupies the currently reserved position.
     treeState.assignments.set(targetSlot, item.id);
 
-    // Immediately establish the next reserved position so one subtle empty
-    // ornament is always visible, even when 14 messages are already displayed.
+    // Immediately establish the next hidden reserved position so the next
+    // message can appear at a random, previously unseen location.
     if (treeState.assignments.size > TREE_VISIBLE_LIMIT) {
       const candidates = [...treeState.assignments.keys()].filter(
         slot => slot !== targetSlot
