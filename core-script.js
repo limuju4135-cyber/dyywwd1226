@@ -658,8 +658,13 @@
     if (button.dataset.randomReady === 'true') return;
     button.dataset.randomReady = 'true';
 
-    button.addEventListener('click', () => {
-      if (!randomGalleryImages.length) return;
+    const label = button.querySelector('.gallery__random-btn-label');
+    const kicker = button.querySelector('.gallery__random-btn-kicker');
+    const defaultLabel = label?.textContent || '랜덤 뽑기';
+    const defaultKicker = kicker?.textContent || 'RANDOM PHOTO';
+
+    button.addEventListener('click', async () => {
+      if (!randomGalleryImages.length || button.classList.contains('is-shuffling')) return;
 
       let randomIndex = 0;
 
@@ -669,10 +674,48 @@
         } while (randomIndex === lastRandomGalleryIndex);
       }
 
+      const selectedSrc = randomGalleryImages[randomIndex];
+      const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+      button.classList.add('is-shuffling');
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+
+      if (kicker) kicker.textContent = 'SHUFFLING';
+      if (label) label.textContent = '두근...';
+
+      // 결과 이미지는 셔플 애니메이션 중 미리 받아 팝업 지연을 줄입니다.
+      const preloadPromise = preloadModalImage(selectedSrc);
+
+      const shuffleLabels = ['두근...', '두근두근...', '고르는 중...', '두근두근...'];
+      let shuffleStep = 0;
+      let shuffleTimer = null;
+
+      if (!reduceMotion) {
+        shuffleTimer = window.setInterval(() => {
+          shuffleStep = (shuffleStep + 1) % shuffleLabels.length;
+          if (label) label.textContent = shuffleLabels[shuffleStep];
+        }, 360);
+      }
+
+      await new Promise(resolve => {
+        window.setTimeout(resolve, reduceMotion ? 450 : 2000);
+      });
+
+      if (shuffleTimer) window.clearInterval(shuffleTimer);
+      await preloadPromise;
+
       lastRandomGalleryIndex = randomIndex;
 
-      // 랜덤 뽑기는 선택된 사진 한 장만 팝업으로 보여줍니다.
-      openPhotoModal([randomGalleryImages[randomIndex]], 0);
+      button.classList.remove('is-shuffling');
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+
+      if (kicker) kicker.textContent = defaultKicker;
+      if (label) label.textContent = defaultLabel;
+
+      // 랜덤 결과는 한 장만 보여주므로 좌우 화살표 없이 팝업합니다.
+      openPhotoModal([selectedSrc], 0);
     });
   }
 
