@@ -6,30 +6,41 @@
 
   const TREE_SLOT_LIMIT = 15;
   const TREE_VISIBLE_LIMIT = 14;
-  const ORNAMENT_ASSETS = [
-    'assets/special/ornament-1.svg?v=stage57',
-    'assets/special/ornament-2.svg?v=stage57',
-    'assets/special/ornament-3.svg?v=stage57',
-    'assets/special/ornament-4.svg?v=stage57'
+  const ORNAMENT_SPRITE =
+    'assets/special/ornaments-sheet.png?v=stage58-approved-art';
+
+  const ORNAMENT_CELLS = [
+    { col: 0, row: 0 },
+    { col: 1, row: 0 },
+    { col: 2, row: 0 },
+    { col: 3, row: 0 },
+    { col: 0, row: 1 },
+    { col: 1, row: 1 },
+    { col: 2, row: 1 },
+    { col: 3, row: 1 },
+    { col: 0, row: 2 },
+    { col: 1, row: 2 },
+    { col: 2, row: 2 },
+    { col: 3, row: 2 }
   ];
 
   // Percent positions over the 2D tree image. One slot is always reserved internally, but never shown.
   const TREE_SLOTS = [
-    { x: 50, y: 23, s: 10 },
-    { x: 36, y: 31, s: 9 },
-    { x: 64, y: 31, s: 9 },
-    { x: 27, y: 41, s: 10 },
-    { x: 45, y: 40, s: 9 },
-    { x: 70, y: 42, s: 10 },
-    { x: 20, y: 52, s: 9 },
-    { x: 37, y: 51, s: 10 },
-    { x: 57, y: 53, s: 9 },
-    { x: 78, y: 54, s: 10 },
-    { x: 25, y: 65, s: 10 },
-    { x: 43, y: 64, s: 9 },
-    { x: 62, y: 66, s: 10 },
-    { x: 76, y: 69, s: 9 },
-    { x: 50, y: 76, s: 10 }
+    { x: 50, y: 20, s: 10 },
+    { x: 34, y: 29, s: 11 },
+    { x: 66, y: 30, s: 10 },
+    { x: 26, y: 39, s: 11 },
+    { x: 47, y: 38, s: 10 },
+    { x: 71, y: 40, s: 11 },
+    { x: 20, y: 50, s: 10 },
+    { x: 38, y: 50, s: 11 },
+    { x: 58, y: 51, s: 10 },
+    { x: 78, y: 52, s: 11 },
+    { x: 25, y: 62, s: 11 },
+    { x: 43, y: 62, s: 10 },
+    { x: 63, y: 63, s: 11 },
+    { x: 75, y: 70, s: 10 },
+    { x: 50, y: 74, s: 11 }
   ];
 
   let messages = [];
@@ -178,11 +189,11 @@
     treeState = { assignments, reservedSlot };
   }
 
-  function ornamentAssetFor(item, slot) {
+  function ornamentCellFor(item, slot) {
     const index =
-      (stableNumber(item?.id) + slot) % ORNAMENT_ASSETS.length;
+      (stableNumber(item?.id) + slot) % ORNAMENT_CELLS.length;
 
-    return ORNAMENT_ASSETS[index];
+    return ORNAMENT_CELLS[index];
   }
 
   function messageById(id) {
@@ -219,7 +230,8 @@
       if (!item || !slot) continue;
 
       const button = document.createElement('button');
-      const image = document.createElement('img');
+      const sprite = document.createElement('span');
+      const cell = ornamentCellFor(item, slotIndex);
 
       button.type = 'button';
       button.className = 'message-tree__ornament';
@@ -233,10 +245,11 @@
         (item.name || '익명') + '님의 메시지 보기'
       );
 
-      image.src = ornamentAssetFor(item, slotIndex);
-      image.alt = '';
-      image.draggable = false;
-      button.appendChild(image);
+      sprite.className = 'message-tree__ornament-sprite';
+      sprite.style.setProperty('--ornament-sheet', 'url("' + ORNAMENT_SPRITE + '")');
+      sprite.style.setProperty('--bg-x', (cell.col * 33.333333) + '%');
+      sprite.style.setProperty('--bg-y', (cell.row * 50) + '%');
+      button.appendChild(sprite);
 
       if (item.id === highlightMessageId) {
         button.classList.add('is-new');
