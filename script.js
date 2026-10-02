@@ -307,18 +307,22 @@
     if (reduceMotion) return;
 
     const ctx = canvas.getContext('2d');
+    const flakes = [];
 
     let width = 0;
     let height = 0;
     let dpr = 1;
     let animationId = null;
-
-    const flakes = [];
-
-    const isMobile = document.documentElement.clientWidth <= 768;
-    const NORMAL_FLAKE_COUNT = isMobile ? 20 : 30;
-    const SPECIAL_FLAKE_COUNT = isMobile ? 110 : 150;
+    let lastFrame = 0;
+    let running = false;
     let lastSpecialSnowMode = null;
+
+    const NORMAL_FLAKE_COUNT =
+      (document.documentElement.clientWidth || window.innerWidth) <= 768
+        ? 20
+        : 30;
+    const SPECIAL_FLAKE_COUNT = 80;
+    const FRAME_MS = 1000 / 30;
 
     function isSpecialSnowMode() {
       return document.body.classList.contains('special-mode');
@@ -330,44 +334,32 @@
         : NORMAL_FLAKE_COUNT;
     }
 
-    /**
-     * 핀치 줌 대응 핵심:
-     * visualViewport의 확대/축소에 따라 canvas 내부 좌표계를
-     * 다시 만들지 않는다.
-     *
-     * documentElement.clientWidth/Height는 레이아웃 viewport 기준이므로
-     * 핀치 줌 중 visual viewport 크기 변화에 덜 영향을 받는다.
-     */
-    function getLayoutViewport() {
+    function viewport() {
       return {
         width: document.documentElement.clientWidth || window.innerWidth,
         height: document.documentElement.clientHeight || window.innerHeight
       };
     }
 
-    function applyCanvasSize(preservePositions = false) {
+    function applyCanvasSize(preserve = false) {
       const oldWidth = width || 1;
       const oldHeight = height || 1;
+      const next = viewport();
 
-      const viewport = getLayoutViewport();
-      width = viewport.width;
-      height = viewport.height;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = next.width;
+      height = next.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       canvas.style.width = width + 'px';
       canvas.style.height = height + 'px';
-
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // 실제 화면 크기가 바뀐 경우에도 눈 위치가 갑자기 랜덤 재배치되지 않도록
-      // 상대 위치를 그대로 유지
-      if (preservePositions && flakes.length) {
+      if (preserve && flakes.length) {
         const ratioX = width / oldWidth;
         const ratioY = height / oldHeight;
-
-        flakes.forEach((flake) => {
+        flakes.forEach(flake => {
           flake.x *= ratioX;
           flake.y *= ratioY;
         });
@@ -381,188 +373,36 @@
 
       reset(initial = false) {
         const special = isSpecialSnowMode();
-        const crystal = Math.random() < (special ? 0.30 : 0.16);
-
-        this.type = crystal ? 'crystal' : 'soft';
-        this.goldSeed = Math.random();
+        this.crystal = Math.random() < (special ? .24 : .14);
+        this.gold = special && Math.random() < .30;
 
         this.size = special
-          ? (crystal
-              ? 3.8 + Math.random() * 2.8
-              : 1.7 + Math.random() * 2.5)
-          : (crystal
-              ? 2.7 + Math.random() * 1.7
-              : 0.8 + Math.random() * 1.6);
+          ? (this.crystal ? 3.4 + Math.random() * 2.4 : 1.5 + Math.random() * 2.1)
+          : (this.crystal ? 2.4 + Math.random() * 1.4 : .8 + Math.random() * 1.3);
 
         this.x = Math.random() * width;
-        this.y = initial
-          ? Math.random() * height
-          : -18 - Math.random() * 55;
-
-        this.baseOpacity = special
-          ? (crystal
-              ? 0.42 + Math.random() * 0.26
-              : 0.31 + Math.random() * 0.25)
-          : (crystal
-              ? 0.15 + Math.random() * 0.085
-              : 0.10 + Math.random() * 0.075);
-
-        this.opacity = this.baseOpacity;
-
+        this.y = initial ? Math.random() * height : -20 - Math.random() * 45;
+        this.opacity = special
+          ? .30 + Math.random() * .30
+          : .10 + Math.random() * .08;
         this.speedY = special
-          ? (crystal
-              ? 0.42 + Math.random() * 0.44
-              : 0.34 + Math.random() * 0.50)
-          : (crystal
-              ? 0.24 + Math.random() * 0.28
-              : 0.18 + Math.random() * 0.34);
-
-        this.speedX = special
-          ? -0.10 + Math.random() * 0.20
-          : -0.045 + Math.random() * 0.09;
-
-        this.swing = Math.random() * Math.PI * 2;
-        this.swingSpeed = 0.003 + Math.random() * 0.006;
-        this.swingAmp = 0.10 + Math.random() * 0.25;
-
+          ? .36 + Math.random() * .44
+          : .18 + Math.random() * .28;
+        this.speedX = -.08 + Math.random() * .16;
+        this.phase = Math.random() * Math.PI * 2;
         this.rotation = Math.random() * Math.PI * 2;
-        this.rotationSpeed =
-          (-0.0015 + Math.random() * 0.003) *
-          (crystal ? 1 : 0.4);
-
-        this.twinkle = Math.random() * Math.PI * 2;
-        this.twinkleSpeed = 0.006 + Math.random() * 0.007;
+        this.rotationSpeed = (-.002 + Math.random() * .004) * (this.crystal ? 1 : .3);
       }
 
       update() {
+        this.phase += .018;
         this.y += this.speedY;
-
-        this.swing += this.swingSpeed;
-        this.x +=
-          this.speedX +
-          Math.sin(this.swing) * this.swingAmp * 0.08;
-
+        this.x += this.speedX + Math.sin(this.phase) * .025;
         this.rotation += this.rotationSpeed;
 
-        // 반짝임을 거의 느껴지지 않을 정도로만
-        this.twinkle += this.twinkleSpeed;
-        this.opacity =
-          this.baseOpacity *
-          (1 + Math.sin(this.twinkle) * 0.035);
-
-        if (
-          this.y > height + 25 ||
-          this.x < -25 ||
-          this.x > width + 25
-        ) {
+        if (this.y > height + 24 || this.x < -24 || this.x > width + 24) {
           this.reset(false);
         }
-      }
-
-      isSpecialGold() {
-        return isSpecialSnowMode() &&
-          this.goldSeed < 0.36;
-      }
-
-      drawSoft() {
-        const glow = this.size * 1.75;
-        const gold = this.isSpecialGold();
-
-        const grad = ctx.createRadialGradient(
-          0, 0, 0,
-          0, 0, glow
-        );
-
-        if (gold) {
-          grad.addColorStop(0, 'rgba(205,181,138,0.98)');
-          grad.addColorStop(0.48, 'rgba(205,181,138,0.64)');
-          grad.addColorStop(1, 'rgba(205,181,138,0)');
-        } else {
-          grad.addColorStop(0, 'rgba(255,255,255,0.96)');
-          grad.addColorStop(0.48, 'rgba(249,250,255,0.58)');
-          grad.addColorStop(1, 'rgba(249,250,255,0)');
-        }
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(0, 0, glow, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = gold
-          ? 'rgba(243,235,221,0.94)'
-          : 'rgba(255,255,255,0.88)';
-        ctx.beginPath();
-        ctx.arc(0, 0, this.size * 0.42, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      drawCrystal() {
-        const outer = this.size;
-        const gold = this.isSpecialGold();
-        const branchStart = outer * 0.58;
-        const branchLength = outer * 0.20;
-
-        // 아주 약한 halo
-        const grad = ctx.createRadialGradient(
-          0, 0, 0,
-          0, 0, outer * 2.1
-        );
-        if (gold) {
-          grad.addColorStop(0, 'rgba(205,181,138,0.58)');
-          grad.addColorStop(1, 'rgba(205,181,138,0)');
-        } else {
-          grad.addColorStop(0, 'rgba(255,255,255,0.46)');
-          grad.addColorStop(1, 'rgba(255,255,255,0)');
-        }
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(0, 0, outer * 2.1, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = gold
-          ? 'rgba(205,181,138,0.94)'
-          : 'rgba(255,255,255,0.84)';
-        ctx.lineWidth = Math.max(0.55, outer * 0.12);
-        ctx.lineCap = 'round';
-
-        // 6축 결정
-        for (let i = 0; i < 6; i++) {
-          const angle = (Math.PI / 3) * i;
-          const cos = Math.cos(angle);
-          const sin = Math.sin(angle);
-
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(cos * outer, sin * outer);
-          ctx.stroke();
-
-          const px = cos * branchStart;
-          const py = sin * branchStart;
-
-          const leftAngle = angle - 0.48;
-          const rightAngle = angle + 0.48;
-
-          ctx.beginPath();
-          ctx.moveTo(px, py);
-          ctx.lineTo(
-            px + Math.cos(leftAngle) * branchLength,
-            py + Math.sin(leftAngle) * branchLength
-          );
-          ctx.moveTo(px, py);
-          ctx.lineTo(
-            px + Math.cos(rightAngle) * branchLength,
-            py + Math.sin(rightAngle) * branchLength
-          );
-          ctx.stroke();
-        }
-
-        ctx.fillStyle = gold
-          ? 'rgba(243,235,221,0.96)'
-          : 'rgba(255,255,255,0.88)';
-        ctx.beginPath();
-        ctx.arc(0, 0, outer * 0.12, 0, Math.PI * 2);
-        ctx.fill();
       }
 
       draw() {
@@ -571,10 +411,39 @@
         ctx.rotate(this.rotation);
         ctx.globalAlpha = this.opacity;
 
-        if (this.type === 'crystal') {
-          this.drawCrystal();
+        if (this.crystal) {
+          const radius = this.size;
+          ctx.strokeStyle = this.gold
+            ? 'rgba(216,192,138,.95)'
+            : 'rgba(255,255,255,.88)';
+          ctx.lineWidth = Math.max(.55, radius * .11);
+          ctx.lineCap = 'round';
+
+          for (let i = 0; i < 6; i += 1) {
+            const angle = Math.PI * i / 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+            ctx.stroke();
+          }
         } else {
-          this.drawSoft();
+          const glow = this.size * 1.55;
+          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, glow);
+
+          if (this.gold) {
+            gradient.addColorStop(0, 'rgba(216,192,138,.98)');
+            gradient.addColorStop(.48, 'rgba(216,192,138,.55)');
+            gradient.addColorStop(1, 'rgba(216,192,138,0)');
+          } else {
+            gradient.addColorStop(0, 'rgba(255,255,255,.96)');
+            gradient.addColorStop(.48, 'rgba(255,255,255,.50)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+          }
+
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(0, 0, glow, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         ctx.restore();
@@ -583,178 +452,112 @@
 
     function populate() {
       flakes.length = 0;
-      const count = targetFlakeCount();
-
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < targetFlakeCount(); i += 1) {
         flakes.push(new Snowflake());
       }
-
       lastSpecialSnowMode = isSpecialSnowMode();
     }
 
-    function syncSnowMode() {
+    function syncMode() {
       const special = isSpecialSnowMode();
-
-      if (special === lastSpecialSnowMode) return;
-
-      populate();
+      if (special !== lastSpecialSnowMode) {
+        populate();
+      }
     }
 
-    function animate() {
-      syncSnowMode();
+    function frame(now) {
+      if (!running) return;
+      animationId = requestAnimationFrame(frame);
+
+      if (document.hidden || now - lastFrame < FRAME_MS) return;
+      lastFrame = now;
+
+      syncMode();
       ctx.clearRect(0, 0, width, height);
 
-      flakes.forEach((flake) => {
+      flakes.forEach(flake => {
         flake.update();
         flake.draw();
       });
-
-      animationId = requestAnimationFrame(animate);
     }
 
-    let specialBurstTimer = null;
+    function start() {
+      if (running) return;
+      running = true;
+      lastFrame = 0;
+      animationId = requestAnimationFrame(frame);
+    }
 
-    window.addEventListener('special-snow-burst', () => {
-      if (!isSpecialSnowMode()) return;
+    function stop() {
+      running = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      animationId = null;
+    }
 
-      const burstTarget = SPECIAL_FLAKE_COUNT + (isMobile ? 95 : 135);
-
-      while (flakes.length < burstTarget) {
-        const flake = new Snowflake();
-        flake.y = Math.random() * Math.max(120, height * 0.72);
-        flake.speedY *= 1.65;
-        flake.speedX *= 1.35;
-        flakes.push(flake);
-      }
-
-      clearTimeout(specialBurstTimer);
-      specialBurstTimer = window.setTimeout(() => {
-        if (flakes.length > SPECIAL_FLAKE_COUNT) {
-          flakes.splice(SPECIAL_FLAKE_COUNT);
-        }
-      }, 3200);
-    });
-
-    // 최초 한 번만 canvas 기준 좌표계 설정
     applyCanvasSize(false);
     populate();
-    animate();
+    start();
 
-    /**
-     * 핀치 줌은 visualViewport.scale 값만 변하므로
-     * resize 이벤트에서 canvas를 재설정하지 않는다.
-     *
-     * 실제 기기 회전처럼 layout viewport 자체가 바뀌었을 때만
-     * 기존 눈송이의 상대 위치를 보존하며 재계산한다.
-     */
     let resizeTimer;
-
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-
-      resizeTimer = setTimeout(() => {
-        if (
-          window.visualViewport &&
-          Math.abs(window.visualViewport.scale - 1) > 0.01
-        ) {
-          return;
-        }
-
-        const viewport = getLayoutViewport();
-
-        const widthDiff = Math.abs(viewport.width - width);
-        const heightDiff = Math.abs(viewport.height - height);
-
-        // 주소창 숨김/표시 같은 작은 변화는 무시
-        if (widthDiff < 40 && heightDiff < 120) {
-          return;
-        }
-
+      resizeTimer = window.setTimeout(() => {
+        const next = viewport();
+        if (Math.abs(next.width - width) < 40 && Math.abs(next.height - height) < 120) return;
         applyCanvasSize(true);
       }, 180);
-    });
+    }, { passive: true });
 
-    // 방향 전환은 실제 레이아웃 변화이므로 별도로 반영
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => {
-        applyCanvasSize(true);
-      }, 350);
-    });
-
-    window.addEventListener('beforeunload', () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stop();
+      } else {
+        start();
       }
     });
+
+    window.addEventListener('beforeunload', stop);
   }
 
   function initSnowPlayground() {
     const canvas = document.getElementById('snowPlayCanvas');
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
     const reduceMotion =
       window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (reduceMotion) return;
 
-    const IDLE_BEFORE_ACCUMULATION = 4000;
-    const MOBILE_HEIGHT = 96;
-    const DESKTOP_HEIGHT = 112;
-    const MAX_PILE_RATIO = 0.72;
-    const CLEAR_RADIUS = 34;
+    const ctx = canvas.getContext('2d');
+    const IDLE_BEFORE_ACCUMULATION = 3500;
+    const PLAYGROUND_HEIGHT = 92;
+    const MAX_PILE_RATIO = .68;
+    const FRAME_MS = 1000 / 20;
 
     let width = 0;
-    let height = 0;
+    let height = PLAYGROUND_HEIGHT;
     let dpr = 1;
-    let binCount = 0;
     let pile = new Float32Array(0);
     let nextPile = new Float32Array(0);
-    let puffs = [];
-    let animationId = null;
-    let lastFrame = performance.now();
+    let binCount = 0;
     let lastActivity = performance.now();
-    let lastScrollY = window.scrollY || 0;
-    let maxPile = 0;
-
-    let touchActive = false;
-    let touchClearing = false;
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchLastX = 0;
-
-    let mouseActive = false;
-    let mouseClearing = false;
-    let mouseStartX = 0;
-    let mouseStartY = 0;
-    let mouseLastX = 0;
+    let lastFrame = 0;
+    let animationId = null;
+    let running = false;
 
     function isSpecial() {
       return document.body.classList.contains('special-mode');
-    }
-
-    function layoutViewport() {
-      return {
-        width: document.documentElement.clientWidth || window.innerWidth,
-        height: document.documentElement.clientHeight || window.innerHeight
-      };
-    }
-
-    function playgroundHeight() {
-      return (document.documentElement.clientWidth || window.innerWidth) <= 768
-        ? MOBILE_HEIGHT
-        : DESKTOP_HEIGHT;
     }
 
     function resizeCanvas(preserve = true) {
       const oldPile = pile;
       const oldCount = binCount;
 
-      width = layoutViewport().width;
-      height = playgroundHeight();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      binCount = Math.max(52, Math.min(110, Math.round(width / 5.2)));
+      width = document.documentElement.clientWidth || window.innerWidth;
+      height = PLAYGROUND_HEIGHT;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      binCount = Math.max(48, Math.min(78, Math.round(width / 6)));
 
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
@@ -765,139 +568,72 @@
       pile = new Float32Array(binCount);
       nextPile = new Float32Array(binCount);
 
-      if (preserve && oldCount > 1 && oldPile.length) {
+      if (preserve && oldCount > 1) {
         for (let i = 0; i < binCount; i += 1) {
-          const t = i / Math.max(1, binCount - 1);
-          const oldIndex = t * (oldCount - 1);
-          const left = Math.floor(oldIndex);
-          const right = Math.min(oldCount - 1, left + 1);
-          const mix = oldIndex - left;
-          pile[i] = oldPile[left] * (1 - mix) + oldPile[right] * mix;
+          const source = (i / Math.max(1, binCount - 1)) * (oldCount - 1);
+          const low = Math.floor(source);
+          const high = Math.min(oldCount - 1, low + 1);
+          const t = source - low;
+          pile[i] = oldPile[low] * (1 - t) + oldPile[high] * t;
         }
       }
     }
 
-    function markActivity() {
-      lastActivity = performance.now();
-    }
-
-    function smoothPile() {
+    function smooth() {
       if (pile.length < 3) return;
-
       nextPile[0] = pile[0];
       nextPile[pile.length - 1] = pile[pile.length - 1];
 
       for (let i = 1; i < pile.length - 1; i += 1) {
         nextPile[i] =
-          pile[i] * 0.58 +
-          pile[i - 1] * 0.21 +
-          pile[i + 1] * 0.21;
+          pile[i] * .64 +
+          pile[i - 1] * .18 +
+          pile[i + 1] * .18;
       }
 
-      const temp = pile;
+      const swap = pile;
       pile = nextPile;
-      nextPile = temp;
+      nextPile = swap;
     }
 
-    function accumulate(dt) {
-      if (!isSpecial()) return;
-      if (performance.now() - lastActivity < IDLE_BEFORE_ACCUMULATION) return;
+    function accumulate() {
+      if (!isSpecial() || performance.now() - lastActivity < IDLE_BEFORE_ACCUMULATION) return;
 
       const maxHeight = height * MAX_PILE_RATIO;
-      const additions = Math.max(2, Math.round(binCount * 0.045));
-      const amount = dt * 0.0064;
+      const additions = 3;
 
       for (let n = 0; n < additions; n += 1) {
         const center = Math.floor(Math.random() * binCount);
-        const spread = 1 + Math.floor(Math.random() * 3);
+        const spread = 1 + Math.floor(Math.random() * 2);
 
         for (let j = -spread; j <= spread; j += 1) {
-          const idx = center + j;
-          if (idx < 0 || idx >= binCount) continue;
-
+          const index = center + j;
+          if (index < 0 || index >= binCount) continue;
           const weight = 1 - Math.abs(j) / (spread + 1);
-          pile[idx] = Math.min(
-            maxHeight,
-            pile[idx] + amount * weight * (0.72 + Math.random() * 0.7)
-          );
+          pile[index] = Math.min(maxHeight, pile[index] + .30 * weight);
         }
       }
 
-      smoothPile();
+      smooth();
     }
 
-    function spawnPuffs(x, y, strength = 1) {
-      const count = Math.min(14, 5 + Math.round(strength * 5));
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
 
-      for (let i = 0; i < count; i += 1) {
-        puffs.push({
-          x: x + (Math.random() - 0.5) * 18,
-          y: y + (Math.random() - 0.5) * 10,
-          vx: (Math.random() - 0.5) * (1.2 + strength * 1.2),
-          vy: -0.45 - Math.random() * (1.0 + strength * 0.8),
-          size: 1.2 + Math.random() * 2.8,
-          life: 1,
-          decay: 0.018 + Math.random() * 0.022
-        });
+      if (!isSpecial() || !pile.length) {
+        canvas.classList.remove('is-visible');
+        return;
       }
 
-      if (puffs.length > 180) {
-        puffs.splice(0, puffs.length - 180);
-      }
-    }
-
-    function clearSnowAt(clientX, strength = 1) {
-      if (!pile.length) return;
-
-      const localX = Math.max(0, Math.min(width, clientX));
-      const center = Math.round((localX / Math.max(1, width)) * (binCount - 1));
-      const binsPerPx = binCount / Math.max(1, width);
-      const radiusBins = Math.max(3, Math.round(CLEAR_RADIUS * binsPerPx));
-      let removed = 0;
-
-      for (let j = -radiusBins; j <= radiusBins; j += 1) {
-        const idx = center + j;
-        if (idx < 0 || idx >= binCount) continue;
-
-        const normalized = Math.abs(j) / Math.max(1, radiusBins);
-        const carve = (1 - normalized * normalized) * (12 + 16 * strength);
-        const before = pile[idx];
-        pile[idx] = Math.max(0, pile[idx] - carve);
-        removed += before - pile[idx];
-      }
-
-      smoothPile();
-
-      if (removed > 1) {
-        const y = height - Math.min(maxPile, height * MAX_PILE_RATIO) * 0.45;
-        spawnPuffs(localX, Math.max(12, y), Math.min(1.8, removed / 38));
-      }
-    }
-
-    function clearStroke(fromX, toX) {
-      const distance = Math.abs(toX - fromX);
-      const steps = Math.max(1, Math.ceil(distance / 12));
-
-      for (let i = 0; i <= steps; i += 1) {
-        const t = i / steps;
-        const x = fromX + (toX - fromX) * t;
-        clearSnowAt(x, Math.min(1.7, 0.8 + distance / 80));
-      }
-    }
-
-    function drawPile() {
-      if (!pile.length || maxPile < 0.5) return;
+      const maxPile = Math.max(...pile);
+      canvas.classList.toggle('is-visible', maxPile > 4);
+      if (maxPile < .5) return;
 
       const step = width / Math.max(1, binCount - 1);
       const gradient = ctx.createLinearGradient(0, height - maxPile, 0, height);
-      gradient.addColorStop(0, 'rgba(255,255,255,.98)');
-      gradient.addColorStop(.45, 'rgba(252,248,238,.98)');
-      gradient.addColorStop(1, 'rgba(232,219,191,.97)');
-
-      ctx.save();
-      ctx.shadowColor = 'rgba(112,91,55,.14)';
-      ctx.shadowBlur = 9;
-      ctx.shadowOffsetY = -2;
+      gradient.addColorStop(0, 'rgba(255,255,255,.99)');
+      gradient.addColorStop(.55, 'rgba(248,242,229,.99)');
+      gradient.addColorStop(1, 'rgba(224,211,182,.98)');
 
       ctx.beginPath();
       ctx.moveTo(0, height);
@@ -906,224 +642,71 @@
       for (let i = 1; i < binCount; i += 1) {
         const x = i * step;
         const y = height - pile[i];
-        const prevX = (i - 1) * step;
-        const prevY = height - pile[i - 1];
-        const midX = (prevX + x) / 2;
-        const midY = (prevY + y) / 2;
-
-        ctx.quadraticCurveTo(prevX, prevY, midX, midY);
+        ctx.lineTo(x, y);
       }
 
       ctx.lineTo(width, height);
       ctx.closePath();
       ctx.fillStyle = gradient;
       ctx.fill();
-      ctx.restore();
 
-      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,.92)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(0, height - pile[0]);
       for (let i = 1; i < binCount; i += 1) {
-        const x = i * step;
-        const y = height - pile[i];
-        ctx.lineTo(x, y);
+        ctx.lineTo(i * step, height - pile[i]);
       }
-      ctx.strokeStyle = 'rgba(255,255,255,.88)';
-      ctx.lineWidth = 1.25;
-      ctx.shadowColor = 'rgba(255,255,255,.70)';
-      ctx.shadowBlur = 5;
       ctx.stroke();
-      ctx.restore();
     }
 
-    function updateAndDrawPuffs() {
-      if (!puffs.length) return;
+    function frame(now) {
+      if (!running) return;
+      animationId = requestAnimationFrame(frame);
 
-      ctx.save();
-
-      for (let i = puffs.length - 1; i >= 0; i -= 1) {
-        const p = puffs[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.018;
-        p.life -= p.decay;
-
-        if (p.life <= 0) {
-          puffs.splice(i, 1);
-          continue;
-        }
-
-        ctx.globalAlpha = Math.max(0, p.life);
-        ctx.fillStyle = 'rgba(255,252,244,.96)';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.restore();
-    }
-
-    function updateInteractiveState() {
-      maxPile = pile.length ? Math.max(...pile) : 0;
-      canvas.classList.toggle('is-visible', isSpecial() && maxPile > 0.8);
-    }
-
-    function animate(now) {
-      const dt = Math.min(48, Math.max(0, now - lastFrame));
+      if (document.hidden || now - lastFrame < FRAME_MS) return;
       lastFrame = now;
 
-      if (!isSpecial()) {
-        ctx.clearRect(0, 0, width, height);
-        canvas.classList.remove('is-visible');
-        animationId = requestAnimationFrame(animate);
-        return;
-      }
-
-      accumulate(dt);
-      updateInteractiveState();
-
-      ctx.clearRect(0, 0, width, height);
-      drawPile();
-      updateAndDrawPuffs();
-
-      animationId = requestAnimationFrame(animate);
+      accumulate();
+      draw();
     }
 
-    function bottomZone(clientY) {
-      const viewportHeight =
-        window.visualViewport?.height ||
-        window.innerHeight ||
-        document.documentElement.clientHeight;
-
-      return clientY >= viewportHeight - height - 8;
+    function start() {
+      if (running) return;
+      running = true;
+      lastFrame = 0;
+      animationId = requestAnimationFrame(frame);
     }
 
-    document.addEventListener('touchstart', event => {
-      if (!isSpecial() || maxPile < 4 || event.touches.length !== 1) {
-        touchActive = false;
-        return;
-      }
+    function stop() {
+      running = false;
+      if (animationId) cancelAnimationFrame(animationId);
+      animationId = null;
+    }
 
-      const touch = event.touches[0];
+    window.addEventListener('wedding-mode-change', () => {
+      lastActivity = performance.now();
+    });
 
-      if (!bottomZone(touch.clientY)) {
-        touchActive = false;
-        return;
-      }
-
-      touchActive = true;
-      touchClearing = false;
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-      touchLastX = touch.clientX;
-      markActivity();
-    }, { passive: true, capture: true });
-
-    document.addEventListener('touchmove', event => {
-      if (!touchActive || event.touches.length !== 1) return;
-
-      const touch = event.touches[0];
-      const dx = touch.clientX - touchStartX;
-      const dy = touch.clientY - touchStartY;
-
-      if (!touchClearing) {
-        if (Math.abs(dx) < 9 && Math.abs(dy) < 9) return;
-
-        if (Math.abs(dx) > Math.abs(dy) * 1.15) {
-          touchClearing = true;
-        } else {
-          touchActive = false;
-          return;
-        }
-      }
-
-      if (touchClearing) {
-        event.preventDefault();
-        clearStroke(touchLastX, touch.clientX);
-        touchLastX = touch.clientX;
-        markActivity();
-      }
-    }, { passive: false, capture: true });
-
-    document.addEventListener('touchend', () => {
-      touchActive = false;
-      touchClearing = false;
-    }, { passive: true, capture: true });
-
-    document.addEventListener('mousedown', event => {
-      if (!isSpecial() || maxPile < 4 || event.button !== 0 || !bottomZone(event.clientY)) {
-        mouseActive = false;
-        return;
-      }
-
-      mouseActive = true;
-      mouseClearing = false;
-      mouseStartX = event.clientX;
-      mouseStartY = event.clientY;
-      mouseLastX = event.clientX;
-      markActivity();
-    }, true);
-
-    document.addEventListener('mousemove', event => {
-      if (!mouseActive) return;
-
-      const dx = event.clientX - mouseStartX;
-      const dy = event.clientY - mouseStartY;
-
-      if (!mouseClearing) {
-        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
-
-        if (Math.abs(dx) > Math.abs(dy)) {
-          mouseClearing = true;
-        } else {
-          mouseActive = false;
-          return;
-        }
-      }
-
-      if (mouseClearing) {
-        clearStroke(mouseLastX, event.clientX);
-        mouseLastX = event.clientX;
-        markActivity();
-      }
-    }, true);
-
-    document.addEventListener('mouseup', () => {
-      mouseActive = false;
-      mouseClearing = false;
-    }, true);
-
-    window.addEventListener('scroll', () => {
-      const current = window.scrollY || 0;
-
-      if (Math.abs(current - lastScrollY) > 1) {
-        markActivity();
-        lastScrollY = current;
-      }
+    document.addEventListener('pointerdown', () => {
+      lastActivity = performance.now();
     }, { passive: true });
 
-    window.addEventListener('pointerdown', event => {
-      if (!bottomZone(event.clientY)) {
-        markActivity();
-      }
-    }, { passive: true });
+    resizeCanvas(false);
+    start();
 
     let resizeTimer;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => resizeCanvas(true), 180);
+      resizeTimer = window.setTimeout(() => resizeCanvas(true), 200);
     }, { passive: true });
 
-    window.addEventListener('orientationchange', () => {
-      setTimeout(() => resizeCanvas(true), 320);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
     });
 
-    window.addEventListener('beforeunload', () => {
-      if (animationId) cancelAnimationFrame(animationId);
-    });
-
-    resizeCanvas(false);
-    animationId = requestAnimationFrame(animate);
+    window.addEventListener('beforeunload', stop);
   }
 
   function replaceSmallOrnaments() {
