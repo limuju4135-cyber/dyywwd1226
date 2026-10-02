@@ -14,13 +14,14 @@ const JSON_OBJECTS = Object.freeze({
 
 const MESSAGE_PREFIX = 'messages/';
 const MESSAGE_LIMIT = 100;
+const ADMIN_PIN_SHA256 = '151c9df1bd78ddc4d98eab39c7c9f8220f0b16f9f6d535c956e95eab97435d12';
 
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
 
-  if (url.pathname === '/api/messages') {
-    return messageGateway(request, env);
+  if (url.pathname === '/api/messages' || url.pathname.startsWith('/api/messages/')) {
+    return messageGateway(request, env, url);
   }
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
@@ -71,9 +72,47 @@ export async function onRequest(context) {
   return new Response(text, { status: 200, headers });
 }
 
-async function messageGateway(request, env) {
+async function messageGateway(request, env, url) {
   if (!env.MEDIA_BUCKET) {
     return jsonError('R2 binding unavailable', 500);
+  }
+
+  const pathname = url?.pathname || new URL(request.url).pathname;
+
+  if (pathname === '/api/messages/admin/verify') {
+    if (request.method !== 'POST') {
+      return new Response('Method Not Allowed', {
+        status: 405,
+        headers: {
+          'Allow': 'POST',
+          'Cache-Control': 'no-store'
+        }
+      });
+    }
+
+    return verifyAdminPin(request);
+  }
+
+  const messageMatch = pathname.match(
+    /^\/api\/messages\/(\d{13}-[A-Za-z0-9-]+)$/
+  );
+
+  if (messageMatch) {
+    if (request.method !== 'DELETE') {
+      return new Response('Method Not Allowed', {
+        status: 405,
+        headers: {
+          'Allow': 'DELETE',
+          'Cache-Control': 'no-store'
+        }
+      });
+    }
+
+    return deleteMessage(request, env, messageMatch[1]);
+  }
+
+  if (pathname !== '/api/messages') {
+    return jsonError('Not Found', 404);
   }
 
   if (request.method === 'HEAD') {
@@ -101,6 +140,80 @@ async function messageGateway(request, env) {
       'Cache-Control': 'no-store'
     }
   });
+}
+
+async function verifyAdminPin(request) {
+  let payload;
+
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonError('Invalid JSON', 400);
+  }
+
+  const valid = await isValidAdminPin(payload?.pin);
+
+  if (!valid) {
+    return jsonError('Invalid PIN', 403);
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: jsonHeaders()
+  });
+}
+
+async function deleteMessage(request, env, id) {
+  const pin = request.headers.get('X-Admin-Pin') || '';
+
+  if (!(await isValidAdminPin(pin))) {
+    return jsonError('Forbidden', 403);
+  }
+
+  const key = MESSAGE_PREFIX + id + '.json';
+  const existing = await env.MEDIA_BUCKET.head(key);
+
+  if (!existing) {
+    return jsonError('Not Found', 404);
+  }
+
+  await env.MEDIA_BUCKET.delete(key);
+
+  return new Response(JSON.stringify({ ok: true, id }), {
+    status: 200,
+    headers: jsonHeaders()
+  });
+}
+
+async function isValidAdminPin(pin) {
+  const normalized = String(pin ?? '').trim();
+
+  if (!/^\d{6}$/.test(normalized)) {
+    return false;
+  }
+
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(normalized)
+  );
+
+  const hex = [...new Uint8Array(digest)]
+    .map(byte => byte.toString(16).padStart(2, '0'))
+    .join('');
+
+  return constantTimeEqual(hex, ADMIN_PIN_SHA256);
+}
+
+function constantTimeEqual(a, b) {
+  if (a.length !== b.length) return false;
+
+  let mismatch = 0;
+
+  for (let i = 0; i < a.length; i += 1) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+
+  return mismatch === 0;
 }
 
 async function listMessages(env) {
