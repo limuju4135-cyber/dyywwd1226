@@ -372,6 +372,7 @@
         const crystal = Math.random() < 0.16; // Stage19: 결정형을 조금 더 자주
 
         this.type = crystal ? 'crystal' : 'soft';
+        this.goldSeed = Math.random();
 
         // 전체 크기 축소
         this.size = crystal
@@ -435,24 +436,38 @@
         }
       }
 
+      isSpecialGold() {
+        return document.body.classList.contains('special-mode') &&
+          this.goldSeed < 0.28;
+      }
+
       drawSoft() {
         const glow = this.size * 1.75;
+        const gold = this.isSpecialGold();
 
         const grad = ctx.createRadialGradient(
           0, 0, 0,
           0, 0, glow
         );
 
-        grad.addColorStop(0, 'rgba(255,255,255,0.96)');
-        grad.addColorStop(0.48, 'rgba(249,250,255,0.58)');
-        grad.addColorStop(1, 'rgba(249,250,255,0)');
+        if (gold) {
+          grad.addColorStop(0, 'rgba(255,231,174,0.98)');
+          grad.addColorStop(0.48, 'rgba(224,184,108,0.64)');
+          grad.addColorStop(1, 'rgba(224,184,108,0)');
+        } else {
+          grad.addColorStop(0, 'rgba(255,255,255,0.96)');
+          grad.addColorStop(0.48, 'rgba(249,250,255,0.58)');
+          grad.addColorStop(1, 'rgba(249,250,255,0)');
+        }
 
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(0, 0, glow, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        ctx.fillStyle = gold
+          ? 'rgba(248,215,150,0.92)'
+          : 'rgba(255,255,255,0.88)';
         ctx.beginPath();
         ctx.arc(0, 0, this.size * 0.42, 0, Math.PI * 2);
         ctx.fill();
@@ -460,6 +475,7 @@
 
       drawCrystal() {
         const outer = this.size;
+        const gold = this.isSpecialGold();
         const branchStart = outer * 0.58;
         const branchLength = outer * 0.20;
 
@@ -468,15 +484,22 @@
           0, 0, 0,
           0, 0, outer * 2.1
         );
-        grad.addColorStop(0, 'rgba(255,255,255,0.46)');
-        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        if (gold) {
+          grad.addColorStop(0, 'rgba(245,210,143,0.58)');
+          grad.addColorStop(1, 'rgba(224,184,108,0)');
+        } else {
+          grad.addColorStop(0, 'rgba(255,255,255,0.46)');
+          grad.addColorStop(1, 'rgba(255,255,255,0)');
+        }
 
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(0, 0, outer * 2.1, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.strokeStyle = 'rgba(255,255,255,0.84)';
+        ctx.strokeStyle = gold
+          ? 'rgba(242,206,136,0.92)'
+          : 'rgba(255,255,255,0.84)';
         ctx.lineWidth = Math.max(0.55, outer * 0.12);
         ctx.lineCap = 'round';
 
@@ -511,7 +534,9 @@
           ctx.stroke();
         }
 
-        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        ctx.fillStyle = gold
+          ? 'rgba(248,215,150,0.94)'
+          : 'rgba(255,255,255,0.88)';
         ctx.beginPath();
         ctx.arc(0, 0, outer * 0.12, 0, Math.PI * 2);
         ctx.fill();
