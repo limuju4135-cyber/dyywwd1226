@@ -1479,3 +1479,96 @@ body.special-mode #hero .hero__quick-btn {
     width: 44px;
   }
 }
+
+
+/* ============================================================
+   STAGE 61 — UNIFIED MOBILE BROWSER CHROME
+   One authoritative color source for top/bottom browser areas.
+   idle    = white
+   normal  = rose
+   special = sage
+   ============================================================ */
+html {
+  --browser-chrome-color: #FFFFFF;
+  background-color: #FFFFFF !important;
+  color-scheme: light;
+}
+
+body {
+  background-color: #FFFFFF !important;
+}
+
+html.normal-mode {
+  --browser-chrome-color: #BE858D;
+  background-color: #BE858D !important;
+}
+
+body.normal-mode {
+  --browser-chrome-color: #BE858D;
+  background-color: #BE858D !important;
+}
+
+html.special-mode {
+  --browser-chrome-color: #A6B09F;
+  background-color: #A6B09F !important;
+}
+
+body.special-mode {
+  --browser-chrome-color: #A6B09F;
+  background-color: #A6B09F !important;
+}
+
+/* Keep the invitation itself on its intended paper color.
+   The BODY remains the mode color so browser chrome / overscroll samples it. */
+body.normal-mode #mainContent {
+  background-color: #FFFAFA !important;
+}
+
+body.special-mode #mainContent {
+  background-color: #F8F3EA !important;
+}
+
+/* viewport-fit=cover: paint the physical safe areas with the same
+   color as Android/iOS browser chrome. */
+body.normal-mode::before,
+body.normal-mode::after,
+body.special-mode::before,
+body.special-mode::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  background-color: var(--browser-chrome-color) !important;
+}
+
+body.normal-mode::before,
+body.special-mode::before {
+  top: 0;
+  height: max(env(safe-area-inset-top, 0px), 1px);
+}
+
+body.normal-mode::after,
+body.special-mode::after {
+  bottom: 0;
+  height: max(env(safe-area-inset-bottom, 0px), 1px);
+}
+
+/* Before the user chooses a mode there is deliberately no tinted
+   safe-area overlay; the initial browser chrome remains white. */
+body:not(.normal-mode):not(.special-mode)::before,
+body:not(.normal-mode):not(.special-mode)::after {
+  content: none !important;
+}
+
+/* Prevent legacy special-only rules from forcing sage onto normal mode. */
+html.normal-mode,
+body.normal-mode {
+  background-color: #BE858D !important;
+}
+
+html.special-mode,
+body.special-mode {
+  background-color: #A6B09F !important;
+}
