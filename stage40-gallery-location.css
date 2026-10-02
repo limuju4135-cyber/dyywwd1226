@@ -134,3 +134,87 @@
   -webkit-user-select: none !important;
   user-select: none !important;
 }
+
+
+/* ============================================================
+   STAGE 45 — GALLERY RANDOM DRAW
+   갤러리 타이틀 옆 랜덤 사진 뽑기 버튼
+   ============================================================ */
+#gallery .gallery__heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .72rem;
+  margin-bottom: var(--spacing-lg);
+}
+
+#gallery .gallery__title {
+  margin-bottom: 0 !important;
+}
+
+#gallery .gallery__random-btn {
+  appearance: none;
+  -webkit-appearance: none;
+
+  min-height: 32px;
+  padding: .42rem .82rem;
+
+  border: 1px solid rgba(199,166,115,.58);
+  border-radius: 999px;
+
+  background:
+    linear-gradient(180deg, rgba(255,253,249,.96), rgba(249,243,235,.94));
+  color: #7A252A;
+
+  font-family:
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    sans-serif;
+  font-size: .70rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .035em;
+
+  box-shadow:
+    0 4px 14px rgba(83,55,45,.06),
+    inset 0 0 0 1px rgba(255,255,255,.55);
+
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+}
+
+#gallery .gallery__random-btn:hover {
+  border-color: rgba(183,139,78,.78);
+  background:
+    linear-gradient(180deg, rgba(255,252,247,1), rgba(247,237,226,.98));
+  box-shadow:
+    0 6px 18px rgba(83,55,45,.09),
+    inset 0 0 0 1px rgba(255,255,255,.62);
+}
+
+#gallery .gallery__random-btn:active {
+  transform: scale(.96);
+}
+
+#gallery .gallery__random-btn[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 390px) {
+  #gallery .gallery__heading {
+    gap: .58rem;
+  }
+
+  #gallery .gallery__random-btn {
+    min-height: 30px;
+    padding: .40rem .72rem;
+    font-size: .66rem;
+  }
+}
