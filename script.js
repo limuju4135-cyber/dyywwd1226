@@ -152,13 +152,13 @@
 
     // 원본 gallery/story click handler보다 먼저 현재 위치 저장
     document.addEventListener('pointerdown', (event) => {
-      if (event.target.closest('.gallery__item, .story__photo-item')) {
+      if (event.target.closest('.gallery__item, .story__photo-item, #galleryRandomBtn')) {
         rememberScrollPosition();
       }
     }, true);
 
     document.addEventListener('click', (event) => {
-      if (event.target.closest('.gallery__item, .story__photo-item')) {
+      if (event.target.closest('.gallery__item, .story__photo-item, #galleryRandomBtn')) {
         rememberScrollPosition();
 
         if (!history.state || !history.state.__weddingPhotoModal) {
