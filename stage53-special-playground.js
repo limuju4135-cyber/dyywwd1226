@@ -164,6 +164,10 @@
 
     scene.addEventListener('pointerdown', event => {
       if (!isMobileSpecial()) return;
+
+      // Ornament taps must remain clicks. Rotate by dragging the tree itself.
+      if (event.target.closest('.message-tree__ornament')) return;
+
       pointerId = event.pointerId;
       startX = event.clientX;
       startY = event.clientY;
@@ -584,6 +588,7 @@
         return;
       }
 
+      lastSpecialGalleryIndex = 0;
       showSpecialGalleryImage(0, false);
     } catch (error) {
       console.warn('[Special gallery]', error);
