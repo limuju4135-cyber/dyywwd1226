@@ -393,15 +393,10 @@
 
   let modalImages = [];
   let modalIndex = 0;
+  let modalAnimating = false;
+  let modalTransitionId = 0;
 
-  function showModalImage() {
-    const img = $('#modalImg');
-    if (!img || !modalImages.length) return;
-
-    const src = modalImages[modalIndex];
-    img.dataset.protectedSrc = src;
-    img.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`;
-
+  function updateModalUi() {
     const counter = $('#modalCounter');
     if (counter) counter.textContent = `${modalIndex + 1} / ${modalImages.length}`;
 
@@ -411,16 +406,121 @@
     if (next) next.style.display = modalIndex < modalImages.length - 1 ? '' : 'none';
   }
 
+  function setModalImage(index) {
+    const img = $('#modalImg');
+    if (!img || !modalImages.length) return;
+
+    const src = modalImages[index];
+    img.dataset.protectedSrc = src;
+    img.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`;
+  }
+
+  function showModalImage() {
+    if (!modalImages.length) return;
+    setModalImage(modalIndex);
+    updateModalUi();
+  }
+
+  function preloadModalImage(src) {
+    return new Promise(resolve => {
+      const preloader = new Image();
+      preloader.onload = resolve;
+      preloader.onerror = resolve;
+      preloader.src = src;
+    });
+  }
+
+  async function changeModalImage(targetIndex, direction) {
+    if (
+      modalAnimating ||
+      targetIndex < 0 ||
+      targetIndex >= modalImages.length ||
+      targetIndex === modalIndex
+    ) return;
+
+    const img = $('#modalImg');
+    if (!img) return;
+
+    const reduceMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ||
+      typeof img.animate !== 'function';
+
+    if (reduceMotion) {
+      modalIndex = targetIndex;
+      showModalImage();
+      return;
+    }
+
+    modalAnimating = true;
+    const transitionId = ++modalTransitionId;
+    const nextSrc = modalImages[targetIndex];
+    const offset = Math.min(18, Math.max(10, window.innerWidth * 0.035));
+    const sign = direction >= 0 ? 1 : -1;
+
+    try {
+      // 다음 사진을 먼저 받아두어 전환 중 빈 화면이 생기지 않게 합니다.
+      await preloadModalImage(nextSrc);
+      if (transitionId !== modalTransitionId) return;
+
+      const outAnimation = img.animate(
+        [
+          { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
+          { opacity: 0, transform: `translate3d(${-sign * offset}px, 0, 0) scale(.995)` }
+        ],
+        {
+          duration: 155,
+          easing: 'cubic-bezier(.4, 0, .2, 1)',
+          fill: 'forwards'
+        }
+      );
+
+      await outAnimation.finished.catch(() => {});
+      if (transitionId !== modalTransitionId) return;
+
+      modalIndex = targetIndex;
+      setModalImage(modalIndex);
+      updateModalUi();
+
+      const inAnimation = img.animate(
+        [
+          { opacity: 0, transform: `translate3d(${sign * offset}px, 0, 0) scale(.995)` },
+          { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' }
+        ],
+        {
+          duration: 225,
+          easing: 'cubic-bezier(.22, 1, .36, 1)',
+          fill: 'forwards'
+        }
+      );
+
+      await inAnimation.finished.catch(() => {});
+    } finally {
+      if (transitionId === modalTransitionId) {
+        img.getAnimations().forEach(animation => animation.cancel());
+        modalAnimating = false;
+      }
+    }
+  }
+
   function openPhotoModal(images, index) {
+    modalTransitionId += 1;
+    modalAnimating = false;
     modalImages = images;
     modalIndex = index;
     showModalImage();
+
     const modal = $('#photoModal');
     if (modal) modal.classList.add('is-open');
     document.body.classList.add('no-scroll');
   }
 
   function closePhotoModal() {
+    modalTransitionId += 1;
+    modalAnimating = false;
+
+    const img = $('#modalImg');
+    img?.getAnimations().forEach(animation => animation.cancel());
+
     const modal = $('#photoModal');
     if (modal) modal.classList.remove('is-open');
     document.body.classList.remove('no-scroll');
@@ -431,17 +531,13 @@
     if (!modal) return;
 
     $('#modalClose')?.addEventListener('click', closePhotoModal);
+
     $('#modalPrev')?.addEventListener('click', () => {
-      if (modalIndex > 0) {
-        modalIndex -= 1;
-        showModalImage();
-      }
+      changeModalImage(modalIndex - 1, -1);
     });
+
     $('#modalNext')?.addEventListener('click', () => {
-      if (modalIndex < modalImages.length - 1) {
-        modalIndex += 1;
-        showModalImage();
-      }
+      changeModalImage(modalIndex + 1, 1);
     });
 
     modal.addEventListener('click', e => {
@@ -450,20 +546,25 @@
 
     document.addEventListener('keydown', e => {
       if (!modal.classList.contains('is-open')) return;
+
       if (e.key === 'Escape') closePhotoModal();
+      if (e.key === 'ArrowLeft') changeModalImage(modalIndex - 1, -1);
+      if (e.key === 'ArrowRight') changeModalImage(modalIndex + 1, 1);
     });
 
     let startX = 0;
     const container = $('#modalContainer');
+
     container?.addEventListener('touchstart', e => {
       startX = e.changedTouches[0].screenX;
     }, { passive: true });
+
     container?.addEventListener('touchend', e => {
       const diff = startX - e.changedTouches[0].screenX;
       if (Math.abs(diff) < 50) return;
-      if (diff > 0 && modalIndex < modalImages.length - 1) modalIndex += 1;
-      if (diff < 0 && modalIndex > 0) modalIndex -= 1;
-      showModalImage();
+
+      if (diff > 0) changeModalImage(modalIndex + 1, 1);
+      if (diff < 0) changeModalImage(modalIndex - 1, -1);
     }, { passive: true });
   }
 
