@@ -54,8 +54,19 @@
   }
 
   function applyBrowserTheme(mode) {
-    const special = mode === 'special';
-    const color = '#A6B09F';
+    const resolvedMode =
+      mode === 'special'
+        ? 'special'
+        : mode === 'normal'
+          ? 'normal'
+          : 'idle';
+
+    const color =
+      resolvedMode === 'special'
+        ? '#A6B09F'
+        : resolvedMode === 'normal'
+          ? '#BE858D'
+          : '#FFFFFF';
 
     let meta = document.querySelector('meta[name="theme-color"]');
 
@@ -75,7 +86,7 @@
     } catch {}
 
     window.dispatchEvent(new CustomEvent('wedding-mode-change', {
-      detail: { mode: special ? 'special' : 'normal' }
+      detail: { mode: resolvedMode }
     }));
   }
 
@@ -114,8 +125,8 @@
     let specialTriggered = false;
     let invitationOpening = false;
 
-    invitationMode = 'normal';
-    applyBrowserTheme('normal');
+    invitationMode = 'idle';
+    applyBrowserTheme('idle');
     document.body.classList.remove('special-mode', 'normal-mode');
     document.documentElement.classList.remove('special-mode', 'normal-mode');
     curtain.classList.remove('is-special-unlocking');
