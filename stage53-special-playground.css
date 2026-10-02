@@ -293,7 +293,7 @@ body.special-mode #gallery .special-gallery__title {
 }
 
 /* ------------------------------------------------------------
-   2D MESSAGE TREE — 15 slots / 1 always reserved
+   2D MESSAGE TREE — approved PNG tree + 12 ornament sprites
    ------------------------------------------------------------ */
 .message-tree {
   position: relative;
@@ -302,7 +302,7 @@ body.special-mode #gallery .special-gallery__title {
 
 .message-tree__stage {
   position: relative;
-  width: min(88vw, 390px);
+  width: min(90vw, 398px);
   margin: 0 auto;
   aspect-ratio: 1086 / 1448;
   isolation: isolate;
@@ -320,8 +320,8 @@ body.special-mode #gallery .special-gallery__title {
   -webkit-user-drag: none;
   user-select: none;
   filter:
-    drop-shadow(0 12px 17px rgba(70,78,69,.08))
-    saturate(.95);
+    drop-shadow(0 10px 18px rgba(70,78,69,.08))
+    saturate(.98);
 }
 
 .message-tree__ornaments {
@@ -331,25 +331,63 @@ body.special-mode #gallery .special-gallery__title {
   pointer-events: none;
 }
 
-.message-tree__ornament,
-.message-tree__ornament.is-new {
-  z-index: 8;
-  animation: stage57-ornament-arrive 1.22s cubic-bezier(.16,1,.3,1) both;
+.message-tree__ornament {
+  position: absolute;
+  left: var(--slot-x);
+  top: var(--slot-y);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: clamp(44px, var(--slot-size), 62px);
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.message-tree__ornament.is-new 
 .message-tree__ornament::before {
   content: "";
   position: absolute;
-  inset: 5%;
+  inset: 6%;
+  z-index: -1;
   border-radius: 50%;
-  background: rgba(248,243,234,.20);
-  box-shadow: 0 0 8px rgba(210,191,145,.12);
+  background: rgba(248,243,234,.18);
+  box-shadow: 0 0 8px rgba(210,191,145,.10);
   pointer-events: none;
 }
 
 .message-tree__ornament-sprite {
-  animation: stage57-ornament-glow 1.65s ease-out both;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: var(--ornament-sheet);
+  background-size: 400% 300%;
+  background-repeat: no-repeat;
+  background-position: var(--bg-x) var(--bg-y);
+  pointer-events: none;
+  filter: drop-shadow(0 4px 5px rgba(71,62,43,.18));
+}
+
+.message-tree__ornament.is-new {
+  z-index: 8;
+  animation:
+    stage57-ornament-arrive
+    1.22s
+    cubic-bezier(.16,1,.3,1)
+    both;
+}
+
+.message-tree__ornament.is-new .message-tree__ornament-sprite {
+  animation:
+    stage57-ornament-glow
+    1.65s
+    ease-out
+    both;
 }
 
 .message-tree__sparkles {
@@ -376,7 +414,11 @@ body.special-mode #gallery .special-gallery__title {
     rotate(var(--spark-angle))
     translateX(0);
   animation:
-    stage57-sparkle .9s var(--spark-delay) cubic-bezier(.16,1,.3,1) both;
+    stage57-sparkle
+    .9s
+    var(--spark-delay)
+    cubic-bezier(.16,1,.3,1)
+    both;
 }
 
 .message-tree__empty {
@@ -430,29 +472,41 @@ body.special-mode #gallery .special-gallery__title {
 @keyframes stage57-ornament-arrive {
   0% {
     opacity: 0;
-    transform: translate(-50%, calc(-50% - 34px)) scale(1.42) rotate(-8deg);
+    transform:
+      translate(-50%, calc(-50% - 34px))
+      scale(1.42)
+      rotate(-8deg);
   }
   58% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(.94) rotate(3deg);
+    transform:
+      translate(-50%, -50%)
+      scale(.94)
+      rotate(3deg);
   }
   76% {
-    transform: translate(-50%, -50%) scale(1.08) rotate(-1deg);
+    transform:
+      translate(-50%, -50%)
+      scale(1.08)
+      rotate(-1deg);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(0);
+    transform:
+      translate(-50%, -50%)
+      scale(1)
+      rotate(0);
   }
 }
 
 @keyframes stage57-ornament-glow {
   0%, 100% {
-    filter: drop-shadow(0 3px 4px rgba(71,62,43,.14));
+    filter: drop-shadow(0 4px 5px rgba(71,62,43,.18));
   }
   36%, 68% {
     filter:
-      drop-shadow(0 0 6px rgba(210,191,145,.92))
-      drop-shadow(0 0 13px rgba(210,191,145,.52));
+      drop-shadow(0 0 6px rgba(210,191,145,.94))
+      drop-shadow(0 0 14px rgba(210,191,145,.58));
   }
 }
 
@@ -464,7 +518,9 @@ body.special-mode #gallery .special-gallery__title {
       translateX(0)
       scale(.2);
   }
-  28% { opacity: 1; }
+  28% {
+    opacity: 1;
+  }
   100% {
     opacity: 0;
     transform:
@@ -1052,7 +1108,7 @@ body.special-mode #hero .hero__quick-btn[hidden] {
 
 @media (prefers-reduced-motion: reduce) {
   .message-tree__ornament.is-new,
-  .message-tree__ornament.is-new img,
+  .message-tree__ornament.is-new .message-tree__ornament-sprite,
   .message-tree__sparkles i {
     animation: none !important;
   }
@@ -1062,17 +1118,6 @@ body.special-mode #hero .hero__quick-btn[hidden] {
 /* ============================================================
    STAGE 58 — APPROVED TREE ART + FIXED BEHIND CUT GEOMETRY
    ============================================================ */
-.message-tree__stage {
-  width: min(90vw, 398px) !important;
-  aspect-ratio: 1086 / 1448 !important;
-}
-
-.message-tree__image {
-  filter:
-    drop-shadow(0 10px 18px rgba(70,78,69,.08))
-    saturate(.98) !important;
-}
-
 .special-gallery__machine {
   display: grid !important;
   justify-items: center !important;
