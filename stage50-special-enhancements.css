@@ -51,6 +51,24 @@
   content: none !important;
 }
 
+/* Unlock copy is anchored directly above the curtain date */
+.curtain__content {
+  position: relative;
+}
+
+.curtain__content > .special-unlock-fx__copy {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  z-index: 30;
+  width: max-content;
+  max-width: min(88vw, 360px);
+  padding: 0;
+  gap: .34rem;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - .72rem)) scale(.96);
+}
+
 /* 2) Stronger unlock event */
 .curtain.is-special-unlocking {
   animation: stage50-curtain-impact .55s cubic-bezier(.2,.8,.2,1) both;
@@ -220,7 +238,7 @@
 @keyframes stage50-copy-reveal {
   0% {
     opacity: 0;
-    transform: translateY(14px) scale(.88);
+    transform: translate(-50%, calc(-100% - .40rem)) scale(.88);
     filter: blur(5px);
   }
   25% {
@@ -229,15 +247,15 @@
   }
   58% {
     opacity: 1;
-    transform: translateY(0) scale(1.035);
+    transform: translate(-50%, calc(-100% - .72rem)) scale(1.035);
   }
   78% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, calc(-100% - .72rem)) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateY(-8px) scale(1.02);
+    transform: translate(-50%, calc(-100% - 1rem)) scale(1.02);
   }
 }
 
