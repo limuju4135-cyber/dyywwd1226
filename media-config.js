@@ -9,7 +9,8 @@ const MEDIA_CONFIG = Object.freeze({
     invitation: "/api/invitation",
     contacts: "/api/contacts",
     accounts: "/api/accounts",
-    gallery: "/api/gallery"
+    gallery: "/api/gallery",
+    specialGallery: "/api/special-gallery"
   },
 
   media: {
