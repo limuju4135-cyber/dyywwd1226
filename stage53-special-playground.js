@@ -4,6 +4,34 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+  const TREE_SLOT_LIMIT = 15;
+  const TREE_VISIBLE_LIMIT = 14;
+  const ORNAMENT_ASSETS = [
+    'assets/special/ornament-1.svg?v=stage57',
+    'assets/special/ornament-2.svg?v=stage57',
+    'assets/special/ornament-3.svg?v=stage57',
+    'assets/special/ornament-4.svg?v=stage57'
+  ];
+
+  // Percent positions over the 2D tree image. One slot is always reserved.
+  const TREE_SLOTS = [
+    { x: 50, y: 23, s: 10 },
+    { x: 36, y: 31, s: 9 },
+    { x: 64, y: 31, s: 9 },
+    { x: 27, y: 41, s: 10 },
+    { x: 45, y: 40, s: 9 },
+    { x: 70, y: 42, s: 10 },
+    { x: 20, y: 52, s: 9 },
+    { x: 37, y: 51, s: 10 },
+    { x: 57, y: 53, s: 9 },
+    { x: 78, y: 54, s: 10 },
+    { x: 25, y: 65, s: 10 },
+    { x: 43, y: 64, s: 9 },
+    { x: 62, y: 66, s: 10 },
+    { x: 76, y: 69, s: 9 },
+    { x: 50, y: 76, s: 10 }
+  ];
+
   let messages = [];
   let messagesLoaded = false;
   let messagesLoading = false;
@@ -14,6 +42,11 @@
   let adminTitleTapTimer = null;
   let selectedMessageId = '';
 
+  let treeState = {
+    assignments: new Map(),
+    reservedSlot: 0
+  };
+
   let specialGalleryImages = [];
   let specialGalleryLoaded = false;
   let lastSpecialGalleryIndex = -1;
@@ -23,17 +56,52 @@
   }
 
   function isMobileSpecial() {
-    return isSpecial() &&
-      window.matchMedia('(pointer: coarse)').matches &&
-      (document.documentElement.clientWidth || window.innerWidth) <= 768;
+    const coarse =
+      window.matchMedia?.('(pointer: coarse)').matches ||
+      ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+
+    return (
+      isSpecial() &&
+      coarse &&
+      (document.documentElement.clientWidth || window.innerWidth) <= 768
+    );
   }
 
   function formatMessageDate(timestamp) {
     const date = new Date(Number(timestamp) || Date.now());
+
     return [
       String(date.getMonth() + 1).padStart(2, '0'),
       String(date.getDate()).padStart(2, '0')
     ].join('.');
+  }
+
+  function shuffle(list) {
+    const copy = [...list];
+
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+
+    return copy;
+  }
+
+  function randomFrom(list) {
+    if (!list.length) return null;
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function stableNumber(value) {
+    let hash = 2166136261;
+    const string = String(value || '');
+
+    for (let i = 0; i < string.length; i += 1) {
+      hash ^= string.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+
+    return Math.abs(hash >>> 0);
   }
 
   /* ----------------------------------------------------------
@@ -44,184 +112,253 @@
     if (buttons.length < 3) return;
 
     if (isMobileSpecial()) {
-      const setup = [
-        ['메시지함', 'specialMessages'],
-        ['갤러리', 'gallery'],
-        ['눈사람', 'specialSnow']
-      ];
+      buttons[0].textContent = '메시지함';
+      buttons[0].dataset.scrollTarget = 'specialMessages';
+      buttons[0].hidden = false;
 
-      buttons.slice(0, 3).forEach((button, index) => {
-        button.textContent = setup[index][0];
-        button.dataset.scrollTarget = setup[index][1];
-      });
+      buttons[1].textContent = '비하인드';
+      buttons[1].dataset.scrollTarget = 'gallery';
+      buttons[1].hidden = false;
+
+      buttons[2].hidden = true;
 
       loadMessages();
       loadSpecialGallery();
-    } else {
-      const setup = [
-        ['연락처', 'contact'],
-        ['갤러리', 'gallery'],
-        ['오시는 길', 'location']
-      ];
-
-      buttons.slice(0, 3).forEach((button, index) => {
-        button.textContent = setup[index][0];
-        button.dataset.scrollTarget = setup[index][1];
-      });
-    }
-  }
-
-  /* ----------------------------------------------------------
-     3D MESSAGE TREE
-     ---------------------------------------------------------- */
-  function ensureTreeFoliage() {
-    const foliage = $('#messageTreeFoliage');
-    if (!foliage || foliage.childElementCount) return;
-
-    const bladeCount = 16;
-
-    for (let i = 0; i < bladeCount; i += 1) {
-      const blade = document.createElement('i');
-      blade.className = 'message-tree__blade';
-      blade.style.setProperty('--blade-angle', (360 / bladeCount * i) + 'deg');
-      blade.style.setProperty('--shade', String(i % 4));
-      foliage.appendChild(blade);
-    }
-  }
-
-  function ornamentPosition(index) {
-    const tier = index % 7;
-    const round = Math.floor(index / 7);
-    const angle = (index * 137.508 + round * 19) % 360;
-    const y = -92 + tier * 30;
-    const radius = 25 + tier * 11;
-    const size = 18 + ((index * 7) % 10);
-
-    return { angle, y, radius, size };
-  }
-
-  function renderMessageTree() {
-    const holder = $('#messageTreeOrnaments');
-    const empty = $('#messageTreeEmpty');
-    if (!holder) return;
-
-    ensureTreeFoliage();
-    holder.replaceChildren();
-
-    if (!messages.length) {
-      if (empty) empty.hidden = false;
       return;
     }
 
-    if (empty) empty.hidden = true;
+    const setup = [
+      ['연락처', 'contact'],
+      ['갤러리', 'gallery'],
+      ['오시는 길', 'location']
+    ];
 
-    const colors = ['#D2BF91', '#B98588', '#F8F3EA', '#A6B09F'];
+    buttons.slice(0, 3).forEach((button, index) => {
+      button.hidden = false;
+      button.textContent = setup[index][0];
+      button.dataset.scrollTarget = setup[index][1];
+    });
+  }
 
-    messages.forEach((item, index) => {
-      const position = ornamentPosition(index);
-      const ornament = document.createElement('button');
+  /* ----------------------------------------------------------
+     2D MESSAGE TREE
+     ---------------------------------------------------------- */
+  function chooseReservedSlot(assignments, preferredExclude = -1) {
+    const unused = [];
 
-      ornament.type = 'button';
-      ornament.className = 'message-tree__ornament';
-      ornament.dataset.messageId = item.id || '';
-      ornament.setAttribute(
+    for (let slot = 0; slot < TREE_SLOT_LIMIT; slot += 1) {
+      if (!assignments.has(slot) && slot !== preferredExclude) {
+        unused.push(slot);
+      }
+    }
+
+    if (unused.length) return randomFrom(unused);
+
+    const removable = [...assignments.keys()].filter(
+      slot => slot !== preferredExclude
+    );
+
+    return randomFrom(removable) ?? 0;
+  }
+
+  function buildInitialTreeState() {
+    const visible = shuffle(messages).slice(0, TREE_VISIBLE_LIMIT);
+    const allSlots = shuffle(
+      Array.from({ length: TREE_SLOT_LIMIT }, (_, index) => index)
+    );
+
+    const reservedSlot = allSlots.pop() ?? 0;
+    const assignments = new Map();
+
+    visible.forEach((item, index) => {
+      const slot = allSlots[index];
+      if (slot !== undefined) assignments.set(slot, item.id);
+    });
+
+    treeState = { assignments, reservedSlot };
+  }
+
+  function ornamentAssetFor(item, slot) {
+    const index =
+      (stableNumber(item?.id) + slot) % ORNAMENT_ASSETS.length;
+
+    return ORNAMENT_ASSETS[index];
+  }
+
+  function messageById(id) {
+    return messages.find(item => item.id === id) || null;
+  }
+
+  function createSparkles() {
+    const sparkles = document.createElement('span');
+    sparkles.className = 'message-tree__sparkles';
+    sparkles.setAttribute('aria-hidden', 'true');
+
+    for (let i = 0; i < 6; i += 1) {
+      const spark = document.createElement('i');
+      spark.style.setProperty('--spark-angle', String(i * 60) + 'deg');
+      spark.style.setProperty('--spark-delay', String(i * 38) + 'ms');
+      sparkles.appendChild(spark);
+    }
+
+    return sparkles;
+  }
+
+  function renderTreeState(highlightMessageId = '') {
+    const holder = $('#messageTreeOrnaments');
+    const empty = $('#messageTreeEmpty');
+
+    if (!holder) return;
+
+    holder.replaceChildren();
+
+    for (const [slotIndex, messageId] of treeState.assignments.entries()) {
+      const item = messageById(messageId);
+      const slot = TREE_SLOTS[slotIndex];
+
+      if (!item || !slot) continue;
+
+      const button = document.createElement('button');
+      const image = document.createElement('img');
+
+      button.type = 'button';
+      button.className = 'message-tree__ornament';
+      button.dataset.messageId = item.id;
+      button.dataset.slot = String(slotIndex);
+      button.style.setProperty('--slot-x', slot.x + '%');
+      button.style.setProperty('--slot-y', slot.y + '%');
+      button.style.setProperty('--slot-size', slot.s + '%');
+      button.setAttribute(
         'aria-label',
         (item.name || '익명') + '님의 메시지 보기'
       );
 
-      ornament.style.setProperty('--ornament-angle', position.angle + 'deg');
-      ornament.style.setProperty('--ornament-y', position.y + 'px');
-      ornament.style.setProperty('--ornament-radius', position.radius + 'px');
-      ornament.style.setProperty('--ornament-size', position.size + 'px');
-      ornament.style.setProperty('--ornament-color', colors[index % colors.length]);
+      image.src = ornamentAssetFor(item, slotIndex);
+      image.alt = '';
+      image.draggable = false;
+      button.appendChild(image);
 
-      const cap = document.createElement('i');
-      cap.className = 'message-tree__ornament-cap';
-      ornament.appendChild(cap);
+      if (item.id === highlightMessageId) {
+        button.classList.add('is-new');
+        button.appendChild(createSparkles());
+      }
 
-      holder.appendChild(ornament);
-    });
+      holder.appendChild(button);
+    }
+
+    const reservedSlot = TREE_SLOTS[treeState.reservedSlot];
+
+    if (reservedSlot) {
+      const reserved = document.createElement('span');
+      const ghost = document.createElement('img');
+
+      reserved.className = 'message-tree__reserved';
+      reserved.style.setProperty('--slot-x', reservedSlot.x + '%');
+      reserved.style.setProperty('--slot-y', reservedSlot.y + '%');
+      reserved.style.setProperty('--slot-size', reservedSlot.s + '%');
+      reserved.setAttribute('aria-hidden', 'true');
+
+      ghost.src =
+        ORNAMENT_ASSETS[
+          (treeState.reservedSlot + treeState.assignments.size) %
+          ORNAMENT_ASSETS.length
+        ];
+      ghost.alt = '';
+      reserved.appendChild(ghost);
+      holder.appendChild(reserved);
+    }
+
+    if (empty) {
+      empty.hidden = messages.length !== 0;
+    }
   }
 
-  function initTreeRotation() {
-    const scene = $('#messageTreeScene');
-    const rotator = $('#messageTreeRotator');
-    if (!scene || !rotator) return;
+  function showTreeFeedback() {
+    const feedback = $('#messageTreeFeedback');
+    if (!feedback) return;
 
-    let rotation = -18;
-    let pointerId = null;
-    let startX = 0;
-    let startY = 0;
-    let startRotation = rotation;
-    let moved = false;
-    let suppressClickUntil = 0;
+    feedback.hidden = false;
+    feedback.classList.remove('is-show');
 
-    function applyRotation() {
-      rotator.style.setProperty('--tree-rotation', rotation + 'deg');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        feedback.classList.add('is-show');
+      });
+    });
+
+    window.clearTimeout(showTreeFeedback.timer);
+    showTreeFeedback.timer = window.setTimeout(() => {
+      feedback.classList.remove('is-show');
+
+      window.setTimeout(() => {
+        feedback.hidden = true;
+      }, 260);
+    }, 3100);
+  }
+
+  function moveTreeIntoView() {
+    const stage = $('#messageTreeStage');
+    if (!stage) return;
+
+    const rect = stage.getBoundingClientRect();
+    const viewportHeight =
+      window.visualViewport?.height || window.innerHeight;
+
+    const sufficientlyVisible =
+      rect.top >= 50 && rect.bottom <= viewportHeight - 24;
+
+    if (!sufficientlyVisible) {
+      window.setTimeout(() => {
+        stage.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }, 90);
     }
+  }
 
-    applyRotation();
+  function attachNewMessage(item) {
+    if (!item?.id) return;
 
-    scene.addEventListener('pointerdown', event => {
-      if (!isMobileSpecial()) return;
+    const targetSlot = treeState.reservedSlot;
 
-      // Ornament taps must remain clicks. Rotate by dragging the tree itself.
-      if (event.target.closest('.message-tree__ornament')) return;
+    // New message visibly occupies the reserved spot first.
+    treeState.assignments.set(targetSlot, item.id);
+    renderTreeState(item.id);
+    showTreeFeedback();
+    moveTreeIntoView();
 
-      pointerId = event.pointerId;
-      startX = event.clientX;
-      startY = event.clientY;
-      startRotation = rotation;
-      moved = false;
+    // After the celebration, create the next subtle reserved position.
+    window.setTimeout(() => {
+      if (treeState.assignments.size > TREE_VISIBLE_LIMIT) {
+        const candidates = [...treeState.assignments.keys()].filter(
+          slot => slot !== targetSlot
+        );
 
-      try {
-        scene.setPointerCapture(pointerId);
-      } catch {}
-    });
+        const victim = randomFrom(candidates);
 
-    scene.addEventListener('pointermove', event => {
-      if (pointerId === null || event.pointerId !== pointerId) return;
-
-      const dx = event.clientX - startX;
-      const dy = event.clientY - startY;
-
-      if (!moved) {
-        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
-        if (Math.abs(dy) > Math.abs(dx) * 1.1) return;
-        moved = true;
-        scene.classList.add('is-rotating');
-      }
-
-      rotation = startRotation + dx * .72;
-      applyRotation();
-    });
-
-    function endPointer(event) {
-      if (pointerId === null) return;
-      if (event?.pointerId !== undefined && event.pointerId !== pointerId) return;
-
-      if (moved) {
-        suppressClickUntil = Date.now() + 260;
-      }
-
-      scene.classList.remove('is-rotating');
-
-      try {
-        if (scene.hasPointerCapture?.(pointerId)) {
-          scene.releasePointerCapture(pointerId);
+        if (victim !== null) {
+          treeState.assignments.delete(victim);
+          treeState.reservedSlot = victim;
         }
-      } catch {}
+      } else {
+        treeState.reservedSlot = chooseReservedSlot(
+          treeState.assignments,
+          targetSlot
+        );
+      }
 
-      pointerId = null;
-      moved = false;
-    }
+      renderTreeState();
+    }, 1900);
+  }
 
-    scene.addEventListener('pointerup', endPointer);
-    scene.addEventListener('pointercancel', endPointer);
+  function initMessageTreeInteraction() {
+    const holder = $('#messageTreeOrnaments');
+    if (!holder) return;
 
-    scene.addEventListener('click', event => {
+    holder.addEventListener('click', event => {
       const ornament = event.target.closest('.message-tree__ornament');
-      if (!ornament || Date.now() < suppressClickUntil) return;
+      if (!ornament) return;
 
       openMessageDetail(ornament.dataset.messageId || '');
     });
@@ -231,7 +368,7 @@
      MESSAGE DETAIL
      ---------------------------------------------------------- */
   function openMessageDetail(id) {
-    const item = messages.find(message => message.id === id);
+    const item = messageById(id);
     const modal = $('#messageDetailModal');
 
     if (!item || !modal) return;
@@ -249,7 +386,10 @@
     if (deleteButton) deleteButton.hidden = !messageAdminPin;
 
     modal.hidden = false;
-    requestAnimationFrame(() => modal.classList.add('is-open'));
+
+    requestAnimationFrame(() => {
+      modal.classList.add('is-open');
+    });
   }
 
   function closeMessageDetail() {
@@ -267,6 +407,7 @@
   function initMessageDetail() {
     const modal = $('#messageDetailModal');
     const deleteButton = $('#messageDetailDelete');
+
     if (!modal) return;
 
     modal.addEventListener('click', event => {
@@ -278,10 +419,12 @@
     deleteButton?.addEventListener('click', async () => {
       if (!selectedMessageId || !messageAdminPin) return;
 
-      const item = messages.find(message => message.id === selectedMessageId);
+      const item = messageById(selectedMessageId);
       const preview = String(item?.message || '').slice(0, 26);
 
-      if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) return;
+      if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) {
+        return;
+      }
 
       deleteButton.disabled = true;
       deleteButton.textContent = '삭제 중';
@@ -306,10 +449,13 @@
           return;
         }
 
-        if (!response.ok) throw new Error('delete failed');
+        if (!response.ok) {
+          throw new Error('delete failed');
+        }
 
         messages = messages.filter(item => item.id !== selectedMessageId);
-        renderMessageTree();
+        buildInitialTreeState();
+        renderTreeState();
         closeMessageDetail();
       } catch (error) {
         console.warn('[Message delete]', error);
@@ -325,7 +471,9 @@
      MESSAGE API + FORM
      ---------------------------------------------------------- */
   async function loadMessages(force = false) {
-    if ((!force && messagesLoaded) || messagesLoading || !isMobileSpecial()) return;
+    if ((!force && messagesLoaded) || messagesLoading || !isMobileSpecial()) {
+      return;
+    }
 
     messagesLoading = true;
 
@@ -336,15 +484,21 @@
         cache: 'no-store'
       });
 
-      if (!response.ok) throw new Error('message list failed');
+      if (!response.ok) {
+        throw new Error('message list failed');
+      }
 
       const data = await response.json();
       messages = Array.isArray(data.messages) ? data.messages : [];
       messagesLoaded = true;
-      renderMessageTree();
+
+      buildInitialTreeState();
+      renderTreeState();
     } catch (error) {
       console.warn('[Special messages]', error);
+
       const empty = $('#messageTreeEmpty');
+
       if (empty) {
         empty.hidden = false;
         empty.textContent = '메시지를 불러오지 못했습니다.';
@@ -364,7 +518,9 @@
     if (!form || !messageInput || !submit) return;
 
     function updateCounter() {
-      if (counter) counter.textContent = messageInput.value.length + '/80';
+      if (counter) {
+        counter.textContent = messageInput.value.length + '/80';
+      }
     }
 
     messageInput.addEventListener('input', updateCounter);
@@ -381,10 +537,12 @@
         return;
       }
 
-      if (Date.now() - lastMessageSubmit < 5000) return;
+      if (Date.now() - lastMessageSubmit < 5000) {
+        return;
+      }
 
       submit.disabled = true;
-      submit.textContent = '남기는 중...';
+      submit.textContent = '트리에 다는 중...';
 
       try {
         const response = await fetch('/api/messages', {
@@ -396,18 +554,21 @@
           body: JSON.stringify({ name, message })
         });
 
-        if (!response.ok) throw new Error('message submit failed');
+        if (!response.ok) {
+          throw new Error('message submit failed');
+        }
 
         const item = await response.json();
+
         messages.unshift(item);
         messagesLoaded = true;
-        renderMessageTree();
+        attachNewMessage(item);
 
         messageInput.value = '';
         updateCounter();
         lastMessageSubmit = Date.now();
 
-        submit.textContent = '트리에 달렸어요';
+        submit.textContent = '오너먼트가 달렸어요';
       } catch (error) {
         console.warn('[Special message submit]', error);
         submit.textContent = '다시 시도';
@@ -415,7 +576,7 @@
         window.setTimeout(() => {
           submit.textContent = '메시지 남기기';
           submit.disabled = false;
-        }, 1000);
+        }, 1300);
       }
     });
   }
@@ -459,7 +620,10 @@
     if (error) error.textContent = '';
     input.value = '';
     modal.hidden = false;
-    requestAnimationFrame(() => modal.classList.add('is-open'));
+
+    requestAnimationFrame(() => {
+      modal.classList.add('is-open');
+    });
 
     window.setTimeout(() => {
       try {
@@ -472,9 +636,11 @@
 
   function closeMessageAdminModal() {
     const modal = $('#messageAdminModal');
+
     if (!modal) return;
 
     modal.classList.remove('is-open');
+
     window.setTimeout(() => {
       modal.hidden = true;
     }, 180);
@@ -489,18 +655,24 @@
     const error = $('#messageAdminError');
     const submit = $('#messageAdminSubmit');
 
-    if (!section || !title || !modal || !form || !input || !submit) return;
+    if (!section || !title || !modal || !form || !input || !submit) {
+      return;
+    }
 
     document.addEventListener('pointerdown', event => {
-      if (!isMobileSpecial() || section.classList.contains('is-admin')) return;
+      if (!isMobileSpecial() || section.classList.contains('is-admin')) {
+        return;
+      }
 
-      const target = event.target instanceof Element
-        ? event.target.closest('#specialMessageTitle')
-        : null;
+      const target =
+        event.target instanceof Element
+          ? event.target.closest('#specialMessageTitle')
+          : null;
 
       if (!target) return;
 
       adminTitleTapCount += 1;
+
       clearTimeout(adminTitleTapTimer);
       adminTitleTapTimer = window.setTimeout(() => {
         adminTitleTapCount = 0;
@@ -521,7 +693,10 @@
 
     input.addEventListener('input', () => {
       input.value = input.value.replace(/\D/g, '').slice(0, 6);
-      if (error) error.textContent = '';
+
+      if (error) {
+        error.textContent = '';
+      }
     });
 
     form.addEventListener('submit', async event => {
@@ -530,7 +705,9 @@
       const pin = input.value.trim();
 
       if (!/^\d{6}$/.test(pin)) {
-        if (error) error.textContent = '6자리 PIN을 입력해주세요.';
+        if (error) {
+          error.textContent = '6자리 PIN을 입력해주세요.';
+        }
         return;
       }
 
@@ -541,7 +718,9 @@
         const valid = await verifyMessageAdminPin(pin);
 
         if (!valid) {
-          if (error) error.textContent = 'PIN이 올바르지 않습니다.';
+          if (error) {
+            error.textContent = 'PIN이 올바르지 않습니다.';
+          }
           return;
         }
 
@@ -549,7 +728,10 @@
         closeMessageAdminModal();
       } catch (verifyError) {
         console.warn('[Message admin]', verifyError);
-        if (error) error.textContent = '인증에 실패했습니다.';
+
+        if (error) {
+          error.textContent = '인증에 실패했습니다.';
+        }
       } finally {
         submit.disabled = false;
         submit.textContent = '확인';
@@ -558,18 +740,21 @@
   }
 
   /* ----------------------------------------------------------
-     SPECIAL GALLERY — button left / one photo right
+     SPECIAL GALLERY — compact portrait/landscape polaroid
      ---------------------------------------------------------- */
   async function loadSpecialGallery() {
     if (specialGalleryLoaded || !isMobileSpecial()) return;
 
     const button = $('#specialGalleryDrawBtn');
     const preview = $('#specialGalleryPreview');
+
     if (!button || !preview) return;
 
     try {
       const privateWedding =
-        typeof PRIVATE_WEDDING !== 'undefined' ? PRIVATE_WEDDING : null;
+        typeof PRIVATE_WEDDING !== 'undefined'
+          ? PRIVATE_WEDDING
+          : null;
 
       if (!privateWedding?.getSpecialGalleryManifest) {
         throw new Error('special gallery unavailable');
@@ -578,22 +763,17 @@
       const manifest = await privateWedding.getSpecialGalleryManifest();
       const paths = Array.isArray(manifest.images) ? manifest.images : [];
 
-      specialGalleryImages = paths.map(path => privateWedding.mediaUrl(path));
+      specialGalleryImages = paths.map(
+        path => privateWedding.mediaUrl(path)
+      );
+
       specialGalleryLoaded = true;
 
       if (!specialGalleryImages.length) {
         button.disabled = true;
         preview.classList.add('is-empty');
         preview.textContent = '사진 준비 중';
-        return;
       }
-
-      preview.classList.add('is-empty');
-      preview.replaceChildren();
-      const placeholder = document.createElement('span');
-      placeholder.className = 'special-gallery__placeholder';
-      placeholder.textContent = '?';
-      preview.appendChild(placeholder);
     } catch (error) {
       console.warn('[Special gallery]', error);
       button.disabled = true;
@@ -602,24 +782,40 @@
     }
   }
 
-  function showSpecialGalleryImage(index, animate = true) {
+  function showSpecialGalleryImage(index) {
     const preview = $('#specialGalleryPreview');
-    if (!preview || !specialGalleryImages[index]) return;
-
+    const polaroid = $('.special-gallery__polaroid');
     const src = specialGalleryImages[index];
+
+    if (!preview || !polaroid || !src) return;
+
     const image = new Image();
     image.decoding = 'async';
 
+    polaroid.classList.add('is-changing');
+
     image.onload = () => {
-      if (animate) preview.classList.add('is-changing');
+      const landscape = image.naturalWidth > image.naturalHeight;
 
       window.setTimeout(() => {
+        polaroid.classList.toggle('is-landscape', landscape);
+        polaroid.classList.toggle('is-portrait', !landscape);
+
         preview.textContent = '';
         preview.classList.remove('is-empty');
         preview.style.backgroundImage =
           'url("' + String(src).replace(/"/g, '%22') + '")';
-        preview.classList.remove('is-changing');
-      }, animate ? 140 : 0);
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            polaroid.classList.remove('is-changing');
+          });
+        });
+      }, 190);
+    };
+
+    image.onerror = () => {
+      polaroid.classList.remove('is-changing');
     };
 
     image.src = src;
@@ -627,6 +823,7 @@
 
   function initSpecialGallery() {
     const button = $('#specialGalleryDrawBtn');
+
     if (!button) return;
 
     button.addEventListener('click', () => {
@@ -641,203 +838,13 @@
       }
 
       lastSpecialGalleryIndex = index;
-      showSpecialGalleryImage(index, true);
+      showSpecialGalleryImage(index);
 
       button.classList.add('is-picked');
-      window.setTimeout(() => button.classList.remove('is-picked'), 420);
-    });
-  }
-
-  /* ----------------------------------------------------------
-     SNOWMAN — two free-size circular swipes
-     ---------------------------------------------------------- */
-  function initSnowmanBuilder() {
-    const builder = $('#snowmanBuilder');
-    const preview = $('#snowballRollPreview');
-    const zone = $('#snowmanRollZone');
-    const stageLabel = $('#snowmanStageLabel');
-
-    if (!builder || !preview || !zone) return;
-
-    let stage = 0;
-    let gesture = null;
-    let tapCount = 0;
-    let tapTimer = null;
-
-    function normalizeAngle(value) {
-      while (value > Math.PI) value -= Math.PI * 2;
-      while (value < -Math.PI) value += Math.PI * 2;
-      return value;
-    }
-
-    function startGesture(event) {
-      if (!isMobileSpecial() || stage >= 2) return;
-
-      const rect = zone.getBoundingClientRect();
-
-      gesture = {
-        pointerId: event.pointerId,
-        lastX: event.clientX,
-        lastY: event.clientY,
-        lastVectorAngle: null,
-        turn: 0,
-        path: 0,
-        size: 32,
-        centerX: rect.left + rect.width / 2,
-        centerY: rect.top + rect.height / 2
-      };
-
-      zone.classList.add('is-rolling');
-      preview.classList.add('is-visible');
-      preview.style.setProperty('--roll-x', event.clientX + 'px');
-      preview.style.setProperty('--roll-y', event.clientY + 'px');
-      preview.style.setProperty('--roll-size', '32px');
-
-      try {
-        zone.setPointerCapture(event.pointerId);
-      } catch {}
-    }
-
-    function updateGesture(event) {
-      if (!gesture || event.pointerId !== gesture.pointerId) return;
-
-      event.preventDefault();
-
-      const dx = event.clientX - gesture.lastX;
-      const dy = event.clientY - gesture.lastY;
-      const distance = Math.hypot(dx, dy);
-
-      if (distance < 1.2) return;
-
-      const vectorAngle = Math.atan2(dy, dx);
-
-      if (gesture.lastVectorAngle !== null) {
-        const delta = normalizeAngle(vectorAngle - gesture.lastVectorAngle);
-
-        if (Math.abs(delta) <= 1.55) {
-          gesture.turn += Math.abs(delta);
-        }
-      }
-
-      gesture.lastVectorAngle = vectorAngle;
-      gesture.lastX = event.clientX;
-      gesture.lastY = event.clientY;
-      gesture.path += distance;
-
-      // Every continuing circular swipe visibly grows the ball.
-      gesture.size = Math.max(
-        32,
-        Math.min(
-          118,
-          32 + gesture.turn * 8.6 + gesture.path * .055
-        )
-      );
-
-      preview.style.setProperty('--roll-x', event.clientX + 'px');
-      preview.style.setProperty('--roll-y', event.clientY + 'px');
-      preview.style.setProperty('--roll-size', gesture.size + 'px');
-    }
-
-    function applySnowmanGeometry() {
-      const bodySize = Number(builder.dataset.bodySize || 0);
-      const headSize = Number(builder.dataset.headSize || 0);
-
-      // Head sits directly on the body. Oversized heads are intentionally allowed.
-      const headBottom = Math.max(18, bodySize * .72);
-
-      builder.style.setProperty('--body-size', bodySize + 'px');
-      builder.style.setProperty('--head-size', headSize + 'px');
-      builder.style.setProperty('--head-bottom', headBottom + 'px');
-    }
-
-    function finishGesture(event, cancelled = false) {
-      if (!gesture || event.pointerId !== gesture.pointerId) return;
-
-      const current = gesture;
-      gesture = null;
-
-      zone.classList.remove('is-rolling');
-      preview.classList.remove('is-visible');
-
-      try {
-        if (zone.hasPointerCapture?.(event.pointerId)) {
-          zone.releasePointerCapture(event.pointerId);
-        }
-      } catch {}
-
-      if (cancelled) return;
-
-      // Forgiving threshold: roughly a curved half-to-full loop is sufficient.
-      const valid =
-        current.path >= 85 &&
-        current.turn >= .72;
-
-      if (!valid) {
-        zone.classList.add('is-retry');
-        window.setTimeout(() => zone.classList.remove('is-retry'), 320);
-        return;
-      }
-
-      const size = Math.round(current.size);
-
-      if (stage === 0) {
-        stage = 1;
-        builder.dataset.stage = '1';
-        builder.dataset.bodySize = String(size);
-        builder.dataset.headSize = '0';
-        applySnowmanGeometry();
-
-        if (stageLabel) stageLabel.textContent = '머리 굴리기';
-        return;
-      }
-
-      stage = 2;
-      builder.dataset.stage = '2';
-      builder.dataset.headSize = String(size);
-      applySnowmanGeometry();
-
-      builder.classList.add('is-head-drop');
-      window.setTimeout(() => {
-        builder.classList.remove('is-head-drop');
-      }, 480);
-
-      if (stageLabel) stageLabel.textContent = '완성';
-      zone.classList.add('is-complete');
-    }
-
-    zone.addEventListener('pointerdown', startGesture);
-    zone.addEventListener('pointermove', updateGesture);
-    zone.addEventListener('pointerup', event => finishGesture(event, false));
-    zone.addEventListener('pointercancel', event => finishGesture(event, true));
-
-    builder.addEventListener('pointerdown', event => {
-      if (stage === 0) return;
-
-      event.stopPropagation();
-      tapCount += 1;
-
-      clearTimeout(tapTimer);
-      tapTimer = window.setTimeout(() => {
-        tapCount = 0;
-      }, 1500);
-
-      if (tapCount < 3) return;
-
-      tapCount = 0;
-      clearTimeout(tapTimer);
-      builder.classList.add('is-removing');
 
       window.setTimeout(() => {
-        stage = 0;
-        builder.dataset.stage = '0';
-        builder.dataset.bodySize = '0';
-        builder.dataset.headSize = '0';
-        builder.classList.remove('is-removing', 'is-head-drop');
-        zone.classList.remove('is-complete');
-        applySnowmanGeometry();
-
-        if (stageLabel) stageLabel.textContent = '몸통 굴리기';
-      }, 280);
+        button.classList.remove('is-picked');
+      }, 420);
     });
   }
 
@@ -848,16 +855,14 @@
     initMessages();
     initMessageAdmin();
     initMessageDetail();
-    initTreeRotation();
+    initMessageTreeInteraction();
     initSpecialGallery();
-    initSnowmanBuilder();
-
-    ensureTreeFoliage();
     syncSpecialNavigation();
 
     window.addEventListener('wedding-mode-change', syncSpecialNavigation);
 
     const observer = new MutationObserver(syncSpecialNavigation);
+
     observer.observe(document.body, {
       attributes: true,
       attributeFilter: ['class']
