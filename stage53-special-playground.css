@@ -1,0 +1,788 @@
+/* ============================================================
+   STAGE 53 — SPECIAL WINTER PLAYGROUND
+   Palette:
+   sage       #71806A
+   deep sage  #4E5B49
+   champagne  #CDB58A
+   cream      #F3EBDD
+   ============================================================ */
+
+:root {
+  --s53-sage: #71806A;
+  --s53-deep-sage: #4E5B49;
+  --s53-champagne: #CDB58A;
+  --s53-cream: #F3EBDD;
+}
+
+.special-only {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------
+   SPECIAL MODE — page architecture
+   ------------------------------------------------------------ */
+html.special-mode {
+  background: var(--s53-deep-sage) !important;
+}
+
+body.special-mode {
+  background: var(--s53-cream) !important;
+  color: var(--s53-deep-sage) !important;
+
+  --color-accent: var(--s53-champagne) !important;
+  --color-accent-light: var(--s53-cream) !important;
+  --color-accent-dark: var(--s53-deep-sage) !important;
+  --color-border: rgba(113,128,106,.28) !important;
+  --color-divider: rgba(205,181,138,.62) !important;
+
+  --wedding-bg: var(--s53-cream) !important;
+  --wedding-card: var(--s53-cream) !important;
+  --wedding-burgundy: var(--s53-deep-sage) !important;
+  --wedding-burgundy-soft: var(--s53-sage) !important;
+  --wedding-gold: var(--s53-champagne) !important;
+  --wedding-gold-light: var(--s53-cream) !important;
+
+  --s32-burgundy: var(--s53-deep-sage) !important;
+  --s32-curtain: var(--s53-sage) !important;
+  --stage24-curtain-rgb: 113, 128, 106 !important;
+}
+
+body.special-mode .special-only {
+  display: block !important;
+}
+
+/* Wedding-information sections are intentionally removed from the special page. */
+body.special-mode #greeting,
+body.special-mode #calendarSection,
+body.special-mode #contactSection,
+body.special-mode #location,
+body.special-mode #guestGuide,
+body.special-mode #account,
+body.special-mode #ending,
+body.special-mode .footer {
+  display: none !important;
+}
+
+body.special-mode #hero .countdown,
+body.special-mode #hero .hero__content,
+body.special-mode #hero .hero__content--minimal {
+  display: none !important;
+}
+
+/* Hero becomes the playground cover instead of a wedding-information panel. */
+body.special-mode #hero.hero {
+  background: var(--s53-deep-sage) !important;
+}
+
+body.special-mode #hero .hero__overlay {
+  background:
+    linear-gradient(
+      to top,
+      rgba(78,91,73,.92) 0%,
+      rgba(78,91,73,.72) 17%,
+      rgba(113,128,106,.48) 32%,
+      rgba(113,128,106,.19) 47%,
+      rgba(243,235,221,.045) 60%,
+      rgba(243,235,221,0) 72%
+    ) !important;
+}
+
+body.special-mode #hero::after {
+  background:
+    linear-gradient(
+      to top,
+      rgba(78,91,73,.34),
+      rgba(113,128,106,.10),
+      transparent
+    ) !important;
+}
+
+/* Hero navigation becomes the three main game destinations. */
+body.special-mode #hero .hero__quick-nav {
+  top: auto !important;
+  bottom: max(28px, calc(env(safe-area-inset-bottom, 0px) + 18px)) !important;
+  width: min(90vw, 356px) !important;
+  z-index: 8 !important;
+}
+
+body.special-mode #hero .hero__quick-btn {
+  height: 42px !important;
+  border: 1px solid rgba(205,181,138,.84) !important;
+  background: rgba(78,91,73,.68) !important;
+  color: var(--s53-cream) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(1.05) !important;
+  backdrop-filter: blur(10px) saturate(1.05) !important;
+  box-shadow:
+    0 6px 20px rgba(78,91,73,.18),
+    inset 0 0 0 1px rgba(243,235,221,.055) !important;
+}
+
+body.special-mode #hero .hero__quick-btn:active {
+  background: rgba(113,128,106,.78) !important;
+}
+
+body.special-mode .hero__special-badge {
+  border-color: rgba(205,181,138,.92) !important;
+  background: rgba(78,91,73,.76) !important;
+  color: var(--s53-cream) !important;
+  box-shadow:
+    0 7px 24px rgba(78,91,73,.18),
+    0 0 18px rgba(205,181,138,.14),
+    inset 0 0 0 1px rgba(243,235,221,.06) !important;
+}
+
+body.special-mode .hero__special-badge-mark {
+  color: var(--s53-champagne) !important;
+  text-shadow: 0 0 10px rgba(205,181,138,.70) !important;
+}
+
+/* ------------------------------------------------------------
+   Unlock FX — champagne instead of gold
+   ------------------------------------------------------------ */
+body.special-mode .special-unlock-fx__ring {
+  border-color: rgba(205,181,138,.86) !important;
+  box-shadow:
+    0 0 20px rgba(205,181,138,.28),
+    inset 0 0 18px rgba(243,235,221,.10) !important;
+}
+
+body.special-mode .special-unlock-fx__halo {
+  background:
+    radial-gradient(
+      circle,
+      rgba(243,235,221,.54) 0%,
+      rgba(205,181,138,.28) 22%,
+      rgba(113,128,106,.12) 48%,
+      transparent 72%
+    ) !important;
+}
+
+body.special-mode .special-unlock-fx__particles i {
+  background: var(--s53-champagne) !important;
+  box-shadow:
+    0 0 8px rgba(243,235,221,.82),
+    0 0 16px rgba(205,181,138,.46) !important;
+}
+
+body.special-mode .special-unlock-fx__particles i.is-snowflake {
+  color: var(--s53-champagne) !important;
+}
+
+/* ------------------------------------------------------------
+   Shared special section language
+   ------------------------------------------------------------ */
+body.special-mode .special-game-section,
+body.special-mode #gallery {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(205,181,138,.12), transparent 34%),
+    var(--s53-cream) !important;
+  color: var(--s53-deep-sage) !important;
+}
+
+body.special-mode .special-game-section {
+  padding-top: 4.6rem !important;
+  padding-bottom: 4.8rem !important;
+}
+
+body.special-mode .special-game-section:nth-of-type(even) {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(113,128,106,.08), transparent 36%),
+    #F3EBDD !important;
+}
+
+.special-game__inner {
+  width: min(calc(100% - 2rem), 430px);
+  margin: 0 auto;
+}
+
+.special-game__eyebrow {
+  margin: 0 0 .52rem;
+  color: var(--s53-sage);
+  font-size: .64rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .18em;
+  text-align: center;
+}
+
+body.special-mode .special-game__title,
+body.special-mode #gallery .section__title {
+  margin: 0;
+  color: var(--s53-deep-sage) !important;
+  font-size: 1.22rem !important;
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+  letter-spacing: .08em !important;
+  text-align: center !important;
+}
+
+.special-game__desc {
+  max-width: 21rem;
+  margin: .72rem auto 1.7rem;
+  color: rgba(78,91,73,.72);
+  font-size: .82rem;
+  line-height: 1.72;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   01 — Message box
+   ------------------------------------------------------------ */
+.special-message__composer {
+  padding: 1rem;
+  border: 1px solid rgba(113,128,106,.22);
+  border-radius: 18px;
+  background: rgba(243,235,221,.88);
+  box-shadow:
+    0 10px 28px rgba(78,91,73,.065),
+    inset 0 0 0 1px rgba(255,255,255,.32);
+}
+
+.special-message__field {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(113,128,106,.24);
+  border-radius: 12px;
+  outline: 0;
+  background: rgba(243,235,221,.96);
+  color: var(--s53-deep-sage);
+  font: inherit;
+  font-size: .83rem;
+}
+
+.special-message__field::placeholder {
+  color: rgba(78,91,73,.42);
+}
+
+.special-message__name {
+  height: 42px;
+  padding: 0 .8rem;
+  margin-bottom: .58rem;
+}
+
+.special-message__message {
+  min-height: 88px;
+  padding: .72rem .8rem;
+  resize: none;
+  line-height: 1.55;
+}
+
+.special-message__composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  margin-top: .68rem;
+}
+
+.special-message__counter {
+  color: rgba(78,91,73,.48);
+  font-size: .68rem;
+}
+
+.special-message__submit {
+  min-width: 94px;
+  height: 40px;
+  padding: 0 .95rem;
+  border: 1px solid var(--s53-deep-sage);
+  border-radius: 999px;
+  background: var(--s53-deep-sage);
+  color: var(--s53-cream);
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.special-message__submit:disabled {
+  opacity: .48;
+  cursor: default;
+}
+
+.special-message__feed {
+  margin-top: 1.25rem;
+}
+
+.special-message__scroller {
+  display: flex;
+  gap: .72rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: .14rem 1.05rem .8rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.special-message__scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.special-message__card {
+  flex: 0 0 min(78vw, 310px);
+  min-height: 138px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: .85rem;
+  padding: 1.05rem 1rem .92rem;
+  border: 1px solid rgba(205,181,138,.76);
+  border-radius: 17px;
+  background:
+    linear-gradient(145deg, rgba(243,235,221,.98), rgba(205,181,138,.18));
+  color: var(--s53-deep-sage);
+  box-shadow: 0 8px 24px rgba(78,91,73,.075);
+  scroll-snap-align: start;
+}
+
+.special-message__text {
+  margin: 0;
+  font-size: .88rem;
+  line-height: 1.72;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.special-message__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: .8rem;
+  color: rgba(78,91,73,.56);
+  font-size: .68rem;
+}
+
+.special-message__empty {
+  width: 100%;
+  padding: 1.65rem 1rem;
+  border: 1px dashed rgba(113,128,106,.28);
+  border-radius: 16px;
+  color: rgba(78,91,73,.58);
+  font-size: .78rem;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------
+   02 — Existing gallery, retinted only
+   ------------------------------------------------------------ */
+body.special-mode #gallery {
+  display: block !important;
+  padding-top: 4.6rem !important;
+  padding-bottom: 4.8rem !important;
+}
+
+body.special-mode #galleryRandomBtn:not([hidden]) {
+  border-color: rgba(113,128,106,.52) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(205,181,138,.24), transparent 62%),
+    linear-gradient(180deg, rgba(243,235,221,.99), rgba(205,181,138,.30)) !important;
+  color: var(--s53-deep-sage) !important;
+  box-shadow:
+    0 7px 20px rgba(78,91,73,.09),
+    inset 0 0 0 1px rgba(255,255,255,.38) !important;
+}
+
+body.special-mode #galleryRandomBtn .gallery__random-btn-kicker {
+  color: var(--s53-sage) !important;
+}
+
+body.special-mode #galleryRandomBtn .gallery__random-btn-label {
+  color: var(--s53-deep-sage) !important;
+}
+
+body.special-mode .gallery-progress__track {
+  background: rgba(113,128,106,.16) !important;
+}
+
+body.special-mode .gallery-progress__thumb {
+  background: var(--s53-sage) !important;
+}
+
+/* ------------------------------------------------------------
+   03 — Spot the difference
+   ------------------------------------------------------------ */
+.spot-diff__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  margin-bottom: .9rem;
+  color: var(--s53-sage);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+}
+
+.spot-diff__board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: .48rem;
+}
+
+.spot-diff__panel {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border: 1px solid rgba(113,128,106,.24);
+  border-radius: 15px;
+  background:
+    var(--spot-image, none)
+    center center / cover no-repeat,
+    var(--s53-sage);
+  box-shadow: 0 8px 22px rgba(78,91,73,.07);
+}
+
+.spot-diff__panel-label {
+  position: absolute;
+  left: 50%;
+  top: .48rem;
+  z-index: 12;
+  transform: translateX(-50%);
+  padding: .26rem .48rem;
+  border: 1px solid rgba(205,181,138,.62);
+  border-radius: 999px;
+  background: rgba(78,91,73,.66);
+  color: var(--s53-cream);
+  font-size: .54rem;
+  line-height: 1;
+  letter-spacing: .09em;
+  pointer-events: none;
+}
+
+.spot-diff__alter {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    var(--spot-image, none)
+    center center / cover no-repeat;
+  pointer-events: none;
+}
+
+.spot-diff__alter--1 {
+  clip-path: circle(9% at 20% 29%);
+  filter: hue-rotate(58deg) saturate(.72);
+}
+.spot-diff__alter--2 {
+  clip-path: circle(8% at 74% 20%);
+  filter: brightness(.60) contrast(1.08);
+}
+.spot-diff__alter--3 {
+  clip-path: circle(9% at 82% 69%);
+  filter: grayscale(1) contrast(1.14);
+}
+.spot-diff__alter--4 {
+  clip-path: circle(9% at 37% 81%);
+  filter: sepia(.9) hue-rotate(20deg) saturate(.62);
+}
+
+.spot-diff__hit {
+  position: absolute;
+  z-index: 8;
+  width: 18%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.spot-diff__hit[data-diff="1"] { left: 20%; top: 29%; }
+.spot-diff__hit[data-diff="2"] { left: 74%; top: 20%; }
+.spot-diff__hit[data-diff="3"] { left: 82%; top: 69%; }
+.spot-diff__hit[data-diff="4"] { left: 37%; top: 81%; }
+
+.spot-diff__hit::after {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border: 2px solid var(--s53-champagne);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(.65);
+  box-shadow:
+    0 0 0 2px rgba(78,91,73,.22),
+    0 0 14px rgba(205,181,138,.34);
+  transition: opacity .2s ease, transform .22s ease;
+}
+
+.spot-diff__hit.is-found::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.spot-diff__complete {
+  margin-top: 1rem;
+  padding: .82rem .9rem;
+  border: 1px solid rgba(205,181,138,.74);
+  border-radius: 14px;
+  background: rgba(205,181,138,.18);
+  color: var(--s53-deep-sage);
+  font-size: .78rem;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.spot-diff__complete.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.spot-diff__reset {
+  display: block;
+  margin: .9rem auto 0;
+  padding: .55rem .9rem;
+  border: 1px solid rgba(113,128,106,.38);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--s53-deep-sage);
+  font-size: .72rem;
+}
+
+/* ------------------------------------------------------------
+   04 — Snow playground
+   ------------------------------------------------------------ */
+.special-snow__cards {
+  display: grid;
+  gap: .72rem;
+}
+
+.special-snow__card {
+  padding: 1.05rem;
+  border: 1px solid rgba(113,128,106,.23);
+  border-radius: 17px;
+  background:
+    linear-gradient(145deg, rgba(243,235,221,.98), rgba(205,181,138,.13));
+  box-shadow: 0 8px 22px rgba(78,91,73,.06);
+}
+
+.special-snow__card-kicker {
+  display: block;
+  margin-bottom: .4rem;
+  color: var(--s53-sage);
+  font-size: .59rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.special-snow__card strong {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--s53-deep-sage);
+  font-size: .92rem;
+}
+
+.special-snow__card p {
+  margin: 0;
+  color: rgba(78,91,73,.68);
+  font-size: .76rem;
+  line-height: 1.65;
+}
+
+.snow-globe__button {
+  width: 100%;
+  min-height: 46px;
+  margin-top: .8rem;
+  border: 1px solid var(--s53-deep-sage);
+  border-radius: 999px;
+  background: var(--s53-deep-sage);
+  color: var(--s53-cream);
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.snow-globe__button.is-active {
+  border-color: var(--s53-champagne);
+  background: var(--s53-sage);
+}
+
+.snowman-progress {
+  display: flex;
+  align-items: center;
+  gap: .42rem;
+  margin-top: .76rem;
+}
+
+.snowman-progress__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(113,128,106,.20);
+  box-shadow: inset 0 0 0 1px rgba(113,128,106,.16);
+}
+
+.snowman-progress__dot.is-complete {
+  background: var(--s53-champagne);
+  box-shadow: 0 0 8px rgba(205,181,138,.52);
+}
+
+/* Fixed snowman that grows out of the accumulated snow. */
+.snowman-builder {
+  position: fixed;
+  right: max(15px, env(safe-area-inset-right, 0px));
+  bottom: max(8px, env(safe-area-inset-bottom, 0px));
+  z-index: 104;
+  width: 104px;
+  height: 146px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(18px) scale(.92);
+  transition: opacity .35s ease, transform .38s cubic-bezier(.22,1,.36,1);
+}
+
+body.special-mode .snowman-builder[data-stage]:not([data-stage="0"]) {
+  opacity: 1;
+  transform: none;
+}
+
+.snowman__ball {
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  transform: translateX(-50%) scale(0);
+  opacity: 0;
+  background:
+    radial-gradient(circle at 34% 24%, #fff 0%, var(--s53-cream) 56%, #e6ddcc 100%);
+  border: 1px solid rgba(113,128,106,.10);
+  box-shadow:
+    inset -8px -7px 15px rgba(113,128,106,.08),
+    0 4px 13px rgba(78,91,73,.10);
+  transition: transform .42s cubic-bezier(.22,1,.36,1), opacity .25s ease;
+}
+
+.snowman__base {
+  bottom: 0;
+  width: 76px;
+  height: 66px;
+}
+
+.snowman__middle {
+  bottom: 52px;
+  width: 58px;
+  height: 54px;
+}
+
+.snowman__head {
+  bottom: 96px;
+  width: 45px;
+  height: 44px;
+}
+
+.snowman-builder[data-stage="1"] .snowman__base,
+.snowman-builder[data-stage="2"] .snowman__base,
+.snowman-builder[data-stage="2"] .snowman__middle,
+.snowman-builder[data-stage="3"] .snowman__base,
+.snowman-builder[data-stage="3"] .snowman__middle,
+.snowman-builder[data-stage="3"] .snowman__head {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.snowman__face,
+.snowman__arms,
+.snowman__scarf {
+  opacity: 0;
+  transition: opacity .3s ease .16s;
+}
+
+.snowman-builder[data-stage="3"] .snowman__face,
+.snowman-builder[data-stage="3"] .snowman__arms,
+.snowman-builder[data-stage="3"] .snowman__scarf {
+  opacity: 1;
+}
+
+.snowman__eye {
+  position: absolute;
+  bottom: 119px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--s53-deep-sage);
+}
+
+.snowman__eye--left { left: 44px; }
+.snowman__eye--right { right: 44px; }
+
+.snowman__nose {
+  position: absolute;
+  left: 52px;
+  bottom: 109px;
+  width: 13px;
+  height: 5px;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  background: var(--s53-champagne);
+}
+
+.snowman__arm {
+  position: absolute;
+  bottom: 67px;
+  width: 35px;
+  height: 2px;
+  background: var(--s53-deep-sage);
+  transform-origin: center;
+}
+
+.snowman__arm--left {
+  left: 2px;
+  transform: rotate(-25deg);
+}
+
+.snowman__arm--right {
+  right: 2px;
+  transform: rotate(25deg);
+}
+
+.snowman__scarf {
+  position: absolute;
+  left: 50%;
+  bottom: 93px;
+  width: 48px;
+  height: 8px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--s53-sage);
+  box-shadow: 8px 7px 0 -2px var(--s53-sage);
+}
+
+/* Keep accumulated snow white/cream while matching the new palette. */
+body.special-mode #snowCanvas {
+  filter:
+    drop-shadow(0 0 2px rgba(243,235,221,.32))
+    drop-shadow(0 0 4px rgba(205,181,138,.16)) !important;
+}
+
+/* Desktop stays phone-like in this project. */
+@media (min-width: 769px) {
+  body.special-mode .special-game__inner {
+    max-width: 430px;
+  }
+}
+
+@media (max-width: 390px) {
+  .special-message__card {
+    flex-basis: 82vw;
+  }
+
+  .spot-diff__board {
+    gap: .38rem;
+  }
+
+  .snowman-builder {
+    right: 9px;
+    transform-origin: bottom right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snowman-builder,
+  .snowman__ball,
+  .spot-diff__hit::after,
+  .spot-diff__complete {
+    transition: none !important;
+  }
+}
