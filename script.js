@@ -533,7 +533,7 @@
     const IDLE_BEFORE_ACCUMULATION = 3500;
     const PLAYGROUND_HEIGHT = 92;
     const MAX_PILE_RATIO = .68;
-    const FRAME_MS = 1000 / 20;
+    const FRAME_MS = 1000 / 15;
 
     let width = 0;
     let height = PLAYGROUND_HEIGHT;
