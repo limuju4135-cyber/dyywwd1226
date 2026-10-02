@@ -530,7 +530,7 @@
     if (reduceMotion) return;
 
     const ctx = canvas.getContext('2d');
-    const IDLE_BEFORE_ACCUMULATION = 3500;
+    const IDLE_BEFORE_ACCUMULATION = 1800;
     const PLAYGROUND_HEIGHT = 92;
     const MAX_PILE_RATIO = .68;
     const FRAME_MS = 1000 / 15;
@@ -600,7 +600,7 @@
       if (!isSpecial() || performance.now() - lastActivity < IDLE_BEFORE_ACCUMULATION) return;
 
       const maxHeight = height * MAX_PILE_RATIO;
-      const additions = 3;
+      const additions = 5;
 
       for (let n = 0; n < additions; n += 1) {
         const center = Math.floor(Math.random() * binCount);
@@ -610,7 +610,7 @@
           const index = center + j;
           if (index < 0 || index >= binCount) continue;
           const weight = 1 - Math.abs(j) / (spread + 1);
-          pile[index] = Math.min(maxHeight, pile[index] + .30 * weight);
+          pile[index] = Math.min(maxHeight, pile[index] + .52 * weight);
         }
       }
 
