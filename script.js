@@ -145,6 +145,7 @@
     let savedScrollY = 0;
     let modalHistoryActive = false;
     let restoringFromPopState = false;
+    let pendingHistoryScrollRestore = false;
 
     function rememberScrollPosition() {
       savedScrollY = window.scrollY || window.pageYOffset || 0;
@@ -178,9 +179,21 @@
 
     function restoreScrollPosition() {
       document.body.style.top = '';
+
+      const restore = () => {
+        window.scrollTo({
+          top: savedScrollY,
+          left: 0,
+          behavior: 'auto'
+        });
+      };
+
+      // fixed body 해제 직후 + history 이동 직후 모두 안정적으로 복원
       requestAnimationFrame(() => {
-        window.scrollTo(0, savedScrollY);
+        restore();
+        requestAnimationFrame(restore);
       });
+      window.setTimeout(restore, 80);
     }
 
     const observer = new MutationObserver(() => {
@@ -197,6 +210,7 @@
       if (modalHistoryActive && !restoringFromPopState &&
           history.state && history.state.__weddingPhotoModal) {
         modalHistoryActive = false;
+        pendingHistoryScrollRestore = true;
         history.back();
       }
     });
@@ -207,13 +221,21 @@
     });
 
     window.addEventListener('popstate', () => {
+      // X/배경 닫기 후 synthetic history entry를 제거한 경우:
+      // 브라우저가 history 복원값으로 스크롤을 덮어쓴 뒤 최종적으로 갤러리 위치 재복원.
       if (!modal.classList.contains('is-open')) {
+        if (pendingHistoryScrollRestore) {
+          pendingHistoryScrollRestore = false;
+          restoreScrollPosition();
+        }
+
         restoringFromPopState = false;
         return;
       }
 
       restoringFromPopState = true;
       modalHistoryActive = false;
+      pendingHistoryScrollRestore = false;
 
       modal.classList.remove('is-open');
       document.body.classList.remove('no-scroll');
