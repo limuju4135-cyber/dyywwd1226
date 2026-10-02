@@ -141,25 +141,6 @@ body.special-mode #hero::after {
     ) !important;
 }
 
-body.special-mode #hero .hero__quick-nav {
-  top: auto !important;
-  bottom: max(26px, calc(env(safe-area-inset-bottom, 0px) + 16px)) !important;
-  width: min(90vw, 356px) !important;
-  z-index: 8 !important;
-}
-
-body.special-mode #hero .hero__quick-btn {
-  height: 42px !important;
-  border: 1px solid rgba(210,191,145,.72) !important;
-  background: rgba(115,126,112,.52) !important;
-  color: var(--s53-cream) !important;
-  -webkit-backdrop-filter: blur(9px) !important;
-  backdrop-filter: blur(9px) !important;
-  box-shadow:
-    0 6px 18px rgba(68,76,66,.12),
-    inset 0 0 0 1px rgba(255,255,255,.05) !important;
-}
-
 body.special-mode .hero__special-badge {
   border-color: rgba(210,191,145,.76) !important;
   background: rgba(115,126,112,.62) !important;
@@ -1229,4 +1210,120 @@ body.special-mode #hero .hero__quick-btn[hidden] {
   .special-gallery__polaroid.is-landscape {
     width: min(76vw, 270px) !important;
   }
+}
+
+
+/* ============================================================
+   STAGE 59 — MESSAGE SWIPE CAROUSEL / HERO NAV REMOVED
+   ============================================================ */
+.message-detail-modal__panel {
+  width: min(91vw, 368px) !important;
+  padding: 1.25rem 0 .85rem !important;
+  overflow: hidden;
+}
+
+.message-detail-modal__kicker {
+  height: 20px;
+  margin: 0 42px .55rem !important;
+  line-height: 20px;
+}
+
+.message-detail-modal__close {
+  z-index: 4;
+}
+
+.message-detail-modal__viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+}
+
+.message-detail-modal__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.message-detail-modal__track {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+.message-detail-modal__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  min-height: 184px;
+  box-sizing: border-box;
+  padding: 1rem 1.35rem .9rem;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.message-detail-modal__text {
+  min-height: 72px;
+  margin: .35rem 0 .95rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.message-detail-modal__meta {
+  min-height: 18px;
+}
+
+.message-detail-modal__delete {
+  display: none !important;
+  width: min(100%, 210px) !important;
+  margin: .9rem auto 0 !important;
+}
+
+.message-detail-modal.is-admin .message-detail-modal__delete {
+  display: block !important;
+}
+
+.message-detail-modal__footer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: .7rem;
+  min-height: 25px;
+  padding: .5rem 1.15rem 0;
+  border-top: 1px solid rgba(166,176,159,.16);
+}
+
+.message-detail-modal__counter {
+  color: #596356;
+  font-size: .67rem;
+  font-weight: 650;
+  letter-spacing: .05em;
+}
+
+.message-detail-modal__hint {
+  color: rgba(86,81,73,.46);
+  font-size: .62rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 390px) {
+  .message-detail-modal__panel {
+    width: min(92vw, 352px) !important;
+  }
+
+  .message-detail-modal__slide {
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
+  }
+}
+
+body.special-mode #hero .hero__quick-nav,
+body.special-mode #hero .hero__quick-btn {
+  display: none !important;
 }
