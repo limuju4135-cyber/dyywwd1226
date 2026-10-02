@@ -63,6 +63,7 @@
   <link rel="stylesheet" href="stage39-mobile-desktop.css?v=stage39-mobile-desktop-3">
   <link rel="stylesheet" href="stage40-gallery-location.css?v=stage48-gallery-button-below-title">
   <link rel="stylesheet" href="stage49-special-mode.css?v=stage49-special-mode-1">
+  <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage50-special-enhancements-1">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -370,11 +371,13 @@
     <div class="curtain__content">
       <p class="curtain__subtitle">2026.12.26</p>
       <p class="curtain__names curtain__typing" id="curtainNames" aria-live="polite"></p>
-      <button class="curtain__btn" id="curtainBtn">초대장 열기</button>
+      <button class="curtain__btn" id="curtainBtn"><span class="curtain__btn-label">초대장 열기</span></button>
     </div>
 
     <div class="special-unlock-fx" id="specialUnlockFx" aria-hidden="true">
       <div class="special-unlock-fx__halo"></div>
+      <div class="special-unlock-fx__ring special-unlock-fx__ring--one"></div>
+      <div class="special-unlock-fx__ring special-unlock-fx__ring--two"></div>
       <div class="special-unlock-fx__particles" id="specialUnlockParticles"></div>
       <div class="special-unlock-fx__copy">
         <span>SECRET FOUND</span>
@@ -406,6 +409,10 @@
       <div class="hero__overlay"></div>
       <div class="hero__photo hero__photo--protected" id="heroPhoto" role="img" aria-label="웨딩 사진" data-media-source="r2"></div>
       <div class="hero__touch-shield" id="heroTouchShield" aria-hidden="true"></div>
+      <div class="hero__special-badge" aria-hidden="true">
+        <span class="hero__special-badge-mark">✦</span>
+        <span>SPECIAL INVITATION</span>
+      </div>
       <nav class="hero__quick-nav" aria-label="초대장 바로가기">
         <button type="button" class="hero__quick-btn" data-scroll-target="contact">연락처</button>
         <button type="button" class="hero__quick-btn" data-scroll-target="gallery">갤러리</button>
@@ -768,9 +775,9 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage49-special-mode"></script>
-  <script src="core-script.js?v=stage49-special-mode"></script>
+  <script src="core-script.js?v=stage50-gold-snow"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
-  <script src="script.js?v=stage47-random-scroll-restore-fix"></script>
+  <script src="script.js?v=stage50-gold-snow"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
   <script src="stage32-major.js?v=stage37-4-meal-loader"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
