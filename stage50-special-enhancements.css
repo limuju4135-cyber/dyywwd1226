@@ -61,12 +61,22 @@
   left: 50%;
   top: 0;
   z-index: 30;
-  width: max-content;
-  max-width: min(88vw, 360px);
+  width: min(88vw, 360px);
+  max-width: none;
   padding: 0;
   gap: .34rem;
+  text-align: center;
+  align-items: center;
   pointer-events: none;
   transform: translate(-50%, calc(-100% - .72rem)) scale(.96);
+}
+
+.curtain__content > .special-unlock-fx__copy > span,
+.curtain__content > .special-unlock-fx__copy > strong,
+.curtain__content > .special-unlock-fx__copy > small {
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 /* 2) Stronger unlock event */
