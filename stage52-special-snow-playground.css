@@ -124,3 +124,103 @@ body.special-mode .snow-play-canvas.is-visible {
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 52B — HERO GOLD HARD OVERRIDE
+   Remove the last visible rose cast in SPECIAL MODE.
+   ============================================================ */
+
+html.special-mode,
+body.special-mode {
+  background-color: #B9924D !important;
+}
+
+/* The photo remains untouched; only the lower information wash becomes gold. */
+body.special-mode #hero .hero__overlay {
+  background:
+    linear-gradient(
+      to top,
+      rgba(154,112,42,.93) 0%,
+      rgba(178,136,60,.82) 16%,
+      rgba(200,160,83,.62) 30%,
+      rgba(220,188,123,.36) 43%,
+      rgba(235,216,174,.14) 54%,
+      rgba(241,228,198,.035) 64%,
+      rgba(241,228,198,0) 72%
+    ) !important;
+}
+
+/* Quick navigation: champagne-bronze glass instead of rose glass. */
+body.special-mode #hero .hero__quick-btn {
+  border-color: rgba(242,216,161,.74) !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(153,112,47,.48),
+      rgba(119,84,31,.40)
+    ) !important;
+  color: rgba(255,248,225,.99) !important;
+  box-shadow:
+    0 5px 18px rgba(76,50,17,.15),
+    inset 0 0 0 1px rgba(255,255,255,.055) !important;
+  text-shadow: 0 1px 2px rgba(54,36,14,.20) !important;
+}
+
+body.special-mode #hero .hero__quick-btn:active {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(168,124,51,.58),
+      rgba(123,86,31,.50)
+    ) !important;
+}
+
+/* D-day glass card gets its own warm gold tint. */
+body.special-mode #hero .countdown {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(157,115,45,.30),
+      rgba(107,75,26,.27)
+    ) !important;
+  border-color: rgba(244,220,172,.42) !important;
+  box-shadow:
+    0 8px 26px rgba(70,45,13,.13),
+    inset 0 0 0 1px rgba(255,255,255,.045) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(1.06) !important;
+  backdrop-filter: blur(8px) saturate(1.06) !important;
+}
+
+body.special-mode #hero .countdown__label {
+  color: rgba(246,211,141,.95) !important;
+  text-shadow: 0 1px 3px rgba(65,43,17,.18) !important;
+}
+
+body.special-mode #hero .countdown__number {
+  color: rgba(255,252,241,.99) !important;
+}
+
+body.special-mode #hero .countdown__unit,
+body.special-mode #hero .countdown__sep {
+  color: rgba(249,234,202,.80) !important;
+}
+
+/* A faint gold floor at the exact bottom prevents pink bleed from the source image. */
+body.special-mode #hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 9%;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to top,
+      rgba(146,104,37,.24),
+      rgba(181,140,66,.08),
+      transparent
+    );
+}
