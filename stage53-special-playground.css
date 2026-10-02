@@ -1019,3 +1019,204 @@ body.special-mode .snowman__scarf {
   background: #B98588 !important;
   box-shadow: 13px 8px 0 -2px #B98588 !important;
 }
+
+
+/* ============================================================
+   STAGE 56 — FUNCTION FIXES / COMPACT BEHIND CUT / SAFE AREAS
+   ============================================================ */
+html,
+html.special-mode {
+  background: #A6B09F !important;
+  overscroll-behavior-y: none;
+}
+
+body.special-mode::before,
+body.special-mode::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  background: #A6B09F;
+}
+
+body.special-mode::before {
+  top: 0;
+  height: max(env(safe-area-inset-top, 0px), 1px);
+}
+
+body.special-mode::after {
+  bottom: 0;
+  height: max(env(safe-area-inset-bottom, 0px), 1px);
+}
+
+/* Compact polaroid draw: smaller than the normal gallery tiles. */
+body.special-mode #gallery {
+  padding-top: 4rem !important;
+  padding-bottom: 4.2rem !important;
+}
+
+.special-gallery__machine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .9rem;
+  margin-top: 1.2rem;
+}
+
+.special-gallery__polaroid {
+  width: min(42vw, 164px);
+  padding: 7px 7px 22px;
+  border: 1px solid rgba(166,176,159,.30);
+  border-radius: 6px;
+  background: #FBF8F1;
+  box-shadow:
+    0 8px 22px rgba(79,74,64,.09),
+    0 1px 0 rgba(255,255,255,.85) inset;
+  transform: rotate(-1.2deg);
+}
+
+.special-gallery__preview {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: 0 !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  background:
+    linear-gradient(145deg, rgba(166,176,159,.16), rgba(210,191,145,.16)),
+    #EFE9DD;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none !important;
+}
+
+.special-gallery__preview.is-empty {
+  display: grid;
+  place-items: center;
+}
+
+.special-gallery__placeholder {
+  color: rgba(89,99,86,.52);
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.special-gallery__caption {
+  display: block;
+  margin-top: 8px;
+  color: rgba(86,81,73,.54);
+  font-size: .54rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-align: center;
+}
+
+.special-gallery__draw {
+  min-width: 128px;
+  min-height: 40px;
+  padding: 0 1rem !important;
+  border: 1px solid rgba(210,191,145,.74) !important;
+  border-radius: 999px !important;
+  background: rgba(248,243,234,.90) !important;
+  color: #596356 !important;
+  box-shadow: 0 5px 14px rgba(79,74,64,.07) !important;
+}
+
+.special-gallery__draw::after {
+  display: none !important;
+}
+
+.special-gallery__draw-label {
+  font-size: .76rem !important;
+  font-weight: 650 !important;
+}
+
+/* Dedicated snowman gesture zone; no competing page scroll inside it. */
+.snowman-roll-zone {
+  position: relative;
+  width: min(82vw, 330px);
+  aspect-ratio: 1.65 / 1;
+  margin: 1.15rem auto 0;
+  overflow: hidden;
+  border: 1px solid rgba(166,176,159,.34);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 78%, rgba(255,255,255,.94) 0 8%, transparent 9%),
+    linear-gradient(180deg, rgba(210,191,145,.08), rgba(166,176,159,.10)),
+    #F8F3EA;
+  box-shadow:
+    inset 0 -22px 34px rgba(216,209,194,.34),
+    0 8px 22px rgba(79,74,64,.06);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.snowman-roll-zone__rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 112px;
+  height: 112px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(166,176,159,.34);
+  border-radius: 50%;
+}
+
+.snowman-roll-zone__rings::before,
+.snowman-roll-zone__rings::after {
+  content: "";
+  position: absolute;
+  border: 1px dashed rgba(210,191,145,.34);
+  border-radius: 50%;
+}
+
+.snowman-roll-zone__rings::before {
+  inset: 17px;
+}
+
+.snowman-roll-zone__rings::after {
+  inset: 34px;
+}
+
+.snowman-roll-zone__label {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  color: rgba(89,99,86,.70);
+  font-size: .70rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.snowman-roll-zone.is-rolling {
+  border-color: rgba(210,191,145,.72);
+}
+
+.snowman-roll-zone.is-retry {
+  animation: stage56-roll-retry .30s ease;
+}
+
+.snowman-roll-zone.is-complete .snowman-roll-zone__rings {
+  opacity: .22;
+}
+
+@keyframes stage56-roll-retry {
+  0%, 100% { transform: translateX(0); }
+  35% { transform: translateX(-4px); }
+  70% { transform: translateX(4px); }
+}
+
+.snowman-builder.is-head-drop .snowman__head {
+  transform: translateX(-50%) translateY(-26px) scale(.92);
+  opacity: .78;
+}
+
+body.special-mode .special-gallery__layout {
+  display: none !important;
+}
