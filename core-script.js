@@ -101,7 +101,13 @@
     const SPECIAL_MAX_WIDTH = 768;
 
     function specialModeAllowed() {
-      return (document.documentElement.clientWidth || window.innerWidth) <= SPECIAL_MAX_WIDTH;
+      const mobileWidth =
+        (document.documentElement.clientWidth || window.innerWidth) <= SPECIAL_MAX_WIDTH;
+      const coarsePointer =
+        window.matchMedia?.('(pointer: coarse)').matches ||
+        ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+
+      return mobileWidth && coarsePointer;
     }
     let holdTimer = null;
     let activePointerId = null;
