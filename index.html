@@ -61,7 +61,7 @@
   <link rel="stylesheet" href="stage36-fixes.css?v=stage36-spacing-titles-location-1">
   <link rel="stylesheet" href="stage37-fixes.css?v=stage38-2-acrostic">
   <link rel="stylesheet" href="stage39-mobile-desktop.css?v=stage39-mobile-desktop-3">
-  <link rel="stylesheet" href="stage40-gallery-location.css?v=stage45-gallery-random-draw">
+  <link rel="stylesheet" href="stage40-gallery-location.css?v=stage46-gallery-random-shuffle">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -500,7 +500,10 @@
             id="galleryRandomBtn"
             aria-label="갤러리 사진 랜덤 뽑기"
             hidden
-          >랜덤 뽑기</button>
+          >
+            <span class="gallery__random-btn-kicker" aria-hidden="true">RANDOM PHOTO</span>
+            <span class="gallery__random-btn-label">랜덤 뽑기</span>
+          </button>
         </div>
         <div class="gallery__grid" id="galleryGrid"></div>
         <div class="gallery-progress" id="galleryProgress" aria-hidden="true">
@@ -754,9 +757,9 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage15"></script>
-  <script src="core-script.js?v=stage45-gallery-random-draw"></script>
+  <script src="core-script.js?v=stage46-gallery-random-shuffle"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
-  <script src="script.js?v=stage28-text-meta"></script>
+  <script src="script.js?v=stage46-random-scroll-restore"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
   <script src="stage32-major.js?v=stage37-4-meal-loader"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
