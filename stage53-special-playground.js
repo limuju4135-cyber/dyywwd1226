@@ -7,6 +7,9 @@
   let messagesLoaded = false;
   let messagesLoading = false;
   let lastMessageSubmit = 0;
+  let messageAdminPin = '';
+  let adminTitleTapCount = 0;
+  let adminTitleTapTimer = null;
 
   function isSpecial() {
     return document.body.classList.contains('special-mode');
@@ -66,6 +69,7 @@
   function makeMessageCard(item) {
     const card = document.createElement('article');
     card.className = 'special-message__card';
+    card.dataset.messageId = item.id || '';
 
     const text = document.createElement('p');
     text.className = 'special-message__text';
@@ -80,8 +84,14 @@
     const date = document.createElement('time');
     date.textContent = formatMessageDate(item.createdAt);
 
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'special-message__delete';
+    deleteButton.textContent = '삭제';
+    deleteButton.setAttribute('aria-label', '메시지 삭제');
+
     meta.append(name, date);
-    card.append(text, meta);
+    card.append(text, meta, deleteButton);
 
     return card;
   }
@@ -149,6 +159,139 @@
     } finally {
       messagesLoading = false;
     }
+  }
+
+  async function verifyMessageAdminPin(pin) {
+    const response = await fetch('/api/messages/admin/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      cache: 'no-store',
+      body: JSON.stringify({ pin })
+    });
+
+    return response.ok;
+  }
+
+  function setMessageAdminMode(enabled, pin = '') {
+    const section = $('#specialMessages');
+    if (!section) return;
+
+    messageAdminPin = enabled ? String(pin) : '';
+    section.classList.toggle('is-admin', enabled);
+  }
+
+  async function requestMessageAdminMode() {
+    const pin = window.prompt('관리자 PIN을 입력하세요.');
+    if (pin === null) return;
+
+    const normalized = String(pin).trim();
+
+    if (!/^\d{6}$/.test(normalized)) {
+      window.alert('6자리 PIN을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const valid = await verifyMessageAdminPin(normalized);
+
+      if (!valid) {
+        window.alert('PIN이 올바르지 않습니다.');
+        return;
+      }
+
+      setMessageAdminMode(true, normalized);
+    } catch (error) {
+      console.warn('[Message admin verify]', error);
+      window.alert('관리자 인증에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
+  }
+
+  function initMessageAdmin() {
+    const section = $('#specialMessages');
+    const title = $('#specialMessageTitle');
+
+    if (!section || !title) return;
+
+    title.addEventListener('click', () => {
+      if (!isSpecial() || section.classList.contains('is-admin')) return;
+
+      adminTitleTapCount += 1;
+
+      clearTimeout(adminTitleTapTimer);
+      adminTitleTapTimer = window.setTimeout(() => {
+        adminTitleTapCount = 0;
+      }, 3200);
+
+      if (adminTitleTapCount < 5) return;
+
+      adminTitleTapCount = 0;
+      clearTimeout(adminTitleTapTimer);
+      requestMessageAdminMode();
+    });
+
+    section.addEventListener('click', async event => {
+      const button = event.target.closest('.special-message__delete');
+      if (!button || !section.classList.contains('is-admin')) return;
+
+      const card = button.closest('.special-message__card');
+      const id = card?.dataset.messageId || '';
+
+      if (!id || !messageAdminPin) return;
+
+      const text =
+        card.querySelector('.special-message__text')?.textContent?.trim() || '';
+
+      const preview = text.length > 24
+        ? text.slice(0, 24) + '…'
+        : text;
+
+      if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) {
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = '삭제 중';
+
+      try {
+        const response = await fetch(
+          '/api/messages/' + encodeURIComponent(id),
+          {
+            method: 'DELETE',
+            headers: {
+              'Accept': 'application/json',
+              'X-Admin-Pin': messageAdminPin
+            },
+            cache: 'no-store'
+          }
+        );
+
+        if (response.status === 403) {
+          setMessageAdminMode(false);
+          window.alert('관리자 인증이 만료되었습니다. 다시 인증해주세요.');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Delete failed');
+        }
+
+        card.remove();
+
+        const scroller = $('#specialMessageCards');
+
+        if (scroller && !scroller.querySelector('.special-message__card')) {
+          renderMessages([]);
+        }
+      } catch (error) {
+        console.warn('[Message delete]', error);
+        window.alert('메시지를 삭제하지 못했습니다.');
+        button.disabled = false;
+        button.textContent = '삭제';
+      }
+    });
   }
 
   function initMessages() {
@@ -579,6 +722,7 @@
      ---------------------------------------------------------- */
   function init() {
     initMessages();
+    initMessageAdmin();
     initSpotDifference();
     initSnowGlobe();
     initSnowmanBuilder();
