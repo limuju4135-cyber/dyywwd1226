@@ -57,6 +57,8 @@
 }
 
 .curtain.is-special-unlocking .special-unlock-fx {
+  visibility: visible !important;
+  opacity: 1;
   animation: stage50-fx-stage 2.2s cubic-bezier(.22,1,.36,1) both !important;
 }
 
@@ -146,6 +148,25 @@
   36% { transform: scale(1.008); }
   62% { transform: scale(.997); }
   100% { transform: scale(1); }
+}
+
+@keyframes stage50-fx-stage {
+  0% {
+    opacity: 0;
+    visibility: visible;
+  }
+  8% {
+    opacity: 1;
+    visibility: visible;
+  }
+  78% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: visible;
+  }
 }
 
 @keyframes stage50-screen-flash {
