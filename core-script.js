@@ -61,12 +61,26 @@
           ? 'normal'
           : 'idle';
 
-    const color =
-      resolvedMode === 'special'
-        ? '#A6B09F'
-        : resolvedMode === 'normal'
-          ? '#BE858D'
-          : '#FFFFFF';
+    const palette = {
+      idle: '#FFFFFF',
+      normal: '#BE858D',
+      special: '#A6B09F'
+    };
+
+    const color = palette[resolvedMode];
+
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.dataset.invitationMode = resolvedMode;
+    root.style.setProperty('--browser-chrome-color', color);
+    root.style.setProperty('background-color', color, 'important');
+
+    if (body) {
+      body.dataset.invitationMode = resolvedMode;
+      body.style.setProperty('--browser-chrome-color', color);
+      body.style.setProperty('background-color', color, 'important');
+    }
 
     let meta = document.querySelector('meta[name="theme-color"]');
 
@@ -77,16 +91,24 @@
     }
 
     meta.setAttribute('content', color);
-    document.documentElement.style.backgroundColor = color;
 
-    // Reinsert the meta node to make iOS Safari re-evaluate a runtime theme change.
+    // Replacing the node forces Chrome/Safari to reconsider the runtime tint.
+    // This is especially useful when normal -> special changes without reload.
     try {
       const refreshed = meta.cloneNode(true);
+      refreshed.setAttribute('content', color);
       meta.replaceWith(refreshed);
     } catch {}
 
+    // Force a style flush after the class/background transition so mobile
+    // browsers sample the new root color rather than the previous mode.
+    void root.offsetHeight;
+
     window.dispatchEvent(new CustomEvent('wedding-mode-change', {
-      detail: { mode: resolvedMode }
+      detail: {
+        mode: resolvedMode,
+        browserColor: color
+      }
     }));
   }
 
