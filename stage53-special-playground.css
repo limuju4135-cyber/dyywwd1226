@@ -1327,3 +1327,155 @@ body.special-mode #hero .hero__quick-nav,
 body.special-mode #hero .hero__quick-btn {
   display: none !important;
 }
+
+
+/* ============================================================
+   STAGE 60 — ADMIN MESSAGE LIST / FIVE-TAP EXIT
+   ============================================================ */
+.message-admin-list-view[hidden] {
+  display: none !important;
+}
+
+.message-admin-list-view {
+  margin-top: 1.05rem;
+  border: 1px solid rgba(166,176,159,.28);
+  border-radius: 18px;
+  background: rgba(248,243,234,.78);
+  overflow: hidden;
+}
+
+.message-admin-list-view__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem;
+  min-height: 44px;
+  padding: 0 .9rem;
+  border-bottom: 1px solid rgba(166,176,159,.20);
+  background: rgba(166,176,159,.08);
+}
+
+.message-admin-list-view__header strong {
+  color: #596356;
+  font-size: .76rem;
+  font-weight: 700;
+}
+
+.message-admin-list-view__header span {
+  color: rgba(86,81,73,.52);
+  font-size: .66rem;
+}
+
+.message-admin-list {
+  max-height: min(58vh, 470px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.message-admin-list__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .75rem;
+  padding: .82rem .82rem .82rem .9rem;
+  border-bottom: 1px solid rgba(166,176,159,.15);
+}
+
+.message-admin-list__row:last-child {
+  border-bottom: 0;
+}
+
+.message-admin-list__content {
+  min-width: 0;
+}
+
+.message-admin-list__meta {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  min-width: 0;
+  margin-bottom: .3rem;
+  color: rgba(86,81,73,.52);
+  font-size: .61rem;
+}
+
+.message-admin-list__sequence {
+  min-width: 1.45rem;
+  color: #A18D68;
+  font-variant-numeric: tabular-nums;
+}
+
+.message-admin-list__meta strong {
+  min-width: 0;
+  overflow: hidden;
+  color: #596356;
+  font-size: .67rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-admin-list__meta time {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.message-admin-list__message {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: #565149;
+  font-size: .74rem;
+  line-height: 1.55;
+}
+
+.message-admin-list__delete {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(185,133,136,.42);
+  border-radius: 999px;
+  background: rgba(185,133,136,.08);
+  color: #9C676A;
+  font-size: .66rem;
+  font-weight: 700;
+}
+
+.message-admin-list__delete:disabled {
+  opacity: .48;
+}
+
+.message-admin-list__empty {
+  margin: 0;
+  padding: 1.5rem 1rem;
+  color: rgba(86,81,73,.52);
+  font-size: .72rem;
+  text-align: center;
+}
+
+.special-message.is-admin .special-game__desc,
+.special-message.is-admin .special-message__composer,
+.special-message.is-admin .message-tree {
+  display: none !important;
+}
+
+.special-message.is-admin #specialMessageTitle {
+  cursor: default;
+}
+
+.special-message.is-admin #specialMessageTitle::after {
+  content: " · ADMIN";
+  color: #A18D68;
+}
+
+@media (max-width: 390px) {
+  .message-admin-list__row {
+    gap: .55rem;
+    padding-left: .72rem;
+    padding-right: .72rem;
+  }
+
+  .message-admin-list__delete {
+    width: 44px;
+  }
+}
