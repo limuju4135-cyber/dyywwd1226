@@ -112,12 +112,18 @@
     function buildSpecialParticles() {
       if (!specialParticles || specialParticles.childElementCount) return;
 
-      const particleCount = 18;
+      const particleCount = 30;
 
       for (let i = 0; i < particleCount; i += 1) {
         const particle = document.createElement('i');
+
+        if (i % 4 === 0) {
+          particle.classList.add('is-snowflake');
+          particle.textContent = '❄';
+        }
+
         const angle = (360 / particleCount) * i + (i % 2 ? 7 : -5);
-        const distance = 82 + (i % 4) * 18;
+        const distance = 92 + (i % 5) * 21;
         const radians = angle * Math.PI / 180;
 
         particle.style.setProperty('--spark-x', `${Math.cos(radians) * distance}px`);
@@ -173,11 +179,11 @@
 
       window.setTimeout(() => {
         openInvitation('special');
-      }, 900);
+      }, 1200);
 
       window.setTimeout(() => {
         specialFx?.setAttribute('aria-hidden', 'true');
-      }, 1800);
+      }, 2300);
     }
 
     btn.addEventListener('pointerdown', event => {
