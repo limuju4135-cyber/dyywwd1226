@@ -344,7 +344,7 @@ body.special-mode #gallery .special-gallery__title {
       rgba(40,70,56,.96) 47%,
       rgba(55,91,70,.92)
     );
-  filter: brightness(calc(.86 + (var(--shade) * .045)));
+  filter: brightness(.94);
 }
 
 .message-tree__trunk {
@@ -383,7 +383,7 @@ body.special-mode #gallery .special-gallery__title {
   border-radius: 50%;
   background:
     radial-gradient(circle at 34% 27%, rgba(255,255,255,.88) 0 10%, transparent 28%),
-    radial-gradient(circle at 38% 32%, var(--ornament-color), color-mix(in srgb, var(--ornament-color) 70%, #4A3515));
+    var(--ornament-color);
   box-shadow:
     0 3px 7px rgba(38,28,11,.18),
     inset -3px -4px 6px rgba(45,28,6,.14);
