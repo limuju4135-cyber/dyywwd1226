@@ -322,34 +322,32 @@
 
     const targetSlot = treeState.reservedSlot;
 
-    // New message visibly occupies the reserved spot first.
+    // The new message always occupies the currently reserved position.
     treeState.assignments.set(targetSlot, item.id);
+
+    // Immediately establish the next reserved position so one subtle empty
+    // ornament is always visible, even when 14 messages are already displayed.
+    if (treeState.assignments.size > TREE_VISIBLE_LIMIT) {
+      const candidates = [...treeState.assignments.keys()].filter(
+        slot => slot !== targetSlot
+      );
+
+      const victim = randomFrom(candidates);
+
+      if (victim !== null) {
+        treeState.assignments.delete(victim);
+        treeState.reservedSlot = victim;
+      }
+    } else {
+      treeState.reservedSlot = chooseReservedSlot(
+        treeState.assignments,
+        targetSlot
+      );
+    }
+
     renderTreeState(item.id);
     showTreeFeedback();
     moveTreeIntoView();
-
-    // After the celebration, create the next subtle reserved position.
-    window.setTimeout(() => {
-      if (treeState.assignments.size > TREE_VISIBLE_LIMIT) {
-        const candidates = [...treeState.assignments.keys()].filter(
-          slot => slot !== targetSlot
-        );
-
-        const victim = randomFrom(candidates);
-
-        if (victim !== null) {
-          treeState.assignments.delete(victim);
-          treeState.reservedSlot = victim;
-        }
-      } else {
-        treeState.reservedSlot = chooseReservedSlot(
-          treeState.assignments,
-          targetSlot
-        );
-      }
-
-      renderTreeState();
-    }, 1900);
   }
 
   function initMessageTreeInteraction() {
@@ -792,10 +790,11 @@
     const image = new Image();
     image.decoding = 'async';
 
-    polaroid.classList.add('is-changing');
-
     image.onload = () => {
       const landscape = image.naturalWidth > image.naturalHeight;
+
+      // Preload first. Fade only when the next image is actually ready.
+      polaroid.classList.add('is-changing');
 
       window.setTimeout(() => {
         polaroid.classList.toggle('is-landscape', landscape);
