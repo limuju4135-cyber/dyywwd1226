@@ -76,7 +76,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage50-copy-initial-hide">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage58-approved-art-fixed-gallery-2">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage59-message-swipe">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -426,11 +426,6 @@
         <span class="hero__special-badge-mark">✦</span>
         <span>SPECIAL INVITATION</span>
       </div>
-      <nav class="hero__quick-nav" aria-label="초대장 바로가기">
-        <button type="button" class="hero__quick-btn" data-scroll-target="contact">연락처</button>
-        <button type="button" class="hero__quick-btn" data-scroll-target="gallery">갤러리</button>
-        <button type="button" class="hero__quick-btn" data-scroll-target="location">오시는 길</button>
-      </nav>
 
       <div class="countdown animate-item" data-animate="fade-up" id="countdown">
         <p class="countdown__label" id="countdownLabel"></p>
@@ -553,15 +548,18 @@
 
         <div class="message-detail-modal" id="messageDetailModal" hidden>
           <div class="message-detail-modal__backdrop" data-message-detail-close></div>
-          <article class="message-detail-modal__panel" role="dialog" aria-modal="true" aria-label="오너먼트 메시지">
+          <article class="message-detail-modal__panel" role="dialog" aria-modal="true" aria-label="전체 메시지 보기">
             <button type="button" class="message-detail-modal__close" data-message-detail-close aria-label="메시지 닫기">×</button>
-            <p class="message-detail-modal__kicker">ORNAMENT MESSAGE</p>
-            <p class="message-detail-modal__text" id="messageDetailText"></p>
-            <div class="message-detail-modal__meta">
-              <span id="messageDetailName"></span>
-              <time id="messageDetailDate"></time>
+            <p class="message-detail-modal__kicker">MESSAGES</p>
+
+            <div class="message-detail-modal__viewport" id="messageDetailViewport">
+              <div class="message-detail-modal__track" id="messageDetailTrack"></div>
             </div>
-            <button type="button" class="message-detail-modal__delete" id="messageDetailDelete" hidden>메시지 삭제</button>
+
+            <div class="message-detail-modal__footer">
+              <span class="message-detail-modal__counter" id="messageDetailCounter">1 / 1</span>
+              <span class="message-detail-modal__hint">좌우로 넘겨보세요</span>
+            </div>
           </article>
         </div>
 
@@ -905,6 +903,6 @@
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage58-approved-art-fixed-gallery"></script>
+  <script src="stage53-special-playground.js?v=stage59-message-swipe"></script>
 </body>
 </html>
