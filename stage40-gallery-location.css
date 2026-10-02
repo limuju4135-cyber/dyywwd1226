@@ -119,3 +119,18 @@
     padding-right: 1.2rem !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 44 — GALLERY MODAL SWIPE RELIABILITY
+   모바일 Safari / 인앱 브라우저에서 가로 스와이프를 갤러리가
+   우선 처리하도록 touch gesture 충돌을 차단합니다.
+   ============================================================ */
+#photoModal .photo-modal__container,
+#photoModal .photo-modal__img,
+#photoModal .photo-modal__img--protected {
+  touch-action: none !important;
+  overscroll-behavior: contain;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
