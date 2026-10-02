@@ -588,8 +588,12 @@
         return;
       }
 
-      lastSpecialGalleryIndex = 0;
-      showSpecialGalleryImage(0, false);
+      preview.classList.add('is-empty');
+      preview.replaceChildren();
+      const placeholder = document.createElement('span');
+      placeholder.className = 'special-gallery__placeholder';
+      placeholder.textContent = '?';
+      preview.appendChild(placeholder);
     } catch (error) {
       console.warn('[Special gallery]', error);
       button.disabled = true;
@@ -650,25 +654,15 @@
   function initSnowmanBuilder() {
     const builder = $('#snowmanBuilder');
     const preview = $('#snowballRollPreview');
-    const playCanvas = $('#snowPlayCanvas');
+    const zone = $('#snowmanRollZone');
     const stageLabel = $('#snowmanStageLabel');
 
-    if (!builder || !preview || !playCanvas) return;
+    if (!builder || !preview || !zone) return;
 
     let stage = 0;
     let gesture = null;
     let tapCount = 0;
     let tapTimer = null;
-
-    function viewportHeight() {
-      return window.visualViewport?.height ||
-        window.innerHeight ||
-        document.documentElement.clientHeight;
-    }
-
-    function bottomZone(y) {
-      return y >= viewportHeight() - 165;
-    }
 
     function normalizeAngle(value) {
       while (value > Math.PI) value -= Math.PI * 2;
@@ -676,47 +670,52 @@
       return value;
     }
 
-    function canStart(y) {
-      return isMobileSpecial() &&
-        stage < 2 &&
-        bottomZone(y) &&
-        playCanvas.classList.contains('is-visible');
-    }
-
     function startGesture(event) {
+      if (!isMobileSpecial() || stage >= 2) return;
+
+      const rect = zone.getBoundingClientRect();
+
       gesture = {
         pointerId: event.pointerId,
-        startX: event.clientX,
-        startY: event.clientY,
         lastX: event.clientX,
         lastY: event.clientY,
         lastVectorAngle: null,
-        absoluteTurn: 0,
+        turn: 0,
         path: 0,
-        size: 30
+        size: 32,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2
       };
 
+      zone.classList.add('is-rolling');
       preview.classList.add('is-visible');
       preview.style.setProperty('--roll-x', event.clientX + 'px');
       preview.style.setProperty('--roll-y', event.clientY + 'px');
-      preview.style.setProperty('--roll-size', '30px');
+      preview.style.setProperty('--roll-size', '32px');
+
+      try {
+        zone.setPointerCapture(event.pointerId);
+      } catch {}
     }
 
     function updateGesture(event) {
       if (!gesture || event.pointerId !== gesture.pointerId) return;
 
+      event.preventDefault();
+
       const dx = event.clientX - gesture.lastX;
       const dy = event.clientY - gesture.lastY;
       const distance = Math.hypot(dx, dy);
 
-      if (distance < 1.5) return;
+      if (distance < 1.2) return;
 
       const vectorAngle = Math.atan2(dy, dx);
 
       if (gesture.lastVectorAngle !== null) {
         const delta = normalizeAngle(vectorAngle - gesture.lastVectorAngle);
-        if (Math.abs(delta) <= 1.45) {
-          gesture.absoluteTurn += Math.abs(delta);
+
+        if (Math.abs(delta) <= 1.55) {
+          gesture.turn += Math.abs(delta);
         }
       }
 
@@ -725,11 +724,12 @@
       gesture.lastY = event.clientY;
       gesture.path += distance;
 
+      // Every continuing circular swipe visibly grows the ball.
       gesture.size = Math.max(
-        30,
+        32,
         Math.min(
-          112,
-          30 + gesture.absoluteTurn * 7.2 + gesture.path * .045
+          118,
+          32 + gesture.turn * 8.6 + gesture.path * .055
         )
       );
 
@@ -741,89 +741,85 @@
     function applySnowmanGeometry() {
       const bodySize = Number(builder.dataset.bodySize || 0);
       const headSize = Number(builder.dataset.headSize || 0);
-      const headBottom = Math.max(26, bodySize * .66);
+
+      // Head sits directly on the body. Oversized heads are intentionally allowed.
+      const headBottom = Math.max(18, bodySize * .72);
 
       builder.style.setProperty('--body-size', bodySize + 'px');
       builder.style.setProperty('--head-size', headSize + 'px');
       builder.style.setProperty('--head-bottom', headBottom + 'px');
     }
 
-    function finalizeGesture(event) {
+    function finishGesture(event, cancelled = false) {
       if (!gesture || event.pointerId !== gesture.pointerId) return;
 
-      const valid =
-        gesture.path >= 65 &&
-        gesture.absoluteTurn >= 1.05;
-
-      preview.classList.remove('is-visible');
-
-      if (valid) {
-        const size = Math.round(gesture.size);
-
-        if (stage === 0) {
-          stage = 1;
-          builder.dataset.stage = '1';
-          builder.dataset.bodySize = String(size);
-          builder.dataset.headSize = '0';
-          applySnowmanGeometry();
-
-          if (stageLabel) {
-            stageLabel.textContent = '몸통 완성 · 이제 머리를 굴려주세요';
-          }
-        } else if (stage === 1) {
-          stage = 2;
-          builder.dataset.stage = '2';
-          builder.dataset.headSize = String(size);
-          applySnowmanGeometry();
-
-          builder.classList.add('is-head-lifting');
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              builder.classList.remove('is-head-lifting');
-            });
-          });
-
-          if (stageLabel) {
-            stageLabel.textContent = '눈사람 완성! 세 번 탭하면 사라져요';
-          }
-        }
-      }
-
+      const current = gesture;
       gesture = null;
-    }
 
-    document.addEventListener('pointerdown', event => {
-      if (!canStart(event.clientY)) return;
-      if (event.target.closest('#snowmanBuilder')) return;
-
-      startGesture(event);
+      zone.classList.remove('is-rolling');
+      preview.classList.remove('is-visible');
 
       try {
-        document.documentElement.setPointerCapture?.(event.pointerId);
+        if (zone.hasPointerCapture?.(event.pointerId)) {
+          zone.releasePointerCapture(event.pointerId);
+        }
       } catch {}
-    }, true);
 
-    document.addEventListener('pointermove', event => {
-      if (!gesture) return;
-      updateGesture(event);
-    }, true);
+      if (cancelled) return;
 
-    document.addEventListener('pointerup', finalizeGesture, true);
-    document.addEventListener('pointercancel', event => {
-      if (!gesture || event.pointerId !== gesture.pointerId) return;
-      preview.classList.remove('is-visible');
-      gesture = null;
-    }, true);
+      // Forgiving threshold: roughly a curved half-to-full loop is sufficient.
+      const valid =
+        current.path >= 85 &&
+        current.turn >= .72;
+
+      if (!valid) {
+        zone.classList.add('is-retry');
+        window.setTimeout(() => zone.classList.remove('is-retry'), 320);
+        return;
+      }
+
+      const size = Math.round(current.size);
+
+      if (stage === 0) {
+        stage = 1;
+        builder.dataset.stage = '1';
+        builder.dataset.bodySize = String(size);
+        builder.dataset.headSize = '0';
+        applySnowmanGeometry();
+
+        if (stageLabel) stageLabel.textContent = '머리 굴리기';
+        return;
+      }
+
+      stage = 2;
+      builder.dataset.stage = '2';
+      builder.dataset.headSize = String(size);
+      applySnowmanGeometry();
+
+      builder.classList.add('is-head-drop');
+      window.setTimeout(() => {
+        builder.classList.remove('is-head-drop');
+      }, 480);
+
+      if (stageLabel) stageLabel.textContent = '완성';
+      zone.classList.add('is-complete');
+    }
+
+    zone.addEventListener('pointerdown', startGesture);
+    zone.addEventListener('pointermove', updateGesture);
+    zone.addEventListener('pointerup', event => finishGesture(event, false));
+    zone.addEventListener('pointercancel', event => finishGesture(event, true));
 
     builder.addEventListener('pointerdown', event => {
       if (stage === 0) return;
-      event.stopPropagation();
 
+      event.stopPropagation();
       tapCount += 1;
+
       clearTimeout(tapTimer);
       tapTimer = window.setTimeout(() => {
         tapCount = 0;
-      }, 1400);
+      }, 1500);
 
       if (tapCount < 3) return;
 
@@ -836,12 +832,11 @@
         builder.dataset.stage = '0';
         builder.dataset.bodySize = '0';
         builder.dataset.headSize = '0';
-        builder.classList.remove('is-removing', 'is-head-lifting');
+        builder.classList.remove('is-removing', 'is-head-drop');
+        zone.classList.remove('is-complete');
         applySnowmanGeometry();
 
-        if (stageLabel) {
-          stageLabel.textContent = '첫 번째 회전 스와이프로 몸통을 만들어보세요';
-        }
+        if (stageLabel) stageLabel.textContent = '몸통 굴리기';
       }, 280);
     });
   }
