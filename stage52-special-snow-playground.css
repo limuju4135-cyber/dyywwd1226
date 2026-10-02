@@ -1,0 +1,126 @@
+/* ============================================================
+   STAGE 52 — GOLD ENFORCEMENT + SNOW PLAYGROUND
+   ============================================================ */
+
+body.special-mode {
+  --s32-burgundy: #A77935 !important;
+  --s32-curtain: #C9A55F !important;
+  --stage24-curtain-rgb: 201, 165, 95 !important;
+}
+
+/* Hard override every remaining rose surface that was authored with !important. */
+body.special-mode .hero__overlay {
+  background:
+    linear-gradient(
+      to top,
+      rgba(166,124,57,.88) 0%,
+      rgba(186,146,78,.68) 17%,
+      rgba(203,169,105,.42) 31%,
+      rgba(216,190,137,.18) 43%,
+      rgba(226,207,166,.05) 54%,
+      rgba(226,207,166,0) 64%
+    ) !important;
+}
+
+body.special-mode .hero__content::before {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(190,154,86,.30) 0%,
+      rgba(201,169,108,.17) 38%,
+      rgba(215,193,149,.06) 72%,
+      rgba(215,193,149,0) 100%
+    ) !important;
+}
+
+body.special-mode .section__title,
+body.special-mode .contact-directory__title,
+body.special-mode .wedding-day-venue,
+body.special-mode #calendarGrid .calendar__month-name,
+body.special-mode .greeting-poem__initial,
+body.special-mode .guest-guide-card__top h3,
+body.special-mode .guest-guide-card__number,
+body.special-mode .guest-guide-card__visual {
+  color: #A77935 !important;
+}
+
+body.special-mode .greeting-poem__heart {
+  color: #C9A55F !important;
+}
+
+body.special-mode #calendarGrid .calendar__month-name {
+  background: rgba(201,165,95,.09) !important;
+  border-color: rgba(201,165,95,.55) !important;
+}
+
+body.special-mode .guest-guide-card--waiting .facility-row__floor {
+  color: #9A7132 !important;
+  background: rgba(201,165,95,.10) !important;
+  border-color: rgba(183,139,70,.42) !important;
+}
+
+body.special-mode .gallery-progress__track,
+body.special-mode .guest-guide-progress__track {
+  background: rgba(183,139,70,.16) !important;
+}
+
+body.special-mode .gallery-progress__thumb,
+body.special-mode .guest-guide-progress__thumb {
+  background: rgba(183,139,70,.72) !important;
+}
+
+body.special-mode #gallery .gallery__coming-soon strong {
+  color: #9A7132 !important;
+}
+
+body.special-mode .guest-guide-card__photo {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(213,176,106,.18), transparent 38%),
+    linear-gradient(145deg, rgba(218,190,137,.13), rgba(255,253,249,.94)) !important;
+}
+
+/* Subtle gold linework in location/contact areas. */
+body.special-mode .contact-directory,
+body.special-mode .transport-card,
+body.special-mode .guest-guide-card,
+body.special-mode .accordion,
+body.special-mode #calendarGrid.calendar {
+  box-shadow:
+    0 10px 28px rgba(142,104,47,.055),
+    inset 0 0 0 1px rgba(255,255,255,.40) !important;
+}
+
+/* ------------------------------------------------------------
+   Snow playground: fixed visual layer only.
+   Gesture detection is global, so this canvas never blocks links/scroll.
+   ------------------------------------------------------------ */
+.snow-play-canvas {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 102;
+  width: 100%;
+  height: 96px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .28s ease;
+}
+
+body.special-mode .snow-play-canvas.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (min-width: 769px) {
+  .snow-play-canvas {
+    height: 112px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snow-play-canvas {
+    display: none !important;
+  }
+}
