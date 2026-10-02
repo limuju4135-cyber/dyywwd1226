@@ -55,7 +55,7 @@
 
   function applyBrowserTheme(mode) {
     const special = mode === 'special';
-    const color = special ? '#B89552' : '#BE858D';
+    const color = '#A6B09F';
 
     let meta = document.querySelector('meta[name="theme-color"]');
 
