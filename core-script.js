@@ -79,6 +79,7 @@
 
     invitationMode = 'normal';
     document.body.classList.remove('special-mode', 'normal-mode');
+    document.documentElement.classList.remove('special-mode', 'normal-mode');
     curtain.classList.remove('is-special-unlocking');
     names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
 
@@ -141,6 +142,8 @@
 
       document.body.classList.toggle('special-mode', invitationMode === 'special');
       document.body.classList.toggle('normal-mode', invitationMode !== 'special');
+      document.documentElement.classList.toggle('special-mode', invitationMode === 'special');
+      document.documentElement.classList.toggle('normal-mode', invitationMode !== 'special');
 
       curtain.classList.add('is-open');
       document.body.classList.remove('no-scroll');
@@ -158,6 +161,8 @@
       invitationMode = 'special';
       document.body.classList.add('special-mode');
       document.body.classList.remove('normal-mode');
+      document.documentElement.classList.add('special-mode');
+      document.documentElement.classList.remove('normal-mode');
 
       clearHoldState();
       btn.classList.add('is-special-unlocked');
