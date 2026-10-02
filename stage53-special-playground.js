@@ -115,7 +115,7 @@
 
     if (empty) empty.hidden = true;
 
-    const colors = ['#D8C08A', '#A74435', '#F6EEDC', '#B89552'];
+    const colors = ['#D2BF91', '#B98588', '#F8F3EA', '#A6B09F'];
 
     messages.forEach((item, index) => {
       const position = ornamentPosition(index);
