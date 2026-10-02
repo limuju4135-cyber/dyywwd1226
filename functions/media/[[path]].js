@@ -42,7 +42,7 @@ export async function onRequest(context) {
   }
 
   const valid =
-    /^(hero|gallery|og|ending)\/[A-Za-z0-9._-]+\.(webp|avif|jpg|jpeg|png)$/i.test(key);
+    /^(hero|gallery|special|og|ending)\/[A-Za-z0-9._-]+\.(webp|avif|jpg|jpeg|png)$/i.test(key);
 
   if (!valid) {
     return notFound();
