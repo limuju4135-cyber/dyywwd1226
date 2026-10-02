@@ -68,7 +68,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage50-copy-initial-hide">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage53-message-admin-2">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage54-gold-tree-snowman">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -398,18 +398,17 @@
   <canvas id="snowCanvas" class="snow-canvas"></canvas>
   <canvas id="snowPlayCanvas" class="snow-play-canvas" aria-hidden="true"></canvas>
 
-  <div class="snowman-builder" id="snowmanBuilder" data-stage="0" aria-hidden="true">
-    <div class="snowman__ball snowman__base"></div>
-    <div class="snowman__ball snowman__middle"></div>
-    <div class="snowman__ball snowman__head"></div>
-    <div class="snowman__face">
+  <div class="snowball-roll-preview" id="snowballRollPreview" aria-hidden="true"></div>
+
+  <div class="snowman-builder" id="snowmanBuilder" data-stage="0" data-body-size="0" data-head-size="0" aria-label="만든 눈사람">
+    <div class="snowman__ball snowman__body">
+      <i class="snowman__arm snowman__arm--left"></i>
+      <i class="snowman__arm snowman__arm--right"></i>
+    </div>
+    <div class="snowman__ball snowman__head">
       <i class="snowman__eye snowman__eye--left"></i>
       <i class="snowman__eye snowman__eye--right"></i>
       <i class="snowman__nose"></i>
-    </div>
-    <div class="snowman__arms">
-      <i class="snowman__arm snowman__arm--left"></i>
-      <i class="snowman__arm snowman__arm--right"></i>
     </div>
     <i class="snowman__scarf"></i>
   </div>
@@ -532,9 +531,9 @@
 
     <section class="section special-only special-game-section special-message" id="specialMessages">
       <div class="special-game__inner">
-        <p class="special-game__eyebrow">01 · MESSAGE BOX</p>
+        <p class="special-game__eyebrow">01 · MESSAGE TREE</p>
         <h2 class="special-game__title" id="specialMessageTitle">메시지함</h2>
-        <p class="special-game__desc">우리에게 한마디를 남겨주세요. 남겨진 카드는 모두 함께 볼 수 있어요.</p>
+        <p class="special-game__desc">메시지를 남기면 트리에 오너먼트가 하나씩 달려요. 트리를 좌우로 돌리고 오너먼트를 눌러보세요.</p>
 
         <div class="message-admin-modal" id="messageAdminModal" hidden>
           <div class="message-admin-modal__backdrop" data-admin-close></div>
@@ -560,6 +559,20 @@
           </div>
         </div>
 
+        <div class="message-detail-modal" id="messageDetailModal" hidden>
+          <div class="message-detail-modal__backdrop" data-message-detail-close></div>
+          <article class="message-detail-modal__panel" role="dialog" aria-modal="true" aria-label="오너먼트 메시지">
+            <button type="button" class="message-detail-modal__close" data-message-detail-close aria-label="메시지 닫기">×</button>
+            <p class="message-detail-modal__kicker">ORNAMENT MESSAGE</p>
+            <p class="message-detail-modal__text" id="messageDetailText"></p>
+            <div class="message-detail-modal__meta">
+              <span id="messageDetailName"></span>
+              <time id="messageDetailDate"></time>
+            </div>
+            <button type="button" class="message-detail-modal__delete" id="messageDetailDelete" hidden>메시지 삭제</button>
+          </article>
+        </div>
+
         <form class="special-message__composer" id="specialMessageForm">
           <input
             type="text"
@@ -583,10 +596,17 @@
           </div>
         </form>
 
-        <div class="special-message__feed">
-          <div class="special-message__scroller" id="specialMessageCards" aria-live="polite">
-            <div class="special-message__empty">메시지를 불러오는 중...</div>
+        <div class="message-tree">
+          <p class="message-tree__hint">← 손가락으로 트리를 360° 돌려보세요 →</p>
+          <div class="message-tree__scene" id="messageTreeScene">
+            <div class="message-tree__rotator" id="messageTreeRotator">
+              <div class="message-tree__foliage" id="messageTreeFoliage"></div>
+              <div class="message-tree__trunk" aria-hidden="true"></div>
+              <div class="message-tree__star" aria-hidden="true">✦</div>
+              <div class="message-tree__ornaments" id="messageTreeOrnaments"></div>
+            </div>
           </div>
+          <p class="message-tree__empty" id="messageTreeEmpty" hidden>첫 번째 오너먼트를 달아주세요.</p>
         </div>
       </div>
     </section>
@@ -613,69 +633,31 @@
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="section special-only special-game-section special-spot" id="specialSpot">
-      <div class="special-game__inner">
-        <p class="special-game__eyebrow">03 · FIND THE DIFFERENCE</p>
-        <h2 class="special-game__title">틀린그림찾기</h2>
-        <p class="special-game__desc">오른쪽 사진에서 달라진 네 곳을 찾아보세요.</p>
-
-        <div class="spot-diff__status">
-          <span>FOUND</span>
-          <strong id="spotDifferenceStatus">0 / 4</strong>
+      <div class="special-only special-gallery">
+        <p class="special-game__eyebrow">02 · BEHIND CUT</p>
+        <h2 class="special-gallery__title">갤러리</h2>
+        <div class="special-gallery__layout">
+          <button type="button" class="special-gallery__draw" id="specialGalleryDrawBtn">
+            <span class="special-gallery__draw-kicker">RANDOM PICK</span>
+            <strong class="special-gallery__draw-label">비하인드<br>뽑기</strong>
+          </button>
+          <div class="special-gallery__preview" id="specialGalleryPreview" role="img" aria-label="랜덤 비하인드 사진"></div>
         </div>
-
-        <div class="spot-diff__board" id="spotDifferenceGame">
-          <div class="spot-diff__panel spot-diff__panel--original" aria-label="원본 사진">
-            <span class="spot-diff__panel-label">ORIGINAL</span>
-          </div>
-
-          <div class="spot-diff__panel spot-diff__panel--answer" aria-label="틀린 그림">
-            <span class="spot-diff__panel-label">FIND 4</span>
-
-            <i class="spot-diff__alter spot-diff__alter--1" aria-hidden="true"></i>
-            <i class="spot-diff__alter spot-diff__alter--2" aria-hidden="true"></i>
-            <i class="spot-diff__alter spot-diff__alter--3" aria-hidden="true"></i>
-            <i class="spot-diff__alter spot-diff__alter--4" aria-hidden="true"></i>
-
-            <button class="spot-diff__hit" type="button" data-diff="1" aria-label="첫 번째 차이" aria-pressed="false"></button>
-            <button class="spot-diff__hit" type="button" data-diff="2" aria-label="두 번째 차이" aria-pressed="false"></button>
-            <button class="spot-diff__hit" type="button" data-diff="3" aria-label="세 번째 차이" aria-pressed="false"></button>
-            <button class="spot-diff__hit" type="button" data-diff="4" aria-label="네 번째 차이" aria-pressed="false"></button>
-          </div>
-        </div>
-
-        <div class="spot-diff__complete" id="spotDifferenceComplete">CLEAR! 네 곳을 모두 찾았어요. ❄</div>
-        <button type="button" class="spot-diff__reset" id="spotDifferenceReset">다시 찾기</button>
       </div>
     </section>
 
     <section class="section special-only special-game-section special-snow" id="specialSnow">
       <div class="special-game__inner">
-        <p class="special-game__eyebrow">04 · SNOW PLAYGROUND</p>
-        <h2 class="special-game__title">스노우 플레이그라운드</h2>
-        <p class="special-game__desc">눈이 쌓이면 직접 굴려보고, 휴대폰도 흔들어보세요.</p>
+        <p class="special-game__eyebrow">03 · BUILD A SNOWMAN</p>
+        <h2 class="special-game__title">눈사람 만들기</h2>
+        <p class="special-game__desc">하단에 눈이 쌓이면 원을 그리듯 굴려주세요. 손을 떼는 순간 눈덩이 크기가 확정됩니다.</p>
 
-        <div class="special-snow__cards">
-          <article class="special-snow__card">
-            <span class="special-snow__card-kicker">SNOWMAN</span>
-            <strong id="snowmanStageLabel">눈사람 0 / 3</strong>
-            <p>화면 아래 눈이 쌓이면 손을 떼지 않고 원을 5바퀴 연속으로 그려주세요. 5바퀴마다 한 단계씩 완성됩니다.</p>
-            <div class="snowman-progress" aria-label="눈사람 완성 단계">
-              <span class="snowman-progress__dot"></span>
-              <span class="snowman-progress__dot"></span>
-              <span class="snowman-progress__dot"></span>
-            </div>
-          </article>
-
-          <article class="special-snow__card">
-            <span class="special-snow__card-kicker">SNOW GLOBE</span>
-            <strong>흔들면 폭설!</strong>
-            <p>버튼을 한 번 눌러 활성화한 뒤 휴대폰을 흔들어보세요. iPhone에서는 모션 권한을 요청할 수 있어요.</p>
-            <button type="button" class="snow-globe__button" id="snowGlobeBtn">스노우글로브 켜기</button>
-          </article>
-        </div>
+        <article class="special-snow__card">
+          <span class="special-snow__card-kicker">2 ROLLS ONLY</span>
+          <strong id="snowmanStageLabel">첫 번째 회전 스와이프로 몸통을 만들어보세요</strong>
+          <p>첫 번째 눈덩이는 몸통, 두 번째 눈덩이는 머리가 됩니다. 머리를 몸통보다 크게 만들어 가분수 눈사람도 만들 수 있어요. 완성된 눈사람은 세 번 탭하면 사라집니다.</p>
+        </article>
       </div>
     </section>
 
@@ -922,15 +904,15 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage49-special-mode"></script>
-  <script src="core-script.js?v=stage53-champagne-snow-burst"></script>
+  <script src="core-script.js?v=stage54-low-power-snow"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
-  <script src="script.js?v=stage53-champagne-snow-burst"></script>
+  <script src="script.js?v=stage54-low-power-snow"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
   <script src="stage32-major.js?v=stage37-4-meal-loader"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage53-message-admin-2"></script>
+  <script src="stage53-special-playground.js?v=stage54-gold-tree-snowman"></script>
 </body>
 </html>
