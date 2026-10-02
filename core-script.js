@@ -552,7 +552,15 @@
       moveModalImage(1);
     });
 
+    let suppressModalClickUntil = 0;
+
     modal.addEventListener('click', e => {
+      // 스와이프 직후 생성되는 synthetic click으로 모달이 닫히는 현상 방지
+      if (performance.now() < suppressModalClickUntil) {
+        e.preventDefault();
+        return;
+      }
+
       if (e.target === modal || e.target.id === 'modalContainer') closePhotoModal();
     });
 
@@ -566,25 +574,64 @@
 
     let startX = 0;
     let startY = 0;
+    let trackingTouch = false;
+    let horizontalGesture = false;
     const container = $('#modalContainer');
 
     container?.addEventListener('touchstart', e => {
-      const touch = e.changedTouches[0];
-      startX = touch.screenX;
-      startY = touch.screenY;
+      if (!e.touches.length) return;
+
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      trackingTouch = true;
+      horizontalGesture = false;
     }, { passive: true });
 
+    container?.addEventListener('touchmove', e => {
+      if (!trackingTouch || !e.touches.length) return;
+
+      const touch = e.touches[0];
+      const diffX = startX - touch.clientX;
+      const diffY = startY - touch.clientY;
+
+      // 가로 의도가 확인되면 브라우저의 뒤로가기/페이지 제스처보다 갤러리를 우선합니다.
+      if (Math.abs(diffX) > 8 && Math.abs(diffX) > Math.abs(diffY)) {
+        horizontalGesture = true;
+        e.preventDefault();
+      }
+    }, { passive: false });
+
     container?.addEventListener('touchend', e => {
+      if (!trackingTouch || !e.changedTouches.length) return;
+
       const touch = e.changedTouches[0];
-      const diffX = startX - touch.screenX;
-      const diffY = startY - touch.screenY;
+      const diffX = startX - touch.clientX;
+      const diffY = startY - touch.clientY;
 
-      // 가로 이동이 충분하고 세로 이동보다 클 때만 사진 넘김으로 처리합니다.
-      if (Math.abs(diffX) < 50 || Math.abs(diffX) <= Math.abs(diffY)) return;
+      trackingTouch = false;
 
-      // 순환형 스와이프: 마지막→첫 사진, 첫 사진→마지막 사진.
-      if (diffX > 0) moveModalImage(1);
-      if (diffX < 0) moveModalImage(-1);
+      // 가로 스와이프 판정. 너무 짧은 움직임과 세로 제스처는 무시합니다.
+      if (
+        !horizontalGesture ||
+        Math.abs(diffX) < 36 ||
+        Math.abs(diffX) <= Math.abs(diffY)
+      ) {
+        horizontalGesture = false;
+        return;
+      }
+
+      // 스와이프 후 발생할 수 있는 click 이벤트로 모달이 닫히지 않도록 잠시 차단합니다.
+      suppressModalClickUntil = performance.now() + 450;
+
+      // 완전 순환: 마지막→첫 사진 / 첫 사진→마지막 사진
+      moveModalImage(diffX > 0 ? 1 : -1);
+      horizontalGesture = false;
+    }, { passive: true });
+
+    container?.addEventListener('touchcancel', () => {
+      trackingTouch = false;
+      horizontalGesture = false;
     }, { passive: true });
   }
 
