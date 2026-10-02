@@ -137,84 +137,188 @@
 
 
 /* ============================================================
-   STAGE 45 — GALLERY RANDOM DRAW
-   갤러리 타이틀 옆 랜덤 사진 뽑기 버튼
+   STAGE 46 — GALLERY RANDOM DRAW / SHUFFLE
+   갤러리 우측 대형 랜덤 뽑기 + 2초 셔플/두근 애니메이션
    ============================================================ */
 #gallery .gallery__heading {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .72rem;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: var(--spacing-lg);
 }
 
 #gallery .gallery__title {
-  margin-bottom: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0 !important;
+  text-align: left;
 }
 
 #gallery .gallery__random-btn {
   appearance: none;
   -webkit-appearance: none;
 
-  min-height: 32px;
-  padding: .42rem .82rem;
+  flex: 0 0 auto;
+  min-width: 148px;
+  min-height: 58px;
+  padding: .66rem 1rem .64rem;
 
-  border: 1px solid rgba(199,166,115,.58);
-  border-radius: 999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .24rem;
+
+  border: 1px solid rgba(199,166,115,.68);
+  border-radius: 13px;
 
   background:
-    linear-gradient(180deg, rgba(255,253,249,.96), rgba(249,243,235,.94));
-  color: #7A252A;
+    radial-gradient(circle at 50% 0%, rgba(199,166,115,.13), transparent 58%),
+    linear-gradient(180deg, rgba(255,253,249,.99), rgba(248,240,231,.97));
+
+  color: #781E24;
 
   font-family:
     'Noto Sans KR',
     'Apple SD Gothic Neo',
     'Malgun Gothic',
     sans-serif;
-  font-size: .70rem;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: .035em;
 
   box-shadow:
-    0 4px 14px rgba(83,55,45,.06),
-    inset 0 0 0 1px rgba(255,255,255,.55);
+    0 7px 22px rgba(83,55,45,.08),
+    inset 0 0 0 1px rgba(255,255,255,.58);
 
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 
+  transform: translateZ(0);
+  transform-origin: center;
   transition:
     transform .18s ease,
     border-color .18s ease,
     background .18s ease,
-    box-shadow .18s ease;
+    box-shadow .18s ease,
+    opacity .18s ease;
+}
+
+#gallery .gallery__random-btn-kicker {
+  color: #B49354;
+  font-size: .58rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: .13em;
+}
+
+#gallery .gallery__random-btn-label {
+  color: #781E24;
+  font-size: .84rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: .015em;
+  white-space: nowrap;
 }
 
 #gallery .gallery__random-btn:hover {
-  border-color: rgba(183,139,78,.78);
-  background:
-    linear-gradient(180deg, rgba(255,252,247,1), rgba(247,237,226,.98));
+  border-color: rgba(183,139,78,.84);
   box-shadow:
-    0 6px 18px rgba(83,55,45,.09),
-    inset 0 0 0 1px rgba(255,255,255,.62);
+    0 9px 25px rgba(83,55,45,.11),
+    inset 0 0 0 1px rgba(255,255,255,.68);
 }
 
-#gallery .gallery__random-btn:active {
-  transform: scale(.96);
+#gallery .gallery__random-btn:active:not(.is-shuffling) {
+  transform: scale(.97);
+}
+
+#gallery .gallery__random-btn:disabled {
+  cursor: default;
+}
+
+#gallery .gallery__random-btn.is-shuffling {
+  border-color: rgba(199,166,115,.92);
+  background:
+    radial-gradient(circle at 50% 10%, rgba(199,166,115,.24), transparent 58%),
+    linear-gradient(180deg, rgba(255,253,249,1), rgba(247,235,224,1));
+  box-shadow:
+    0 10px 30px rgba(120,30,36,.14),
+    0 0 0 4px rgba(199,166,115,.08),
+    inset 0 0 0 1px rgba(255,255,255,.75);
+  animation: gallery-random-heartbeat .72s ease-in-out infinite;
+}
+
+#gallery .gallery__random-btn.is-shuffling .gallery__random-btn-kicker {
+  animation: gallery-random-shimmer .72s ease-in-out infinite alternate;
 }
 
 #gallery .gallery__random-btn[hidden] {
   display: none !important;
 }
 
-@media (max-width: 390px) {
+@keyframes gallery-random-heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.035);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.055);
+  }
+  62% {
+    transform: scale(1);
+  }
+}
+
+@keyframes gallery-random-shimmer {
+  from {
+    opacity: .58;
+    letter-spacing: .13em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: .18em;
+  }
+}
+
+@media (max-width: 430px) {
   #gallery .gallery__heading {
-    gap: .58rem;
+    gap: .72rem;
   }
 
   #gallery .gallery__random-btn {
-    min-height: 30px;
-    padding: .40rem .72rem;
-    font-size: .66rem;
+    min-width: 132px;
+    min-height: 54px;
+    padding: .60rem .78rem;
+  }
+
+  #gallery .gallery__random-btn-kicker {
+    font-size: .54rem;
+  }
+
+  #gallery .gallery__random-btn-label {
+    font-size: .79rem;
+  }
+}
+
+@media (max-width: 360px) {
+  #gallery .gallery__random-btn {
+    min-width: 118px;
+    padding-left: .62rem;
+    padding-right: .62rem;
+  }
+
+  #gallery .gallery__random-btn-label {
+    font-size: .75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #gallery .gallery__random-btn.is-shuffling,
+  #gallery .gallery__random-btn.is-shuffling .gallery__random-btn-kicker {
+    animation: none !important;
   }
 }
