@@ -58,6 +58,9 @@
 
 .curtain__content > .special-unlock-fx__copy {
   position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  animation: none !important;
   left: 50%;
   top: 0;
   z-index: 30;
@@ -144,6 +147,7 @@
 }
 
 .curtain.is-special-unlocking .special-unlock-fx__copy {
+  visibility: visible !important;
   animation: stage50-copy-reveal 1.75s .16s cubic-bezier(.22,1,.36,1) both !important;
 }
 
