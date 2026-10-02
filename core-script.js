@@ -504,6 +504,16 @@
     }
   }
 
+  function moveModalImage(step) {
+    if (!modalImages.length || modalImages.length < 2) return;
+
+    const direction = step > 0 ? 1 : -1;
+    const targetIndex =
+      (modalIndex + step + modalImages.length) % modalImages.length;
+
+    changeModalImage(targetIndex, direction);
+  }
+
   function openPhotoModal(images, index) {
     modalTransitionId += 1;
     modalAnimating = false;
@@ -535,11 +545,11 @@
     $('#modalClose')?.addEventListener('click', closePhotoModal);
 
     $('#modalPrev')?.addEventListener('click', () => {
-      changeModalImage(modalIndex - 1, -1);
+      moveModalImage(-1);
     });
 
     $('#modalNext')?.addEventListener('click', () => {
-      changeModalImage(modalIndex + 1, 1);
+      moveModalImage(1);
     });
 
     modal.addEventListener('click', e => {
@@ -550,23 +560,31 @@
       if (!modal.classList.contains('is-open')) return;
 
       if (e.key === 'Escape') closePhotoModal();
-      if (e.key === 'ArrowLeft') changeModalImage(modalIndex - 1, -1);
-      if (e.key === 'ArrowRight') changeModalImage(modalIndex + 1, 1);
+      if (e.key === 'ArrowLeft') moveModalImage(-1);
+      if (e.key === 'ArrowRight') moveModalImage(1);
     });
 
     let startX = 0;
+    let startY = 0;
     const container = $('#modalContainer');
 
     container?.addEventListener('touchstart', e => {
-      startX = e.changedTouches[0].screenX;
+      const touch = e.changedTouches[0];
+      startX = touch.screenX;
+      startY = touch.screenY;
     }, { passive: true });
 
     container?.addEventListener('touchend', e => {
-      const diff = startX - e.changedTouches[0].screenX;
-      if (Math.abs(diff) < 50) return;
+      const touch = e.changedTouches[0];
+      const diffX = startX - touch.screenX;
+      const diffY = startY - touch.screenY;
 
-      if (diff > 0) changeModalImage(modalIndex + 1, 1);
-      if (diff < 0) changeModalImage(modalIndex - 1, -1);
+      // 가로 이동이 충분하고 세로 이동보다 클 때만 사진 넘김으로 처리합니다.
+      if (Math.abs(diffX) < 50 || Math.abs(diffX) <= Math.abs(diffY)) return;
+
+      // 순환형 스와이프: 마지막→첫 사진, 첫 사진→마지막 사진.
+      if (diffX > 0) moveModalImage(1);
+      if (diffX < 0) moveModalImage(-1);
     }, { passive: true });
   }
 
