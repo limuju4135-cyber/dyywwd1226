@@ -9,6 +9,8 @@
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
+  let invitationMode = 'normal';
+
   function weddingDateTime() {
     return new Date(`${CONFIG.wedding.date}T${CONFIG.wedding.time}:00`);
   }
@@ -65,8 +67,19 @@
     const curtain = $('#curtain');
     const btn = $('#curtainBtn');
     const names = $('#curtainNames');
+    const specialFx = $('#specialUnlockFx');
+    const specialParticles = $('#specialUnlockParticles');
     if (!curtain || !btn || !names) return;
 
+    const HOLD_DURATION = 2000;
+    let holdTimer = null;
+    let activePointerId = null;
+    let specialTriggered = false;
+    let invitationOpening = false;
+
+    invitationMode = 'normal';
+    document.body.classList.remove('special-mode', 'normal-mode');
+    curtain.classList.remove('is-special-unlocking');
     names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
 
     if (CONFIG.useCurtain === false) {
@@ -77,10 +90,141 @@
 
     document.body.classList.add('no-scroll');
 
-    btn.addEventListener('click', () => {
+    function clearHoldState() {
+      if (holdTimer) {
+        window.clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+
+      btn.classList.remove('is-long-pressing');
+
+      if (activePointerId !== null) {
+        try {
+          if (btn.hasPointerCapture?.(activePointerId)) {
+            btn.releasePointerCapture(activePointerId);
+          }
+        } catch {}
+      }
+
+      activePointerId = null;
+    }
+
+    function buildSpecialParticles() {
+      if (!specialParticles || specialParticles.childElementCount) return;
+
+      const particleCount = 18;
+
+      for (let i = 0; i < particleCount; i += 1) {
+        const particle = document.createElement('i');
+        const angle = (360 / particleCount) * i + (i % 2 ? 7 : -5);
+        const distance = 82 + (i % 4) * 18;
+        const radians = angle * Math.PI / 180;
+
+        particle.style.setProperty('--spark-x', `${Math.cos(radians) * distance}px`);
+        particle.style.setProperty('--spark-y', `${Math.sin(radians) * distance}px`);
+        particle.style.setProperty('--spark-delay', `${(i % 6) * 35}ms`);
+        particle.style.setProperty('--spark-size', `${3 + (i % 3)}px`);
+        specialParticles.appendChild(particle);
+      }
+    }
+
+    function openInvitation(mode) {
+      if (invitationOpening) return;
+      invitationOpening = true;
+      invitationMode = mode === 'special' ? 'special' : 'normal';
+
+      document.body.classList.toggle('special-mode', invitationMode === 'special');
+      document.body.classList.toggle('normal-mode', invitationMode !== 'special');
+
       curtain.classList.add('is-open');
       document.body.classList.remove('no-scroll');
-      window.setTimeout(() => curtain.classList.add('is-hidden'), 2200);
+
+      window.setTimeout(() => {
+        curtain.classList.add('is-hidden');
+        curtain.classList.remove('is-special-unlocking');
+      }, 2200);
+    }
+
+    function unlockSpecialMode() {
+      if (invitationOpening || specialTriggered) return;
+
+      specialTriggered = true;
+      invitationMode = 'special';
+      document.body.classList.add('special-mode');
+      document.body.classList.remove('normal-mode');
+
+      clearHoldState();
+      btn.classList.add('is-special-unlocked');
+
+      if (typeof navigator.vibrate === 'function') {
+        try {
+          navigator.vibrate([70, 45, 100]);
+        } catch {}
+      }
+
+      buildSpecialParticles();
+      curtain.classList.add('is-special-unlocking');
+
+      if (specialFx) {
+        specialFx.setAttribute('aria-hidden', 'false');
+      }
+
+      activateSpecialGalleryRandomDraw();
+
+      window.setTimeout(() => {
+        openInvitation('special');
+      }, 900);
+
+      window.setTimeout(() => {
+        specialFx?.setAttribute('aria-hidden', 'true');
+      }, 1800);
+    }
+
+    btn.addEventListener('pointerdown', event => {
+      if (invitationOpening) return;
+      if (typeof event.button === 'number' && event.button !== 0) return;
+
+      specialTriggered = false;
+      activePointerId = event.pointerId;
+
+      try {
+        btn.setPointerCapture?.(event.pointerId);
+      } catch {}
+
+      btn.classList.add('is-long-pressing');
+      holdTimer = window.setTimeout(unlockSpecialMode, HOLD_DURATION);
+    });
+
+    btn.addEventListener('pointerup', event => {
+      if (activePointerId !== null && event.pointerId !== activePointerId) return;
+
+      const wasSpecial = specialTriggered;
+      clearHoldState();
+
+      if (!wasSpecial && !invitationOpening) {
+        openInvitation('normal');
+      }
+    });
+
+    btn.addEventListener('pointercancel', clearHoldState);
+
+    btn.addEventListener('pointerleave', event => {
+      if (event.pointerType === 'mouse' && !specialTriggered) {
+        clearHoldState();
+      }
+    });
+
+    btn.addEventListener('click', event => {
+      event.preventDefault();
+
+      if (event.detail === 0 && !invitationOpening) {
+        clearHoldState();
+        openInvitation('normal');
+      }
+    });
+
+    btn.addEventListener('contextmenu', event => {
+      event.preventDefault();
     });
   }
 
@@ -637,6 +781,35 @@
     }, { passive: true });
   }
 
+  async function activateSpecialGalleryRandomDraw() {
+    const button = $('#galleryRandomBtn');
+    if (!button || invitationMode !== 'special') return;
+
+    try {
+      const manifest = await PRIVATE_WEDDING.getSpecialGalleryManifest();
+      const paths = Array.isArray(manifest.images) ? manifest.images : [];
+
+      if (!paths.length) {
+        button.hidden = true;
+        return;
+      }
+
+      const kicker = button.querySelector('.gallery__random-btn-kicker');
+      const label = button.querySelector('.gallery__random-btn-label');
+
+      if (kicker) kicker.textContent = 'BEHIND CUT';
+      if (label) label.textContent = '비하인드 뽑기';
+
+      button.setAttribute('aria-label', '스페셜 비하인드컷 랜덤 뽑기');
+
+      const images = paths.map(path => PRIVATE_WEDDING.mediaUrl(path));
+      initGalleryRandomDraw(paths, images);
+    } catch (error) {
+      console.warn('[Special Gallery]', error);
+      button.hidden = true;
+    }
+  }
+
   function initGalleryRandomDraw(paths, images) {
     const button = $('#galleryRandomBtn');
     if (!button) return;
@@ -746,6 +919,12 @@
     if (!grid) return;
 
     grid.innerHTML = '';
+
+    const randomButton = $('#galleryRandomBtn');
+    if (randomButton && invitationMode !== 'special') {
+      randomButton.hidden = true;
+    }
+
     if (section) {
       section.style.display = '';
       section.classList.remove('is-coming-soon');
@@ -762,8 +941,6 @@
 
       const images = paths.map((path) => PRIVATE_WEDDING.mediaUrl(path));
 
-      initGalleryRandomDraw(paths, images);
-
       images.forEach((src, index) => {
         const item = document.createElement('button');
         item.type = 'button';
@@ -777,6 +954,10 @@
         item.addEventListener('click', () => openPhotoModal(images, index));
         grid.appendChild(item);
       });
+
+      if (invitationMode === 'special') {
+        await activateSpecialGalleryRandomDraw();
+      }
     } catch (error) {
       console.warn('[Gallery]', error);
       renderGalleryComingSoon();
