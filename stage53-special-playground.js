@@ -552,6 +552,7 @@
         messages = messages.filter(message => message.id !== id);
         buildInitialTreeState();
         renderTreeState();
+        renderAdminMessageList();
 
         const ordered = chronologicalMessages();
 
@@ -577,6 +578,125 @@
         deleteButton.textContent = '메시지 삭제';
       }
     });
+  }
+
+  function renderAdminMessageList() {
+    const view = $('#messageAdminListView');
+    const list = $('#messageAdminList');
+    const count = $('#messageAdminListCount');
+
+    if (!view || !list || !count) return;
+
+    const ordered = chronologicalMessages();
+
+    count.textContent = ordered.length + '개';
+    list.replaceChildren();
+
+    if (!ordered.length) {
+      const empty = document.createElement('p');
+      empty.className = 'message-admin-list__empty';
+      empty.textContent = '등록된 메시지가 없습니다.';
+      list.appendChild(empty);
+      return;
+    }
+
+    ordered.forEach((item, index) => {
+      const row = document.createElement('article');
+      const content = document.createElement('div');
+      const meta = document.createElement('div');
+      const sequence = document.createElement('span');
+      const name = document.createElement('strong');
+      const date = document.createElement('time');
+      const message = document.createElement('p');
+      const deleteButton = document.createElement('button');
+
+      row.className = 'message-admin-list__row';
+      row.dataset.messageId = item.id || '';
+
+      content.className = 'message-admin-list__content';
+      meta.className = 'message-admin-list__meta';
+
+      sequence.className = 'message-admin-list__sequence';
+      sequence.textContent = String(index + 1).padStart(2, '0');
+
+      name.textContent = item.name || '익명';
+      date.textContent = formatMessageDate(item.createdAt);
+
+      message.className = 'message-admin-list__message';
+      message.textContent = item.message || '';
+
+      deleteButton.type = 'button';
+      deleteButton.className = 'message-admin-list__delete';
+      deleteButton.textContent = '삭제';
+      deleteButton.setAttribute('aria-label', '이 메시지 삭제');
+
+      meta.append(sequence, name, date);
+      content.append(meta, message);
+      row.append(content, deleteButton);
+      list.appendChild(row);
+    });
+  }
+
+  async function deleteMessageById(id, button = null) {
+    if (!id || !messageAdminPin) return false;
+
+    const item = messageById(id);
+    const preview = String(item?.message || '').slice(0, 30);
+
+    if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) {
+      return false;
+    }
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = '삭제 중';
+    }
+
+    try {
+      const response = await fetch(
+        '/api/messages/' + encodeURIComponent(id),
+        {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-Admin-Pin': messageAdminPin
+          },
+          cache: 'no-store'
+        }
+      );
+
+      if (response.status === 403) {
+        setMessageAdminMode(false);
+        closeMessageDetail();
+        window.alert('관리자 인증이 풀렸습니다. 다시 인증해주세요.');
+        return false;
+      }
+
+      if (!response.ok) {
+        throw new Error('delete failed');
+      }
+
+      messages = messages.filter(message => message.id !== id);
+      buildInitialTreeState();
+      renderTreeState();
+
+      if ($('#specialMessages')?.classList.contains('is-admin')) {
+        renderAdminMessageList();
+      }
+      renderAdminMessageList();
+
+      return true;
+    } catch (error) {
+      console.warn('[Message delete]', error);
+      window.alert('메시지를 삭제하지 못했습니다.');
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = '삭제';
+      }
+
+      return false;
+    }
   }
 
   /* ----------------------------------------------------------
@@ -676,6 +796,10 @@
         messagesLoaded = true;
         attachNewMessage(item);
 
+        if ($('#specialMessages')?.classList.contains('is-admin')) {
+          renderAdminMessageList();
+        }
+
         messageInput.value = '';
         updateCounter();
         lastMessageSubmit = Date.now();
@@ -713,10 +837,20 @@
   function setMessageAdminMode(enabled, pin = '') {
     const section = $('#specialMessages');
     const modal = $('#messageDetailModal');
+    const listView = $('#messageAdminListView');
 
     messageAdminPin = enabled ? String(pin) : '';
     section?.classList.toggle('is-admin', enabled);
     modal?.classList.toggle('is-admin', enabled);
+
+    if (listView) {
+      listView.hidden = !enabled;
+    }
+
+    if (enabled) {
+      closeMessageDetail();
+      renderAdminMessageList();
+    }
   }
 
   function openMessageAdminModal() {
@@ -769,9 +903,7 @@
     }
 
     document.addEventListener('pointerdown', event => {
-      if (!isMobileSpecial() || section.classList.contains('is-admin')) {
-        return;
-      }
+      if (!isMobileSpecial()) return;
 
       const target =
         event.target instanceof Element
@@ -791,6 +923,12 @@
 
       adminTitleTapCount = 0;
       clearTimeout(adminTitleTapTimer);
+
+      if (section.classList.contains('is-admin')) {
+        setMessageAdminMode(false);
+        return;
+      }
+
       openMessageAdminModal();
     }, true);
 
@@ -806,6 +944,16 @@
       if (error) {
         error.textContent = '';
       }
+    });
+
+    $('#messageAdminList')?.addEventListener('click', async event => {
+      const button = event.target.closest('.message-admin-list__delete');
+      if (!button || !messageAdminPin) return;
+
+      const row = button.closest('.message-admin-list__row');
+      const id = row?.dataset.messageId || '';
+
+      await deleteMessageById(id, button);
     });
 
     form.addEventListener('submit', async event => {
