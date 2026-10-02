@@ -215,8 +215,9 @@
 
     if (!section || !title) return;
 
-    title.addEventListener('click', () => {
+    title.addEventListener('pointerup', event => {
       if (!isSpecial() || section.classList.contains('is-admin')) return;
+      if (typeof event.button === 'number' && event.button !== 0) return;
 
       adminTitleTapCount += 1;
 
