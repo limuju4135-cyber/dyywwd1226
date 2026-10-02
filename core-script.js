@@ -393,6 +393,8 @@
 
   let modalImages = [];
   let modalIndex = 0;
+  let randomGalleryImages = [];
+  let lastRandomGalleryIndex = -1;
   let modalAnimating = false;
   let modalTransitionId = 0;
 
@@ -635,10 +637,54 @@
     }, { passive: true });
   }
 
+  function initGalleryRandomDraw(paths, images) {
+    const button = $('#galleryRandomBtn');
+    if (!button) return;
+
+    randomGalleryImages = paths
+      .map((path, index) => ({ path, src: images[index] }))
+      .filter(item => !String(item.path).toLowerCase().includes('meal'))
+      .map(item => item.src);
+
+    lastRandomGalleryIndex = -1;
+
+    if (!randomGalleryImages.length) {
+      button.hidden = true;
+      return;
+    }
+
+    button.hidden = false;
+
+    if (button.dataset.randomReady === 'true') return;
+    button.dataset.randomReady = 'true';
+
+    button.addEventListener('click', () => {
+      if (!randomGalleryImages.length) return;
+
+      let randomIndex = 0;
+
+      if (randomGalleryImages.length > 1) {
+        do {
+          randomIndex = Math.floor(Math.random() * randomGalleryImages.length);
+        } while (randomIndex === lastRandomGalleryIndex);
+      }
+
+      lastRandomGalleryIndex = randomIndex;
+
+      // 랜덤 뽑기는 선택된 사진 한 장만 팝업으로 보여줍니다.
+      openPhotoModal([randomGalleryImages[randomIndex]], 0);
+    });
+  }
+
   function renderGalleryComingSoon() {
     const section = $('#gallery');
     const grid = $('#galleryGrid');
+    const randomButton = $('#galleryRandomBtn');
     if (!section || !grid) return;
+
+    if (randomButton) randomButton.hidden = true;
+    randomGalleryImages = [];
+    lastRandomGalleryIndex = -1;
 
     section.style.display = '';
     section.classList.add('is-coming-soon');
@@ -672,6 +718,8 @@
       }
 
       const images = paths.map((path) => PRIVATE_WEDDING.mediaUrl(path));
+
+      initGalleryRandomDraw(paths, images);
 
       images.forEach((src, index) => {
         const item = document.createElement('button');
