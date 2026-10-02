@@ -42,8 +42,30 @@
 
   <!-- Stage 55: iOS browser chrome critical -->
   <style id="stage55-browser-chrome-critical">
-    html {
+    html,
+    body {
       background-color: #A6B09F !important;
+    }
+
+    html::before,
+    html::after {
+      content: "";
+      position: fixed;
+      left: 0;
+      right: 0;
+      z-index: 2147483646;
+      pointer-events: none;
+      background: #A6B09F;
+    }
+
+    html::before {
+      top: 0;
+      height: env(safe-area-inset-top, 0px);
+    }
+
+    html::after {
+      bottom: 0;
+      height: env(safe-area-inset-bottom, 0px);
     }
   </style>
 
@@ -52,14 +74,14 @@
     #curtain.curtain,
     #curtain .curtain__left,
     #curtain .curtain__right {
-      background-color: #BE858D !important;
+      background-color: #A6B09F !important;
       background-image: none !important;
     }
 
     #curtain .curtain__left,
     #curtain .curtain__right {
       box-shadow:
-        inset 0 0 34px rgba(55, 0, 0, .08) !important;
+        inset 0 0 34px rgba(61, 73, 62, .08) !important;
     }
   </style>
 
@@ -75,7 +97,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage50-copy-initial-hide">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage55-pale-champagne-theme">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage56-snowman-gallery-safearea">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -643,13 +665,19 @@
 
       <div class="special-only special-gallery">
         <p class="special-game__eyebrow">02 · BEHIND CUT</p>
-        <h2 class="special-gallery__title">갤러리</h2>
-        <div class="special-gallery__layout">
+        <h2 class="special-gallery__title">비하인드 뽑기</h2>
+
+        <div class="special-gallery__machine">
+          <div class="special-gallery__polaroid" aria-hidden="true">
+            <div class="special-gallery__preview is-empty" id="specialGalleryPreview" role="img" aria-label="랜덤 비하인드 사진">
+              <span class="special-gallery__placeholder" aria-hidden="true">?</span>
+            </div>
+            <span class="special-gallery__caption">BEHIND CUT</span>
+          </div>
+
           <button type="button" class="special-gallery__draw" id="specialGalleryDrawBtn">
-            <span class="special-gallery__draw-kicker">RANDOM PICK</span>
-            <strong class="special-gallery__draw-label">비하인드<br>뽑기</strong>
+            <span class="special-gallery__draw-label">한 장 뽑기</span>
           </button>
-          <div class="special-gallery__preview" id="specialGalleryPreview" role="img" aria-label="랜덤 비하인드 사진"></div>
         </div>
       </div>
     </section>
@@ -658,13 +686,11 @@
       <div class="special-game__inner">
         <p class="special-game__eyebrow">03 · BUILD A SNOWMAN</p>
         <h2 class="special-game__title">눈사람 만들기</h2>
-        <p class="special-game__desc">하단에 눈이 쌓이면 원을 그리듯 굴려주세요. 손을 떼는 순간 눈덩이 크기가 확정됩니다.</p>
 
-        <article class="special-snow__card">
-          <span class="special-snow__card-kicker">2 ROLLS ONLY</span>
-          <strong id="snowmanStageLabel">첫 번째 회전 스와이프로 몸통을 만들어보세요</strong>
-          <p>첫 번째 눈덩이는 몸통, 두 번째 눈덩이는 머리가 됩니다. 머리를 몸통보다 크게 만들어 가분수 눈사람도 만들 수 있어요. 완성된 눈사람은 세 번 탭하면 사라집니다.</p>
-        </article>
+        <div class="snowman-roll-zone" id="snowmanRollZone" aria-label="눈덩이 굴리기 영역">
+          <div class="snowman-roll-zone__rings" aria-hidden="true"></div>
+          <span class="snowman-roll-zone__label" id="snowmanStageLabel">몸통 굴리기</span>
+        </div>
       </div>
     </section>
 
@@ -911,15 +937,15 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage49-special-mode"></script>
-  <script src="core-script.js?v=stage55-pale-champagne-theme"></script>
+  <script src="core-script.js?v=stage56-faster-snow-pile"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
-  <script src="script.js?v=stage54-final-low-power-3"></script>
+  <script src="script.js?v=stage56-faster-snow-pile"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
   <script src="stage32-major.js?v=stage37-4-meal-loader"></script>
   <script src="stage33-fixes.js?v=stage33-fixes-1"></script>
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage55-pale-champagne-theme"></script>
+  <script src="stage53-special-playground.js?v=stage56-snowman-gallery-safearea"></script>
 </body>
 </html>
