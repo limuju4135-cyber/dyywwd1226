@@ -665,6 +665,444 @@
     });
   }
 
+  function initSnowPlayground() {
+    const canvas = document.getElementById('snowPlayCanvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const reduceMotion =
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion) return;
+
+    const IDLE_BEFORE_ACCUMULATION = 4000;
+    const MOBILE_HEIGHT = 96;
+    const DESKTOP_HEIGHT = 112;
+    const MAX_PILE_RATIO = 0.72;
+    const CLEAR_RADIUS = 34;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let binCount = 0;
+    let pile = new Float32Array(0);
+    let nextPile = new Float32Array(0);
+    let puffs = [];
+    let animationId = null;
+    let lastFrame = performance.now();
+    let lastActivity = performance.now();
+    let lastScrollY = window.scrollY || 0;
+    let maxPile = 0;
+
+    let touchActive = false;
+    let touchClearing = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchLastX = 0;
+
+    let mouseActive = false;
+    let mouseClearing = false;
+    let mouseStartX = 0;
+    let mouseStartY = 0;
+    let mouseLastX = 0;
+
+    function isSpecial() {
+      return document.body.classList.contains('special-mode');
+    }
+
+    function layoutViewport() {
+      return {
+        width: document.documentElement.clientWidth || window.innerWidth,
+        height: document.documentElement.clientHeight || window.innerHeight
+      };
+    }
+
+    function playgroundHeight() {
+      return (document.documentElement.clientWidth || window.innerWidth) <= 768
+        ? MOBILE_HEIGHT
+        : DESKTOP_HEIGHT;
+    }
+
+    function resizeCanvas(preserve = true) {
+      const oldPile = pile;
+      const oldCount = binCount;
+
+      width = layoutViewport().width;
+      height = playgroundHeight();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      binCount = Math.max(52, Math.min(110, Math.round(width / 5.2)));
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      pile = new Float32Array(binCount);
+      nextPile = new Float32Array(binCount);
+
+      if (preserve && oldCount > 1 && oldPile.length) {
+        for (let i = 0; i < binCount; i += 1) {
+          const t = i / Math.max(1, binCount - 1);
+          const oldIndex = t * (oldCount - 1);
+          const left = Math.floor(oldIndex);
+          const right = Math.min(oldCount - 1, left + 1);
+          const mix = oldIndex - left;
+          pile[i] = oldPile[left] * (1 - mix) + oldPile[right] * mix;
+        }
+      }
+    }
+
+    function markActivity() {
+      lastActivity = performance.now();
+    }
+
+    function smoothPile() {
+      if (pile.length < 3) return;
+
+      nextPile[0] = pile[0];
+      nextPile[pile.length - 1] = pile[pile.length - 1];
+
+      for (let i = 1; i < pile.length - 1; i += 1) {
+        nextPile[i] =
+          pile[i] * 0.58 +
+          pile[i - 1] * 0.21 +
+          pile[i + 1] * 0.21;
+      }
+
+      const temp = pile;
+      pile = nextPile;
+      nextPile = temp;
+    }
+
+    function accumulate(dt) {
+      if (!isSpecial()) return;
+      if (performance.now() - lastActivity < IDLE_BEFORE_ACCUMULATION) return;
+
+      const maxHeight = height * MAX_PILE_RATIO;
+      const additions = Math.max(2, Math.round(binCount * 0.045));
+      const amount = dt * 0.0064;
+
+      for (let n = 0; n < additions; n += 1) {
+        const center = Math.floor(Math.random() * binCount);
+        const spread = 1 + Math.floor(Math.random() * 3);
+
+        for (let j = -spread; j <= spread; j += 1) {
+          const idx = center + j;
+          if (idx < 0 || idx >= binCount) continue;
+
+          const weight = 1 - Math.abs(j) / (spread + 1);
+          pile[idx] = Math.min(
+            maxHeight,
+            pile[idx] + amount * weight * (0.72 + Math.random() * 0.7)
+          );
+        }
+      }
+
+      smoothPile();
+    }
+
+    function spawnPuffs(x, y, strength = 1) {
+      const count = Math.min(14, 5 + Math.round(strength * 5));
+
+      for (let i = 0; i < count; i += 1) {
+        puffs.push({
+          x: x + (Math.random() - 0.5) * 18,
+          y: y + (Math.random() - 0.5) * 10,
+          vx: (Math.random() - 0.5) * (1.2 + strength * 1.2),
+          vy: -0.45 - Math.random() * (1.0 + strength * 0.8),
+          size: 1.2 + Math.random() * 2.8,
+          life: 1,
+          decay: 0.018 + Math.random() * 0.022
+        });
+      }
+
+      if (puffs.length > 180) {
+        puffs.splice(0, puffs.length - 180);
+      }
+    }
+
+    function clearSnowAt(clientX, strength = 1) {
+      if (!pile.length) return;
+
+      const localX = Math.max(0, Math.min(width, clientX));
+      const center = Math.round((localX / Math.max(1, width)) * (binCount - 1));
+      const binsPerPx = binCount / Math.max(1, width);
+      const radiusBins = Math.max(3, Math.round(CLEAR_RADIUS * binsPerPx));
+      let removed = 0;
+
+      for (let j = -radiusBins; j <= radiusBins; j += 1) {
+        const idx = center + j;
+        if (idx < 0 || idx >= binCount) continue;
+
+        const normalized = Math.abs(j) / Math.max(1, radiusBins);
+        const carve = (1 - normalized * normalized) * (12 + 16 * strength);
+        const before = pile[idx];
+        pile[idx] = Math.max(0, pile[idx] - carve);
+        removed += before - pile[idx];
+      }
+
+      smoothPile();
+
+      if (removed > 1) {
+        const y = height - Math.min(maxPile, height * MAX_PILE_RATIO) * 0.45;
+        spawnPuffs(localX, Math.max(12, y), Math.min(1.8, removed / 38));
+      }
+    }
+
+    function clearStroke(fromX, toX) {
+      const distance = Math.abs(toX - fromX);
+      const steps = Math.max(1, Math.ceil(distance / 12));
+
+      for (let i = 0; i <= steps; i += 1) {
+        const t = i / steps;
+        const x = fromX + (toX - fromX) * t;
+        clearSnowAt(x, Math.min(1.7, 0.8 + distance / 80));
+      }
+    }
+
+    function drawPile() {
+      if (!pile.length || maxPile < 0.5) return;
+
+      const step = width / Math.max(1, binCount - 1);
+      const gradient = ctx.createLinearGradient(0, height - maxPile, 0, height);
+      gradient.addColorStop(0, 'rgba(255,255,255,.98)');
+      gradient.addColorStop(.45, 'rgba(252,248,238,.98)');
+      gradient.addColorStop(1, 'rgba(232,219,191,.97)');
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(112,91,55,.14)';
+      ctx.shadowBlur = 9;
+      ctx.shadowOffsetY = -2;
+
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      ctx.lineTo(0, height - pile[0]);
+
+      for (let i = 1; i < binCount; i += 1) {
+        const x = i * step;
+        const y = height - pile[i];
+        const prevX = (i - 1) * step;
+        const prevY = height - pile[i - 1];
+        const midX = (prevX + x) / 2;
+        const midY = (prevY + y) / 2;
+
+        ctx.quadraticCurveTo(prevX, prevY, midX, midY);
+      }
+
+      ctx.lineTo(width, height);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(0, height - pile[0]);
+      for (let i = 1; i < binCount; i += 1) {
+        const x = i * step;
+        const y = height - pile[i];
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = 'rgba(255,255,255,.88)';
+      ctx.lineWidth = 1.25;
+      ctx.shadowColor = 'rgba(255,255,255,.70)';
+      ctx.shadowBlur = 5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function updateAndDrawPuffs() {
+      if (!puffs.length) return;
+
+      ctx.save();
+
+      for (let i = puffs.length - 1; i >= 0; i -= 1) {
+        const p = puffs[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.018;
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+          puffs.splice(i, 1);
+          continue;
+        }
+
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = 'rgba(255,252,244,.96)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function updateInteractiveState() {
+      maxPile = pile.length ? Math.max(...pile) : 0;
+      canvas.classList.toggle('is-visible', isSpecial() && maxPile > 0.8);
+    }
+
+    function animate(now) {
+      const dt = Math.min(48, Math.max(0, now - lastFrame));
+      lastFrame = now;
+
+      if (!isSpecial()) {
+        ctx.clearRect(0, 0, width, height);
+        canvas.classList.remove('is-visible');
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
+      accumulate(dt);
+      updateInteractiveState();
+
+      ctx.clearRect(0, 0, width, height);
+      drawPile();
+      updateAndDrawPuffs();
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    function bottomZone(clientY) {
+      const viewportHeight =
+        window.visualViewport?.height ||
+        window.innerHeight ||
+        document.documentElement.clientHeight;
+
+      return clientY >= viewportHeight - height - 8;
+    }
+
+    document.addEventListener('touchstart', event => {
+      if (!isSpecial() || maxPile < 4 || event.touches.length !== 1) {
+        touchActive = false;
+        return;
+      }
+
+      const touch = event.touches[0];
+
+      if (!bottomZone(touch.clientY)) {
+        touchActive = false;
+        return;
+      }
+
+      touchActive = true;
+      touchClearing = false;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchLastX = touch.clientX;
+      markActivity();
+    }, { passive: true, capture: true });
+
+    document.addEventListener('touchmove', event => {
+      if (!touchActive || event.touches.length !== 1) return;
+
+      const touch = event.touches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+
+      if (!touchClearing) {
+        if (Math.abs(dx) < 9 && Math.abs(dy) < 9) return;
+
+        if (Math.abs(dx) > Math.abs(dy) * 1.15) {
+          touchClearing = true;
+        } else {
+          touchActive = false;
+          return;
+        }
+      }
+
+      if (touchClearing) {
+        event.preventDefault();
+        clearStroke(touchLastX, touch.clientX);
+        touchLastX = touch.clientX;
+        markActivity();
+      }
+    }, { passive: false, capture: true });
+
+    document.addEventListener('touchend', () => {
+      touchActive = false;
+      touchClearing = false;
+    }, { passive: true, capture: true });
+
+    document.addEventListener('mousedown', event => {
+      if (!isSpecial() || maxPile < 4 || event.button !== 0 || !bottomZone(event.clientY)) {
+        mouseActive = false;
+        return;
+      }
+
+      mouseActive = true;
+      mouseClearing = false;
+      mouseStartX = event.clientX;
+      mouseStartY = event.clientY;
+      mouseLastX = event.clientX;
+      markActivity();
+    }, true);
+
+    document.addEventListener('mousemove', event => {
+      if (!mouseActive) return;
+
+      const dx = event.clientX - mouseStartX;
+      const dy = event.clientY - mouseStartY;
+
+      if (!mouseClearing) {
+        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          mouseClearing = true;
+        } else {
+          mouseActive = false;
+          return;
+        }
+      }
+
+      if (mouseClearing) {
+        clearStroke(mouseLastX, event.clientX);
+        mouseLastX = event.clientX;
+        markActivity();
+      }
+    }, true);
+
+    document.addEventListener('mouseup', () => {
+      mouseActive = false;
+      mouseClearing = false;
+    }, true);
+
+    window.addEventListener('scroll', () => {
+      const current = window.scrollY || 0;
+
+      if (Math.abs(current - lastScrollY) > 1) {
+        markActivity();
+        lastScrollY = current;
+      }
+    }, { passive: true });
+
+    window.addEventListener('pointerdown', event => {
+      if (!bottomZone(event.clientY)) {
+        markActivity();
+      }
+    }, { passive: true });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => resizeCanvas(true), 180);
+    }, { passive: true });
+
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => resizeCanvas(true), 320);
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (animationId) cancelAnimationFrame(animationId);
+    });
+
+    resizeCanvas(false);
+    animationId = requestAnimationFrame(animate);
+  }
+
   function replaceSmallOrnaments() {
     document.querySelectorAll('.ornament').forEach((el) => {
       el.textContent = '❄';
@@ -679,5 +1117,6 @@
     normalizeHeroNames();
     initPhotoModalScrollFix();
     initSnowflakes();
+    initSnowPlayground();
   });
 })();
