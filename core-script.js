@@ -55,7 +55,7 @@
 
   function applyBrowserTheme(mode) {
     const special = mode === 'special';
-    const color = special ? '#4E5B49' : '#BE858D';
+    const color = special ? '#B89552' : '#BE858D';
 
     let meta = document.querySelector('meta[name="theme-color"]');
 
@@ -98,6 +98,11 @@
     if (!curtain || !btn || !names) return;
 
     const HOLD_DURATION = 2000;
+    const SPECIAL_MAX_WIDTH = 768;
+
+    function specialModeAllowed() {
+      return (document.documentElement.clientWidth || window.innerWidth) <= SPECIAL_MAX_WIDTH;
+    }
     let holdTimer = null;
     let activePointerId = null;
     let specialTriggered = false;
@@ -183,7 +188,7 @@
     }
 
     function unlockSpecialMode() {
-      if (invitationOpening || specialTriggered) return;
+      if (invitationOpening || specialTriggered || !specialModeAllowed()) return;
 
       specialTriggered = true;
       invitationMode = 'special';
@@ -209,8 +214,6 @@
         specialFx.setAttribute('aria-hidden', 'false');
       }
 
-      activateSpecialGalleryRandomDraw();
-
       window.setTimeout(() => {
         openInvitation('special');
       }, 1200);
@@ -225,6 +228,12 @@
       if (typeof event.button === 'number' && event.button !== 0) return;
 
       specialTriggered = false;
+
+      if (!specialModeAllowed()) {
+        activePointerId = event.pointerId;
+        return;
+      }
+
       activePointerId = event.pointerId;
 
       try {
