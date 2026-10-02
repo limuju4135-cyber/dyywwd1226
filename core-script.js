@@ -402,8 +402,11 @@
 
     const prev = $('#modalPrev');
     const next = $('#modalNext');
-    if (prev) prev.style.display = modalIndex > 0 ? '' : 'none';
-    if (next) next.style.display = modalIndex < modalImages.length - 1 ? '' : 'none';
+    const hasMultipleImages = modalImages.length > 1;
+
+    // 순환형 갤러리: 첫/마지막 사진에서도 화살표를 유지합니다.
+    if (prev) prev.style.display = hasMultipleImages ? '' : 'none';
+    if (next) next.style.display = hasMultipleImages ? '' : 'none';
   }
 
   function setModalImage(index) {
@@ -431,12 +434,11 @@
   }
 
   async function changeModalImage(targetIndex, direction) {
-    if (
-      modalAnimating ||
-      targetIndex < 0 ||
-      targetIndex >= modalImages.length ||
-      targetIndex === modalIndex
-    ) return;
+    if (modalAnimating || modalImages.length < 2) return;
+
+    // 인덱스를 순환시켜 마지막↔처음 이동을 허용합니다.
+    targetIndex = (targetIndex + modalImages.length) % modalImages.length;
+    if (targetIndex === modalIndex) return;
 
     const img = $('#modalImg');
     if (!img) return;
