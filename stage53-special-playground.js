@@ -226,9 +226,14 @@
      ---------------------------------------------------------- */
   function getHeroMediaUrl() {
     try {
-      const heroPath = window.MEDIA_CONFIG?.media?.hero;
-      if (heroPath && window.PRIVATE_WEDDING?.mediaUrl) {
-        return window.PRIVATE_WEDDING.mediaUrl(heroPath);
+      const mediaConfig =
+        typeof MEDIA_CONFIG !== 'undefined' ? MEDIA_CONFIG : null;
+      const privateWedding =
+        typeof PRIVATE_WEDDING !== 'undefined' ? PRIVATE_WEDDING : null;
+      const heroPath = mediaConfig?.media?.hero;
+
+      if (heroPath && privateWedding?.mediaUrl) {
+        return privateWedding.mediaUrl(heroPath);
       }
     } catch {}
 
