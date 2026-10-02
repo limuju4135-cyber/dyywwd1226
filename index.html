@@ -68,7 +68,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage50-copy-initial-hide">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage53-message-admin-1">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage53-message-admin-2">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -536,6 +536,30 @@
         <h2 class="special-game__title" id="specialMessageTitle">메시지함</h2>
         <p class="special-game__desc">우리에게 한마디를 남겨주세요. 남겨진 카드는 모두 함께 볼 수 있어요.</p>
 
+        <div class="message-admin-modal" id="messageAdminModal" hidden>
+          <div class="message-admin-modal__backdrop" data-admin-close></div>
+          <div class="message-admin-modal__panel" role="dialog" aria-modal="true" aria-labelledby="messageAdminModalTitle">
+            <button type="button" class="message-admin-modal__close" data-admin-close aria-label="관리자 창 닫기">×</button>
+            <p class="message-admin-modal__kicker">ADMIN MODE</p>
+            <h3 class="message-admin-modal__title" id="messageAdminModalTitle">관리자 PIN</h3>
+            <p class="message-admin-modal__desc">6자리 PIN을 입력해주세요.</p>
+            <form id="messageAdminForm" class="message-admin-modal__form">
+              <input
+                type="password"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="6"
+                autocomplete="off"
+                class="message-admin-modal__input"
+                id="messageAdminPinInput"
+                aria-label="관리자 PIN"
+              >
+              <p class="message-admin-modal__error" id="messageAdminError" aria-live="polite"></p>
+              <button type="submit" class="message-admin-modal__submit" id="messageAdminSubmit">확인</button>
+            </form>
+          </div>
+        </div>
+
         <form class="special-message__composer" id="specialMessageForm">
           <input
             type="text"
@@ -907,6 +931,6 @@
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage53-message-admin-1"></script>
+  <script src="stage53-special-playground.js?v=stage53-message-admin-2"></script>
 </body>
 </html>
