@@ -4,33 +4,50 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+  let messages = [];
   let messagesLoaded = false;
   let messagesLoading = false;
   let lastMessageSubmit = 0;
+
   let messageAdminPin = '';
   let adminTitleTapCount = 0;
   let adminTitleTapTimer = null;
+  let selectedMessageId = '';
+
+  let specialGalleryImages = [];
+  let specialGalleryLoaded = false;
+  let lastSpecialGalleryIndex = -1;
 
   function isSpecial() {
     return document.body.classList.contains('special-mode');
   }
 
-  function dispatchSnowBurst() {
-    window.dispatchEvent(new CustomEvent('special-snow-burst'));
+  function isMobileSpecial() {
+    return isSpecial() &&
+      window.matchMedia('(pointer: coarse)').matches &&
+      (document.documentElement.clientWidth || window.innerWidth) <= 768;
+  }
+
+  function formatMessageDate(timestamp) {
+    const date = new Date(Number(timestamp) || Date.now());
+    return [
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')
+    ].join('.');
   }
 
   /* ----------------------------------------------------------
-     SPECIAL NAVIGATION
+     SPECIAL NAV
      ---------------------------------------------------------- */
   function syncSpecialNavigation() {
     const buttons = $$('.hero__quick-btn[data-scroll-target]');
     if (buttons.length < 3) return;
 
-    if (isSpecial()) {
+    if (isMobileSpecial()) {
       const setup = [
         ['메시지함', 'specialMessages'],
         ['갤러리', 'gallery'],
-        ['틀린그림', 'specialSpot']
+        ['눈사람', 'specialSnow']
       ];
 
       buttons.slice(0, 3).forEach((button, index) => {
@@ -39,7 +56,7 @@
       });
 
       loadMessages();
-      setupSpotImage();
+      loadSpecialGallery();
     } else {
       const setup = [
         ['연락처', 'contact'],
@@ -55,280 +72,219 @@
   }
 
   /* ----------------------------------------------------------
-     MESSAGE BOX
+     3D MESSAGE TREE
      ---------------------------------------------------------- */
-  function formatMessageDate(timestamp) {
-    const date = new Date(Number(timestamp) || Date.now());
+  function ensureTreeFoliage() {
+    const foliage = $('#messageTreeFoliage');
+    if (!foliage || foliage.childElementCount) return;
 
-    return [
-      String(date.getMonth() + 1).padStart(2, '0'),
-      String(date.getDate()).padStart(2, '0')
-    ].join('.');
+    const bladeCount = 16;
+
+    for (let i = 0; i < bladeCount; i += 1) {
+      const blade = document.createElement('i');
+      blade.className = 'message-tree__blade';
+      blade.style.setProperty('--blade-angle', (360 / bladeCount * i) + 'deg');
+      blade.style.setProperty('--shade', String(i % 4));
+      foliage.appendChild(blade);
+    }
   }
 
-  function makeMessageCard(item) {
-    const card = document.createElement('article');
-    card.className = 'special-message__card';
-    card.dataset.messageId = item.id || '';
+  function ornamentPosition(index) {
+    const tier = index % 7;
+    const round = Math.floor(index / 7);
+    const angle = (index * 137.508 + round * 19) % 360;
+    const y = -92 + tier * 30;
+    const radius = 25 + tier * 11;
+    const size = 18 + ((index * 7) % 10);
 
-    const text = document.createElement('p');
-    text.className = 'special-message__text';
-    text.textContent = item.message || '';
-
-    const meta = document.createElement('div');
-    meta.className = 'special-message__meta';
-
-    const name = document.createElement('span');
-    name.textContent = '— ' + (item.name || '익명');
-
-    const date = document.createElement('time');
-    date.textContent = formatMessageDate(item.createdAt);
-
-    const deleteButton = document.createElement('button');
-    deleteButton.type = 'button';
-    deleteButton.className = 'special-message__delete';
-    deleteButton.textContent = '삭제';
-    deleteButton.setAttribute('aria-label', '메시지 삭제');
-
-    meta.append(name, date);
-    card.append(text, meta, deleteButton);
-
-    return card;
+    return { angle, y, radius, size };
   }
 
-  function renderMessages(messages, prepend = false) {
-    const scroller = $('#specialMessageCards');
-    if (!scroller) return;
+  function renderMessageTree() {
+    const holder = $('#messageTreeOrnaments');
+    const empty = $('#messageTreeEmpty');
+    if (!holder) return;
 
-    const empty = scroller.querySelector('.special-message__empty');
-    empty?.remove();
+    ensureTreeFoliage();
+    holder.replaceChildren();
 
-    if (!messages.length && !scroller.children.length) {
-      const placeholder = document.createElement('div');
-      placeholder.className = 'special-message__empty';
-      placeholder.textContent = '첫 번째 메시지를 남겨주세요.';
-      scroller.appendChild(placeholder);
+    if (!messages.length) {
+      if (empty) empty.hidden = false;
       return;
     }
 
-    messages.forEach(item => {
-      const card = makeMessageCard(item);
-      if (prepend) {
-        scroller.prepend(card);
-      } else {
-        scroller.appendChild(card);
-      }
+    if (empty) empty.hidden = true;
+
+    const colors = ['#D8C08A', '#A74435', '#F6EEDC', '#B89552'];
+
+    messages.forEach((item, index) => {
+      const position = ornamentPosition(index);
+      const ornament = document.createElement('button');
+
+      ornament.type = 'button';
+      ornament.className = 'message-tree__ornament';
+      ornament.dataset.messageId = item.id || '';
+      ornament.setAttribute(
+        'aria-label',
+        (item.name || '익명') + '님의 메시지 보기'
+      );
+
+      ornament.style.setProperty('--ornament-angle', position.angle + 'deg');
+      ornament.style.setProperty('--ornament-y', position.y + 'px');
+      ornament.style.setProperty('--ornament-radius', position.radius + 'px');
+      ornament.style.setProperty('--ornament-size', position.size + 'px');
+      ornament.style.setProperty('--ornament-color', colors[index % colors.length]);
+
+      const cap = document.createElement('i');
+      cap.className = 'message-tree__ornament-cap';
+      ornament.appendChild(cap);
+
+      holder.appendChild(ornament);
     });
+  }
 
-    if (prepend) {
-      scroller.scrollTo({ left: 0, behavior: 'smooth' });
+  function initTreeRotation() {
+    const scene = $('#messageTreeScene');
+    const rotator = $('#messageTreeRotator');
+    if (!scene || !rotator) return;
+
+    let rotation = -18;
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startRotation = rotation;
+    let moved = false;
+    let suppressClickUntil = 0;
+
+    function applyRotation() {
+      rotator.style.setProperty('--tree-rotation', rotation + 'deg');
     }
-  }
 
-  async function loadMessages(force = false) {
-    if ((!force && messagesLoaded) || messagesLoading || !isSpecial()) return;
+    applyRotation();
 
-    const scroller = $('#specialMessageCards');
-    if (!scroller) return;
+    scene.addEventListener('pointerdown', event => {
+      if (!isMobileSpecial()) return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startRotation = rotation;
+      moved = false;
 
-    messagesLoading = true;
-
-    try {
-      const response = await fetch('/api/messages', {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' },
-        cache: 'no-store'
-      });
-
-      if (!response.ok) throw new Error('Message list failed');
-
-      const data = await response.json();
-      const messages = Array.isArray(data.messages) ? data.messages : [];
-
-      scroller.replaceChildren();
-      renderMessages(messages);
-      messagesLoaded = true;
-    } catch (error) {
-      console.warn('[Special messages]', error);
-
-      scroller.replaceChildren();
-      const placeholder = document.createElement('div');
-      placeholder.className = 'special-message__empty';
-      placeholder.textContent = '메시지를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';
-      scroller.appendChild(placeholder);
-    } finally {
-      messagesLoading = false;
-    }
-  }
-
-  async function verifyMessageAdminPin(pin) {
-    const response = await fetch('/api/messages/admin/verify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      cache: 'no-store',
-      body: JSON.stringify({ pin })
-    });
-
-    return response.ok;
-  }
-
-  function setMessageAdminMode(enabled, pin = '') {
-    const section = $('#specialMessages');
-    if (!section) return;
-
-    messageAdminPin = enabled ? String(pin) : '';
-    section.classList.toggle('is-admin', enabled);
-  }
-
-  function openMessageAdminModal() {
-    const modal = $('#messageAdminModal');
-    const input = $('#messageAdminPinInput');
-    const error = $('#messageAdminError');
-
-    if (!modal || !input) return;
-
-    if (error) error.textContent = '';
-    input.value = '';
-    modal.hidden = false;
-    modal.classList.add('is-open');
-
-    window.setTimeout(() => {
       try {
-        input.focus({ preventScroll: true });
-      } catch {
-        input.focus();
+        scene.setPointerCapture(pointerId);
+      } catch {}
+    });
+
+    scene.addEventListener('pointermove', event => {
+      if (pointerId === null || event.pointerId !== pointerId) return;
+
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+
+      if (!moved) {
+        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+        if (Math.abs(dy) > Math.abs(dx) * 1.1) return;
+        moved = true;
+        scene.classList.add('is-rotating');
       }
-    }, 30);
+
+      rotation = startRotation + dx * .72;
+      applyRotation();
+    });
+
+    function endPointer(event) {
+      if (pointerId === null) return;
+      if (event?.pointerId !== undefined && event.pointerId !== pointerId) return;
+
+      if (moved) {
+        suppressClickUntil = Date.now() + 260;
+      }
+
+      scene.classList.remove('is-rotating');
+
+      try {
+        if (scene.hasPointerCapture?.(pointerId)) {
+          scene.releasePointerCapture(pointerId);
+        }
+      } catch {}
+
+      pointerId = null;
+      moved = false;
+    }
+
+    scene.addEventListener('pointerup', endPointer);
+    scene.addEventListener('pointercancel', endPointer);
+
+    scene.addEventListener('click', event => {
+      const ornament = event.target.closest('.message-tree__ornament');
+      if (!ornament || Date.now() < suppressClickUntil) return;
+
+      openMessageDetail(ornament.dataset.messageId || '');
+    });
   }
 
-  function closeMessageAdminModal() {
-    const modal = $('#messageAdminModal');
-    const input = $('#messageAdminPinInput');
-    const error = $('#messageAdminError');
+  /* ----------------------------------------------------------
+     MESSAGE DETAIL
+     ---------------------------------------------------------- */
+  function openMessageDetail(id) {
+    const item = messages.find(message => message.id === id);
+    const modal = $('#messageDetailModal');
 
+    if (!item || !modal) return;
+
+    selectedMessageId = id;
+
+    const text = $('#messageDetailText');
+    const name = $('#messageDetailName');
+    const date = $('#messageDetailDate');
+    const deleteButton = $('#messageDetailDelete');
+
+    if (text) text.textContent = item.message || '';
+    if (name) name.textContent = item.name || '익명';
+    if (date) date.textContent = formatMessageDate(item.createdAt);
+    if (deleteButton) deleteButton.hidden = !messageAdminPin;
+
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add('is-open'));
+  }
+
+  function closeMessageDetail() {
+    const modal = $('#messageDetailModal');
     if (!modal) return;
 
     modal.classList.remove('is-open');
-    if (input) input.value = '';
-    if (error) error.textContent = '';
+    selectedMessageId = '';
 
     window.setTimeout(() => {
       modal.hidden = true;
     }, 180);
   }
 
-  function initMessageAdmin() {
-    const section = $('#specialMessages');
-    const title = $('#specialMessageTitle');
-    const modal = $('#messageAdminModal');
-    const form = $('#messageAdminForm');
-    const input = $('#messageAdminPinInput');
-    const error = $('#messageAdminError');
-    const submit = $('#messageAdminSubmit');
-
-    if (!section || !title || !modal || !form || !input || !submit) return;
-
-    function registerSecretTap(event) {
-      if (!isSpecial() || section.classList.contains('is-admin')) return;
-
-      const target = event.target instanceof Element
-        ? event.target.closest('#specialMessageTitle')
-        : null;
-
-      if (!target) return;
-
-      adminTitleTapCount += 1;
-
-      clearTimeout(adminTitleTapTimer);
-      adminTitleTapTimer = window.setTimeout(() => {
-        adminTitleTapCount = 0;
-      }, 7000);
-
-      if (adminTitleTapCount < 5) return;
-
-      adminTitleTapCount = 0;
-      clearTimeout(adminTitleTapTimer);
-      openMessageAdminModal();
-    }
-
-    // Capture-phase pointerdown is more reliable than click/pointerup on iOS,
-    // especially because this page also suppresses double-tap zoom.
-    document.addEventListener('pointerdown', registerSecretTap, true);
+  function initMessageDetail() {
+    const modal = $('#messageDetailModal');
+    const deleteButton = $('#messageDetailDelete');
+    if (!modal) return;
 
     modal.addEventListener('click', event => {
-      if (event.target.closest('[data-admin-close]')) {
-        closeMessageAdminModal();
+      if (event.target.closest('[data-message-detail-close]')) {
+        closeMessageDetail();
       }
     });
 
-    input.addEventListener('input', () => {
-      input.value = input.value.replace(/\D/g, '').slice(0, 6);
-      if (error) error.textContent = '';
-    });
+    deleteButton?.addEventListener('click', async () => {
+      if (!selectedMessageId || !messageAdminPin) return;
 
-    form.addEventListener('submit', async event => {
-      event.preventDefault();
+      const item = messages.find(message => message.id === selectedMessageId);
+      const preview = String(item?.message || '').slice(0, 26);
 
-      const normalized = input.value.trim();
+      if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) return;
 
-      if (!/^\d{6}$/.test(normalized)) {
-        if (error) error.textContent = '6자리 PIN을 입력해주세요.';
-        input.focus();
-        return;
-      }
-
-      submit.disabled = true;
-      submit.textContent = '확인 중...';
-
-      try {
-        const valid = await verifyMessageAdminPin(normalized);
-
-        if (!valid) {
-          if (error) error.textContent = 'PIN이 올바르지 않습니다.';
-          input.select();
-          return;
-        }
-
-        setMessageAdminMode(true, normalized);
-        closeMessageAdminModal();
-      } catch (verifyError) {
-        console.warn('[Message admin verify]', verifyError);
-        if (error) error.textContent = '인증에 실패했습니다. 다시 시도해주세요.';
-      } finally {
-        submit.disabled = false;
-        submit.textContent = '확인';
-      }
-    });
-
-    section.addEventListener('click', async event => {
-      const button = event.target.closest('.special-message__delete');
-      if (!button || !section.classList.contains('is-admin')) return;
-
-      const card = button.closest('.special-message__card');
-      const id = card?.dataset.messageId || '';
-
-      if (!id || !messageAdminPin) return;
-
-      const text =
-        card.querySelector('.special-message__text')?.textContent?.trim() || '';
-
-      const preview = text.length > 24
-        ? text.slice(0, 24) + '…'
-        : text;
-
-      if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) {
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = '삭제 중';
+      deleteButton.disabled = true;
+      deleteButton.textContent = '삭제 중';
 
       try {
         const response = await fetch(
-          '/api/messages/' + encodeURIComponent(id),
+          '/api/messages/' + encodeURIComponent(selectedMessageId),
           {
             method: 'DELETE',
             headers: {
@@ -341,28 +297,57 @@
 
         if (response.status === 403) {
           setMessageAdminMode(false);
-          window.alert('관리자 인증이 풀렸습니다. 다시 제목을 5번 탭해주세요.');
+          closeMessageDetail();
+          window.alert('관리자 인증이 풀렸습니다. 다시 인증해주세요.');
           return;
         }
 
-        if (!response.ok) {
-          throw new Error('Delete failed');
-        }
+        if (!response.ok) throw new Error('delete failed');
 
-        card.remove();
-
-        const scroller = $('#specialMessageCards');
-
-        if (scroller && !scroller.querySelector('.special-message__card')) {
-          renderMessages([]);
-        }
-      } catch (deleteError) {
-        console.warn('[Message delete]', deleteError);
+        messages = messages.filter(item => item.id !== selectedMessageId);
+        renderMessageTree();
+        closeMessageDetail();
+      } catch (error) {
+        console.warn('[Message delete]', error);
         window.alert('메시지를 삭제하지 못했습니다.');
-        button.disabled = false;
-        button.textContent = '삭제';
+      } finally {
+        deleteButton.disabled = false;
+        deleteButton.textContent = '메시지 삭제';
       }
     });
+  }
+
+  /* ----------------------------------------------------------
+     MESSAGE API + FORM
+     ---------------------------------------------------------- */
+  async function loadMessages(force = false) {
+    if ((!force && messagesLoaded) || messagesLoading || !isMobileSpecial()) return;
+
+    messagesLoading = true;
+
+    try {
+      const response = await fetch('/api/messages', {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store'
+      });
+
+      if (!response.ok) throw new Error('message list failed');
+
+      const data = await response.json();
+      messages = Array.isArray(data.messages) ? data.messages : [];
+      messagesLoaded = true;
+      renderMessageTree();
+    } catch (error) {
+      console.warn('[Special messages]', error);
+      const empty = $('#messageTreeEmpty');
+      if (empty) {
+        empty.hidden = false;
+        empty.textContent = '메시지를 불러오지 못했습니다.';
+      }
+    } finally {
+      messagesLoading = false;
+    }
   }
 
   function initMessages() {
@@ -375,8 +360,7 @@
     if (!form || !messageInput || !submit) return;
 
     function updateCounter() {
-      const length = messageInput.value.length;
-      if (counter) counter.textContent = String(length) + '/80';
+      if (counter) counter.textContent = messageInput.value.length + '/80';
     }
 
     messageInput.addEventListener('input', updateCounter);
@@ -393,8 +377,7 @@
         return;
       }
 
-      const now = Date.now();
-      if (now - lastMessageSubmit < 5000) return;
+      if (Date.now() - lastMessageSubmit < 5000) return;
 
       submit.disabled = true;
       submit.textContent = '남기는 중...';
@@ -409,209 +392,268 @@
           body: JSON.stringify({ name, message })
         });
 
-        if (!response.ok) throw new Error('Message submit failed');
+        if (!response.ok) throw new Error('message submit failed');
 
         const item = await response.json();
+        messages.unshift(item);
+        messagesLoaded = true;
+        renderMessageTree();
 
-        renderMessages([item], true);
         messageInput.value = '';
         updateCounter();
         lastMessageSubmit = Date.now();
+
+        submit.textContent = '트리에 달렸어요';
       } catch (error) {
         console.warn('[Special message submit]', error);
         submit.textContent = '다시 시도';
+      } finally {
         window.setTimeout(() => {
           submit.textContent = '메시지 남기기';
-        }, 1500);
-        submit.disabled = false;
-        return;
+          submit.disabled = false;
+        }, 1000);
       }
-
-      submit.textContent = '남겼어요';
-      window.setTimeout(() => {
-        submit.textContent = '메시지 남기기';
-        submit.disabled = false;
-      }, 900);
     });
   }
 
   /* ----------------------------------------------------------
-     SPOT THE DIFFERENCE
+     HIDDEN ADMIN — title x5
      ---------------------------------------------------------- */
-  function getHeroMediaUrl() {
-    try {
-      const mediaConfig =
-        typeof MEDIA_CONFIG !== 'undefined' ? MEDIA_CONFIG : null;
-      const privateWedding =
-        typeof PRIVATE_WEDDING !== 'undefined' ? PRIVATE_WEDDING : null;
-      const heroPath = mediaConfig?.media?.hero;
-
-      if (heroPath && privateWedding?.mediaUrl) {
-        return privateWedding.mediaUrl(heroPath);
-      }
-    } catch {}
-
-    return $('#heroPhoto')?.dataset.protectedSrc || '';
-  }
-
-  function setupSpotImage() {
-    const game = $('#spotDifferenceGame');
-    if (!game || game.dataset.imageReady === 'true') return;
-
-    const url = getHeroMediaUrl();
-    if (!url) return;
-
-    game.style.setProperty(
-      '--spot-image',
-      'url("' + String(url).replace(/"/g, '%22') + '")'
-    );
-    game.dataset.imageReady = 'true';
-  }
-
-  function initSpotDifference() {
-    const game = $('#spotDifferenceGame');
-    const status = $('#spotDifferenceStatus');
-    const complete = $('#spotDifferenceComplete');
-    const reset = $('#spotDifferenceReset');
-
-    if (!game) return;
-
-    const hits = $$('.spot-diff__hit', game);
-    const found = new Set();
-
-    function update() {
-      if (status) {
-        status.textContent = String(found.size) + ' / ' + String(hits.length);
-      }
-
-      complete?.classList.toggle(
-        'is-visible',
-        found.size === hits.length && hits.length > 0
-      );
-
-      if (found.size === hits.length && hits.length > 0) {
-        dispatchSnowBurst();
-      }
-    }
-
-    hits.forEach(hit => {
-      hit.addEventListener('click', () => {
-        const id = hit.dataset.diff;
-        if (!id || found.has(id)) return;
-
-        found.add(id);
-        hit.classList.add('is-found');
-        hit.setAttribute('aria-pressed', 'true');
-        update();
-      });
+  async function verifyMessageAdminPin(pin) {
+    const response = await fetch('/api/messages/admin/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      cache: 'no-store',
+      body: JSON.stringify({ pin })
     });
 
-    reset?.addEventListener('click', () => {
-      found.clear();
-
-      hits.forEach(hit => {
-        hit.classList.remove('is-found');
-        hit.setAttribute('aria-pressed', 'false');
-      });
-
-      complete?.classList.remove('is-visible');
-      update();
-    });
-
-    setupSpotImage();
-    update();
+    return response.ok;
   }
 
-  /* ----------------------------------------------------------
-     SNOW GLOBE
-     ---------------------------------------------------------- */
-  function initSnowGlobe() {
-    const button = $('#snowGlobeBtn');
-    if (!button) return;
+  function setMessageAdminMode(enabled, pin = '') {
+    const section = $('#specialMessages');
+    const detailDelete = $('#messageDetailDelete');
 
-    let enabled = false;
-    let lastShake = 0;
+    messageAdminPin = enabled ? String(pin) : '';
+    section?.classList.toggle('is-admin', enabled);
 
-    function shakeDetected(event) {
-      if (!enabled || !isSpecial()) return;
-
-      let magnitude = 0;
-
-      if (event.acceleration) {
-        const x = Number(event.acceleration.x) || 0;
-        const y = Number(event.acceleration.y) || 0;
-        const z = Number(event.acceleration.z) || 0;
-        magnitude = Math.sqrt(x * x + y * y + z * z);
-      }
-
-      if (magnitude < 1 && event.accelerationIncludingGravity) {
-        const x = Number(event.accelerationIncludingGravity.x) || 0;
-        const y = Number(event.accelerationIncludingGravity.y) || 0;
-        const z = Number(event.accelerationIncludingGravity.z) || 0;
-        magnitude = Math.abs(Math.sqrt(x * x + y * y + z * z) - 9.81);
-      }
-
-      const now = Date.now();
-
-      if (magnitude >= 9.5 && now - lastShake > 1200) {
-        lastShake = now;
-        dispatchSnowBurst();
-        button.classList.add('is-shaking');
-        window.setTimeout(() => button.classList.remove('is-shaking'), 550);
-      }
+    if (detailDelete) {
+      detailDelete.hidden = !enabled || !selectedMessageId;
     }
+  }
 
-    window.addEventListener('devicemotion', shakeDetected, { passive: true });
+  function openMessageAdminModal() {
+    const modal = $('#messageAdminModal');
+    const input = $('#messageAdminPinInput');
+    const error = $('#messageAdminError');
 
-    button.addEventListener('click', async () => {
-      dispatchSnowBurst();
+    if (!modal || !input) return;
 
-      if (enabled) {
-        button.textContent = '휴대폰을 흔들어보세요';
+    if (error) error.textContent = '';
+    input.value = '';
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add('is-open'));
+
+    window.setTimeout(() => {
+      try {
+        input.focus({ preventScroll: true });
+      } catch {
+        input.focus();
+      }
+    }, 40);
+  }
+
+  function closeMessageAdminModal() {
+    const modal = $('#messageAdminModal');
+    if (!modal) return;
+
+    modal.classList.remove('is-open');
+    window.setTimeout(() => {
+      modal.hidden = true;
+    }, 180);
+  }
+
+  function initMessageAdmin() {
+    const section = $('#specialMessages');
+    const title = $('#specialMessageTitle');
+    const modal = $('#messageAdminModal');
+    const form = $('#messageAdminForm');
+    const input = $('#messageAdminPinInput');
+    const error = $('#messageAdminError');
+    const submit = $('#messageAdminSubmit');
+
+    if (!section || !title || !modal || !form || !input || !submit) return;
+
+    document.addEventListener('pointerdown', event => {
+      if (!isMobileSpecial() || section.classList.contains('is-admin')) return;
+
+      const target = event.target instanceof Element
+        ? event.target.closest('#specialMessageTitle')
+        : null;
+
+      if (!target) return;
+
+      adminTitleTapCount += 1;
+      clearTimeout(adminTitleTapTimer);
+      adminTitleTapTimer = window.setTimeout(() => {
+        adminTitleTapCount = 0;
+      }, 7000);
+
+      if (adminTitleTapCount < 5) return;
+
+      adminTitleTapCount = 0;
+      clearTimeout(adminTitleTapTimer);
+      openMessageAdminModal();
+    }, true);
+
+    modal.addEventListener('click', event => {
+      if (event.target.closest('[data-admin-close]')) {
+        closeMessageAdminModal();
+      }
+    });
+
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '').slice(0, 6);
+      if (error) error.textContent = '';
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const pin = input.value.trim();
+
+      if (!/^\d{6}$/.test(pin)) {
+        if (error) error.textContent = '6자리 PIN을 입력해주세요.';
         return;
       }
+
+      submit.disabled = true;
+      submit.textContent = '확인 중...';
 
       try {
-        if (
-          typeof DeviceMotionEvent !== 'undefined' &&
-          typeof DeviceMotionEvent.requestPermission === 'function'
-        ) {
-          const result = await DeviceMotionEvent.requestPermission();
+        const valid = await verifyMessageAdminPin(pin);
 
-          if (result !== 'granted') {
-            button.textContent = '모션 권한이 필요해요';
-            return;
-          }
+        if (!valid) {
+          if (error) error.textContent = 'PIN이 올바르지 않습니다.';
+          return;
         }
 
-        enabled = true;
-        button.classList.add('is-active');
-        button.textContent = '휴대폰을 흔들어보세요';
-      } catch (error) {
-        console.warn('[Snow globe permission]', error);
-        button.textContent = '버튼을 눌러 폭설!';
+        setMessageAdminMode(true, pin);
+        closeMessageAdminModal();
+      } catch (verifyError) {
+        console.warn('[Message admin]', verifyError);
+        if (error) error.textContent = '인증에 실패했습니다.';
+      } finally {
+        submit.disabled = false;
+        submit.textContent = '확인';
       }
     });
   }
 
   /* ----------------------------------------------------------
-     SNOWMAN — 5 continuous circles = 1 stage
+     SPECIAL GALLERY — button left / one photo right
+     ---------------------------------------------------------- */
+  async function loadSpecialGallery() {
+    if (specialGalleryLoaded || !isMobileSpecial()) return;
+
+    const button = $('#specialGalleryDrawBtn');
+    const preview = $('#specialGalleryPreview');
+    if (!button || !preview) return;
+
+    try {
+      const privateWedding =
+        typeof PRIVATE_WEDDING !== 'undefined' ? PRIVATE_WEDDING : null;
+
+      if (!privateWedding?.getSpecialGalleryManifest) {
+        throw new Error('special gallery unavailable');
+      }
+
+      const manifest = await privateWedding.getSpecialGalleryManifest();
+      const paths = Array.isArray(manifest.images) ? manifest.images : [];
+
+      specialGalleryImages = paths.map(path => privateWedding.mediaUrl(path));
+      specialGalleryLoaded = true;
+
+      if (!specialGalleryImages.length) {
+        button.disabled = true;
+        preview.classList.add('is-empty');
+        preview.textContent = '사진 준비 중';
+        return;
+      }
+
+      showSpecialGalleryImage(0, false);
+    } catch (error) {
+      console.warn('[Special gallery]', error);
+      button.disabled = true;
+      preview.classList.add('is-empty');
+      preview.textContent = '사진을 불러오지 못했어요';
+    }
+  }
+
+  function showSpecialGalleryImage(index, animate = true) {
+    const preview = $('#specialGalleryPreview');
+    if (!preview || !specialGalleryImages[index]) return;
+
+    const src = specialGalleryImages[index];
+    const image = new Image();
+    image.decoding = 'async';
+
+    image.onload = () => {
+      if (animate) preview.classList.add('is-changing');
+
+      window.setTimeout(() => {
+        preview.textContent = '';
+        preview.classList.remove('is-empty');
+        preview.style.backgroundImage =
+          'url("' + String(src).replace(/"/g, '%22') + '")';
+        preview.classList.remove('is-changing');
+      }, animate ? 140 : 0);
+    };
+
+    image.src = src;
+  }
+
+  function initSpecialGallery() {
+    const button = $('#specialGalleryDrawBtn');
+    if (!button) return;
+
+    button.addEventListener('click', () => {
+      if (!specialGalleryImages.length || button.disabled) return;
+
+      let index = 0;
+
+      if (specialGalleryImages.length > 1) {
+        do {
+          index = Math.floor(Math.random() * specialGalleryImages.length);
+        } while (index === lastSpecialGalleryIndex);
+      }
+
+      lastSpecialGalleryIndex = index;
+      showSpecialGalleryImage(index, true);
+
+      button.classList.add('is-picked');
+      window.setTimeout(() => button.classList.remove('is-picked'), 420);
+    });
+  }
+
+  /* ----------------------------------------------------------
+     SNOWMAN — two free-size circular swipes
      ---------------------------------------------------------- */
   function initSnowmanBuilder() {
     const builder = $('#snowmanBuilder');
+    const preview = $('#snowballRollPreview');
     const playCanvas = $('#snowPlayCanvas');
     const stageLabel = $('#snowmanStageLabel');
-    const dots = $$('.snowman-progress__dot');
 
-    if (!builder || !playCanvas) return;
-
-    const ROTATIONS_PER_STAGE = 5;
-    const TARGET_TURN = Math.PI * 2 * ROTATIONS_PER_STAGE;
-    const MAX_STAGE = 3;
+    if (!builder || !preview || !playCanvas) return;
 
     let stage = 0;
     let gesture = null;
-    let mouseActive = false;
+    let tapCount = 0;
+    let tapTimer = null;
 
     function viewportHeight() {
       return window.visualViewport?.height ||
@@ -619,14 +661,8 @@
         document.documentElement.clientHeight;
     }
 
-    function inSnowZone(clientY) {
-      return clientY >= viewportHeight() - 150;
-    }
-
-    function canRoll() {
-      return isSpecial() &&
-        stage < MAX_STAGE &&
-        playCanvas.classList.contains('is-visible');
+    function bottomZone(y) {
+      return y >= viewportHeight() - 165;
     }
 
     function normalizeAngle(value) {
@@ -635,157 +671,174 @@
       return value;
     }
 
-    function startGesture(x, y) {
+    function canStart(y) {
+      return isMobileSpecial() &&
+        stage < 2 &&
+        bottomZone(y) &&
+        playCanvas.classList.contains('is-visible');
+    }
+
+    function startGesture(event) {
       gesture = {
-        lastX: x,
-        lastY: y,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        lastX: event.clientX,
+        lastY: event.clientY,
         lastVectorAngle: null,
-        turn: 0,
         absoluteTurn: 0,
-        distance: 0,
-        minX: x,
-        maxX: x,
-        minY: y,
-        maxY: y
+        path: 0,
+        size: 30
       };
+
+      preview.classList.add('is-visible');
+      preview.style.setProperty('--roll-x', event.clientX + 'px');
+      preview.style.setProperty('--roll-y', event.clientY + 'px');
+      preview.style.setProperty('--roll-size', '30px');
     }
 
-    function resetGestureFrom(x, y) {
-      startGesture(x, y);
-    }
+    function updateGesture(event) {
+      if (!gesture || event.pointerId !== gesture.pointerId) return;
 
-    function advanceStage() {
-      if (stage >= MAX_STAGE) return;
+      const dx = event.clientX - gesture.lastX;
+      const dy = event.clientY - gesture.lastY;
+      const distance = Math.hypot(dx, dy);
 
-      stage += 1;
-      builder.dataset.stage = String(stage);
-
-      dots.forEach((dot, index) => {
-        dot.classList.toggle('is-complete', index < stage);
-      });
-
-      if (stageLabel) {
-        stageLabel.textContent = stage >= MAX_STAGE
-          ? '눈사람 완성!'
-          : '눈사람 ' + String(stage) + ' / ' + String(MAX_STAGE);
-      }
-
-      dispatchSnowBurst();
-
-      if (stage >= MAX_STAGE) {
-        builder.classList.add('is-complete');
-      }
-    }
-
-    function addPoint(x, y) {
-      if (!gesture) return false;
-
-      const dx = x - gesture.lastX;
-      const dy = y - gesture.lastY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < 2) return false;
+      if (distance < 1.5) return;
 
       const vectorAngle = Math.atan2(dy, dx);
 
       if (gesture.lastVectorAngle !== null) {
         const delta = normalizeAngle(vectorAngle - gesture.lastVectorAngle);
-
-        // Ignore abrupt single-sample jumps caused by touch jitter.
-        if (Math.abs(delta) <= 1.35) {
-          gesture.turn += delta;
+        if (Math.abs(delta) <= 1.45) {
           gesture.absoluteTurn += Math.abs(delta);
         }
       }
 
       gesture.lastVectorAngle = vectorAngle;
-      gesture.lastX = x;
-      gesture.lastY = y;
-      gesture.distance += distance;
-      gesture.minX = Math.min(gesture.minX, x);
-      gesture.maxX = Math.max(gesture.maxX, x);
-      gesture.minY = Math.min(gesture.minY, y);
-      gesture.maxY = Math.max(gesture.maxY, y);
+      gesture.lastX = event.clientX;
+      gesture.lastY = event.clientY;
+      gesture.path += distance;
 
-      const width = gesture.maxX - gesture.minX;
-      const height = gesture.maxY - gesture.minY;
-      const consistency =
-        Math.abs(gesture.turn) / Math.max(0.001, gesture.absoluteTurn);
+      gesture.size = Math.max(
+        30,
+        Math.min(
+          112,
+          30 + gesture.absoluteTurn * 7.2 + gesture.path * .045
+        )
+      );
 
-      const qualifies =
-        width >= 45 &&
-        height >= 45 &&
-        gesture.distance >= 420 &&
-        Math.abs(gesture.turn) >= TARGET_TURN &&
-        consistency >= 0.52;
-
-      if (qualifies) {
-        advanceStage();
-        resetGestureFrom(x, y);
-        return true;
-      }
-
-      return false;
+      preview.style.setProperty('--roll-x', event.clientX + 'px');
+      preview.style.setProperty('--roll-y', event.clientY + 'px');
+      preview.style.setProperty('--roll-size', gesture.size + 'px');
     }
 
-    document.addEventListener('touchstart', event => {
-      if (!canRoll() || event.touches.length !== 1) {
-        gesture = null;
-        return;
+    function applySnowmanGeometry() {
+      const bodySize = Number(builder.dataset.bodySize || 0);
+      const headSize = Number(builder.dataset.headSize || 0);
+      const headBottom = Math.max(26, bodySize * .66);
+
+      builder.style.setProperty('--body-size', bodySize + 'px');
+      builder.style.setProperty('--head-size', headSize + 'px');
+      builder.style.setProperty('--head-bottom', headBottom + 'px');
+    }
+
+    function finalizeGesture(event) {
+      if (!gesture || event.pointerId !== gesture.pointerId) return;
+
+      const valid =
+        gesture.path >= 65 &&
+        gesture.absoluteTurn >= 1.05;
+
+      preview.classList.remove('is-visible');
+
+      if (valid) {
+        const size = Math.round(gesture.size);
+
+        if (stage === 0) {
+          stage = 1;
+          builder.dataset.stage = '1';
+          builder.dataset.bodySize = String(size);
+          builder.dataset.headSize = '0';
+          applySnowmanGeometry();
+
+          if (stageLabel) {
+            stageLabel.textContent = '몸통 완성 · 이제 머리를 굴려주세요';
+          }
+        } else if (stage === 1) {
+          stage = 2;
+          builder.dataset.stage = '2';
+          builder.dataset.headSize = String(size);
+          applySnowmanGeometry();
+
+          builder.classList.add('is-head-lifting');
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              builder.classList.remove('is-head-lifting');
+            });
+          });
+
+          if (stageLabel) {
+            stageLabel.textContent = '눈사람 완성! 세 번 탭하면 사라져요';
+          }
+        }
       }
 
-      const touch = event.touches[0];
-
-      if (!inSnowZone(touch.clientY)) {
-        gesture = null;
-        return;
-      }
-
-      startGesture(touch.clientX, touch.clientY);
-    }, { passive: true, capture: true });
-
-    document.addEventListener('touchmove', event => {
-      if (!gesture || event.touches.length !== 1) return;
-
-      const touch = event.touches[0];
-
-      // A snow-rolling gesture owns the bottom play zone until the finger lifts.
-      event.preventDefault();
-      addPoint(touch.clientX, touch.clientY);
-    }, { passive: false, capture: true });
-
-    document.addEventListener('touchend', () => {
-      // Lifting early cancels the current five-circle requirement.
       gesture = null;
-    }, { passive: true, capture: true });
+    }
 
-    document.addEventListener('touchcancel', () => {
-      gesture = null;
-    }, { passive: true, capture: true });
+    document.addEventListener('pointerdown', event => {
+      if (!canStart(event.clientY)) return;
+      if (event.target.closest('#snowmanBuilder')) return;
 
-    document.addEventListener('mousedown', event => {
-      if (
-        event.button !== 0 ||
-        !canRoll() ||
-        !inSnowZone(event.clientY)
-      ) {
-        mouseActive = false;
-        return;
-      }
+      startGesture(event);
 
-      mouseActive = true;
-      startGesture(event.clientX, event.clientY);
+      try {
+        document.documentElement.setPointerCapture?.(event.pointerId);
+      } catch {}
     }, true);
 
-    document.addEventListener('mousemove', event => {
-      if (!mouseActive || !gesture) return;
-      addPoint(event.clientX, event.clientY);
+    document.addEventListener('pointermove', event => {
+      if (!gesture) return;
+      updateGesture(event);
     }, true);
 
-    document.addEventListener('mouseup', () => {
-      mouseActive = false;
+    document.addEventListener('pointerup', finalizeGesture, true);
+    document.addEventListener('pointercancel', event => {
+      if (!gesture || event.pointerId !== gesture.pointerId) return;
+      preview.classList.remove('is-visible');
       gesture = null;
     }, true);
+
+    builder.addEventListener('pointerdown', event => {
+      if (stage === 0) return;
+      event.stopPropagation();
+
+      tapCount += 1;
+      clearTimeout(tapTimer);
+      tapTimer = window.setTimeout(() => {
+        tapCount = 0;
+      }, 1400);
+
+      if (tapCount < 3) return;
+
+      tapCount = 0;
+      clearTimeout(tapTimer);
+      builder.classList.add('is-removing');
+
+      window.setTimeout(() => {
+        stage = 0;
+        builder.dataset.stage = '0';
+        builder.dataset.bodySize = '0';
+        builder.dataset.headSize = '0';
+        builder.classList.remove('is-removing', 'is-head-lifting');
+        applySnowmanGeometry();
+
+        if (stageLabel) {
+          stageLabel.textContent = '첫 번째 회전 스와이프로 몸통을 만들어보세요';
+        }
+      }, 280);
+    });
   }
 
   /* ----------------------------------------------------------
@@ -794,9 +847,12 @@
   function init() {
     initMessages();
     initMessageAdmin();
-    initSpotDifference();
-    initSnowGlobe();
+    initMessageDetail();
+    initTreeRotation();
+    initSpecialGallery();
     initSnowmanBuilder();
+
+    ensureTreeFoliage();
     syncSpecialNavigation();
 
     window.addEventListener('wedding-mode-change', syncSpecialNavigation);
