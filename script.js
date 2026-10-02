@@ -315,9 +315,20 @@
 
     const flakes = [];
 
-    // 이전 버전보다 확실히 적게
     const isMobile = document.documentElement.clientWidth <= 768;
-    const FLAKE_COUNT = isMobile ? 20 : 30;
+    const NORMAL_FLAKE_COUNT = isMobile ? 20 : 30;
+    const SPECIAL_FLAKE_COUNT = isMobile ? 110 : 150;
+    let lastSpecialSnowMode = null;
+
+    function isSpecialSnowMode() {
+      return document.body.classList.contains('special-mode');
+    }
+
+    function targetFlakeCount() {
+      return isSpecialSnowMode()
+        ? SPECIAL_FLAKE_COUNT
+        : NORMAL_FLAKE_COUNT;
+    }
 
     /**
      * 핀치 줌 대응 핵심:
@@ -369,34 +380,46 @@
       }
 
       reset(initial = false) {
-        const crystal = Math.random() < 0.16; // Stage19: 결정형을 조금 더 자주
+        const special = isSpecialSnowMode();
+        const crystal = Math.random() < (special ? 0.30 : 0.16);
 
         this.type = crystal ? 'crystal' : 'soft';
         this.goldSeed = Math.random();
 
-        // 전체 크기 축소
-        this.size = crystal
-          ? 2.7 + Math.random() * 1.7
-          : 0.8 + Math.random() * 1.6;
+        this.size = special
+          ? (crystal
+              ? 3.8 + Math.random() * 2.8
+              : 1.7 + Math.random() * 2.5)
+          : (crystal
+              ? 2.7 + Math.random() * 1.7
+              : 0.8 + Math.random() * 1.6);
 
         this.x = Math.random() * width;
         this.y = initial
           ? Math.random() * height
           : -18 - Math.random() * 55;
 
-        // 전체적으로 더 은은하게
-        this.baseOpacity = crystal
-          ? 0.15 + Math.random() * 0.085
-          : 0.10 + Math.random() * 0.075;
+        this.baseOpacity = special
+          ? (crystal
+              ? 0.42 + Math.random() * 0.26
+              : 0.31 + Math.random() * 0.25)
+          : (crystal
+              ? 0.15 + Math.random() * 0.085
+              : 0.10 + Math.random() * 0.075);
 
         this.opacity = this.baseOpacity;
 
-        // 느리게 낙하
-        this.speedY = crystal
-          ? 0.24 + Math.random() * 0.28
-          : 0.18 + Math.random() * 0.34;
+        this.speedY = special
+          ? (crystal
+              ? 0.42 + Math.random() * 0.44
+              : 0.34 + Math.random() * 0.50)
+          : (crystal
+              ? 0.24 + Math.random() * 0.28
+              : 0.18 + Math.random() * 0.34);
 
-        this.speedX = -0.045 + Math.random() * 0.09;
+        this.speedX = special
+          ? -0.10 + Math.random() * 0.20
+          : -0.045 + Math.random() * 0.09;
 
         this.swing = Math.random() * Math.PI * 2;
         this.swingSpeed = 0.003 + Math.random() * 0.006;
@@ -437,8 +460,8 @@
       }
 
       isSpecialGold() {
-        return document.body.classList.contains('special-mode') &&
-          this.goldSeed < 0.28;
+        return isSpecialSnowMode() &&
+          this.goldSeed < 0.36;
       }
 
       drawSoft() {
@@ -560,13 +583,25 @@
 
     function populate() {
       flakes.length = 0;
+      const count = targetFlakeCount();
 
-      for (let i = 0; i < FLAKE_COUNT; i++) {
+      for (let i = 0; i < count; i++) {
         flakes.push(new Snowflake());
       }
+
+      lastSpecialSnowMode = isSpecialSnowMode();
+    }
+
+    function syncSnowMode() {
+      const special = isSpecialSnowMode();
+
+      if (special === lastSpecialSnowMode) return;
+
+      populate();
     }
 
     function animate() {
+      syncSnowMode();
       ctx.clearRect(0, 0, width, height);
 
       flakes.forEach((flake) => {
