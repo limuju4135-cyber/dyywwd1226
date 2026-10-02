@@ -53,6 +53,32 @@
     }
   }
 
+  function applyBrowserTheme(mode) {
+    const special = mode === 'special';
+    const color = special ? '#4E5B49' : '#BE858D';
+
+    let meta = document.querySelector('meta[name="theme-color"]');
+
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      document.head.appendChild(meta);
+    }
+
+    meta.setAttribute('content', color);
+    document.documentElement.style.backgroundColor = color;
+
+    // Reinsert the meta node to make iOS Safari re-evaluate a runtime theme change.
+    try {
+      const refreshed = meta.cloneNode(true);
+      meta.replaceWith(refreshed);
+    } catch {}
+
+    window.dispatchEvent(new CustomEvent('wedding-mode-change', {
+      detail: { mode: special ? 'special' : 'normal' }
+    }));
+  }
+
   function initMeta() {
     if (!CONFIG.meta) return;
     document.title = CONFIG.meta.title || document.title;
@@ -78,6 +104,7 @@
     let invitationOpening = false;
 
     invitationMode = 'normal';
+    applyBrowserTheme('normal');
     document.body.classList.remove('special-mode', 'normal-mode');
     document.documentElement.classList.remove('special-mode', 'normal-mode');
     curtain.classList.remove('is-special-unlocking');
@@ -144,6 +171,7 @@
       document.body.classList.toggle('normal-mode', invitationMode !== 'special');
       document.documentElement.classList.toggle('special-mode', invitationMode === 'special');
       document.documentElement.classList.toggle('normal-mode', invitationMode !== 'special');
+      applyBrowserTheme(invitationMode);
 
       curtain.classList.add('is-open');
       document.body.classList.remove('no-scroll');
@@ -163,6 +191,7 @@
       document.body.classList.remove('normal-mode');
       document.documentElement.classList.add('special-mode');
       document.documentElement.classList.remove('normal-mode');
+      applyBrowserTheme('special');
 
       clearHoldState();
       btn.classList.add('is-special-unlocked');
