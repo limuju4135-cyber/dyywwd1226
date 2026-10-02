@@ -474,9 +474,9 @@
         );
 
         if (gold) {
-          grad.addColorStop(0, 'rgba(255,231,174,0.98)');
-          grad.addColorStop(0.48, 'rgba(224,184,108,0.64)');
-          grad.addColorStop(1, 'rgba(224,184,108,0)');
+          grad.addColorStop(0, 'rgba(205,181,138,0.98)');
+          grad.addColorStop(0.48, 'rgba(205,181,138,0.64)');
+          grad.addColorStop(1, 'rgba(205,181,138,0)');
         } else {
           grad.addColorStop(0, 'rgba(255,255,255,0.96)');
           grad.addColorStop(0.48, 'rgba(249,250,255,0.58)');
@@ -489,7 +489,7 @@
         ctx.fill();
 
         ctx.fillStyle = gold
-          ? 'rgba(248,215,150,0.92)'
+          ? 'rgba(243,235,221,0.94)'
           : 'rgba(255,255,255,0.88)';
         ctx.beginPath();
         ctx.arc(0, 0, this.size * 0.42, 0, Math.PI * 2);
@@ -508,8 +508,8 @@
           0, 0, outer * 2.1
         );
         if (gold) {
-          grad.addColorStop(0, 'rgba(245,210,143,0.58)');
-          grad.addColorStop(1, 'rgba(224,184,108,0)');
+          grad.addColorStop(0, 'rgba(205,181,138,0.58)');
+          grad.addColorStop(1, 'rgba(205,181,138,0)');
         } else {
           grad.addColorStop(0, 'rgba(255,255,255,0.46)');
           grad.addColorStop(1, 'rgba(255,255,255,0)');
@@ -521,7 +521,7 @@
         ctx.fill();
 
         ctx.strokeStyle = gold
-          ? 'rgba(242,206,136,0.92)'
+          ? 'rgba(205,181,138,0.94)'
           : 'rgba(255,255,255,0.84)';
         ctx.lineWidth = Math.max(0.55, outer * 0.12);
         ctx.lineCap = 'round';
@@ -558,7 +558,7 @@
         }
 
         ctx.fillStyle = gold
-          ? 'rgba(248,215,150,0.94)'
+          ? 'rgba(243,235,221,0.96)'
           : 'rgba(255,255,255,0.88)';
         ctx.beginPath();
         ctx.arc(0, 0, outer * 0.12, 0, Math.PI * 2);
@@ -611,6 +611,29 @@
 
       animationId = requestAnimationFrame(animate);
     }
+
+    let specialBurstTimer = null;
+
+    window.addEventListener('special-snow-burst', () => {
+      if (!isSpecialSnowMode()) return;
+
+      const burstTarget = SPECIAL_FLAKE_COUNT + (isMobile ? 95 : 135);
+
+      while (flakes.length < burstTarget) {
+        const flake = new Snowflake();
+        flake.y = Math.random() * Math.max(120, height * 0.72);
+        flake.speedY *= 1.65;
+        flake.speedX *= 1.35;
+        flakes.push(flake);
+      }
+
+      clearTimeout(specialBurstTimer);
+      specialBurstTimer = window.setTimeout(() => {
+        if (flakes.length > SPECIAL_FLAKE_COUNT) {
+          flakes.splice(SPECIAL_FLAKE_COUNT);
+        }
+      }, 3200);
+    });
 
     // 최초 한 번만 canvas 기준 좌표계 설정
     applyCanvasSize(false);
