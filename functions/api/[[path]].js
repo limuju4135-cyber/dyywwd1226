@@ -1,11 +1,8 @@
 /**
- * Cloudflare Pages Function — private JSON gateway
+ * Cloudflare Pages Function — private JSON + special playground gateway
  *
  * Required Pages R2 binding:
  *   MEDIA_BUCKET -> dyywwd1226-media
- *
- * Browser-visible requests stay on dyw261226.pages.dev.
- * The private R2 bucket is never exposed directly.
  */
 
 const JSON_OBJECTS = Object.freeze({
@@ -15,9 +12,16 @@ const JSON_OBJECTS = Object.freeze({
   '/api/gallery': 'data/gallery.json'
 });
 
+const MESSAGE_PREFIX = 'messages/';
+const MESSAGE_LIMIT = 100;
+
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
+
+  if (url.pathname === '/api/messages') {
+    return messageGateway(request, env);
+  }
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new Response('Method Not Allowed', {
@@ -50,13 +54,7 @@ export async function onRequest(context) {
     return jsonError('Not Found', 404);
   }
 
-  const headers = {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'no-store, private',
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'no-referrer',
-    'Cross-Origin-Resource-Policy': 'same-origin'
-  };
+  const headers = jsonHeaders();
 
   if (request.method === 'HEAD') {
     return new Response(null, { status: 200, headers });
@@ -73,18 +71,136 @@ export async function onRequest(context) {
   return new Response(text, { status: 200, headers });
 }
 
+async function messageGateway(request, env) {
+  if (!env.MEDIA_BUCKET) {
+    return jsonError('R2 binding unavailable', 500);
+  }
+
+  if (request.method === 'HEAD') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        ...jsonHeaders(),
+        'Allow': 'GET, HEAD, POST'
+      }
+    });
+  }
+
+  if (request.method === 'GET') {
+    return listMessages(env);
+  }
+
+  if (request.method === 'POST') {
+    return createMessage(request, env);
+  }
+
+  return new Response('Method Not Allowed', {
+    status: 405,
+    headers: {
+      'Allow': 'GET, HEAD, POST',
+      'Cache-Control': 'no-store'
+    }
+  });
+}
+
+async function listMessages(env) {
+  const listed = await env.MEDIA_BUCKET.list({
+    prefix: MESSAGE_PREFIX,
+    limit: 1000
+  });
+
+  const keys = listed.objects
+    .map(object => object.key)
+    .filter(key => /^messages\/\d{13}-[A-Za-z0-9-]+\.json$/.test(key))
+    .sort((a, b) => b.localeCompare(a))
+    .slice(0, MESSAGE_LIMIT);
+
+  const messages = (
+    await Promise.all(
+      keys.map(async key => {
+        try {
+          const object = await env.MEDIA_BUCKET.get(key);
+          if (!object) return null;
+
+          const data = JSON.parse(await object.text());
+
+          return {
+            id: key.slice(MESSAGE_PREFIX.length, -5),
+            name: cleanText(data.name, 20) || '익명',
+            message: cleanText(data.message, 80),
+            createdAt: Number(data.createdAt) || Number(key.slice(9, 22))
+          };
+        } catch {
+          return null;
+        }
+      })
+    )
+  ).filter(item => item && item.message);
+
+  return new Response(JSON.stringify({ messages }), {
+    status: 200,
+    headers: jsonHeaders()
+  });
+}
+
+async function createMessage(request, env) {
+  let payload;
+
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonError('Invalid JSON', 400);
+  }
+
+  const name = cleanText(payload?.name, 20) || '익명';
+  const message = cleanText(payload?.message, 80);
+
+  if (!message) {
+    return jsonError('Message required', 400);
+  }
+
+  const createdAt = Date.now();
+  const id = `${createdAt}-${crypto.randomUUID()}`;
+  const key = `${MESSAGE_PREFIX}${id}.json`;
+
+  const record = {
+    name,
+    message,
+    createdAt
+  };
+
+  await env.MEDIA_BUCKET.put(key, JSON.stringify(record), {
+    httpMetadata: {
+      contentType: 'application/json; charset=utf-8'
+    }
+  });
+
+  return new Response(
+    JSON.stringify({
+      id,
+      ...record
+    }),
+    {
+      status: 201,
+      headers: jsonHeaders()
+    }
+  );
+}
+
+function cleanText(value, maxLength) {
+  return String(value ?? '')
+    .replace(/[\u0000-\u001F\u007F]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxLength);
+}
+
 async function specialGalleryIndex(request, env) {
   if (!env.MEDIA_BUCKET) {
     return jsonError('R2 binding unavailable', 500);
   }
 
-  const headers = {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'no-store, private',
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'no-referrer',
-    'Cross-Origin-Resource-Policy': 'same-origin'
-  };
+  const headers = jsonHeaders();
 
   if (request.method === 'HEAD') {
     return new Response(null, { status: 200, headers });
@@ -105,15 +221,19 @@ async function specialGalleryIndex(request, env) {
   });
 }
 
+function jsonHeaders() {
+  return {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store, private',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
+    'Cross-Origin-Resource-Policy': 'same-origin'
+  };
+}
+
 function jsonError(message, status) {
   return new Response(JSON.stringify({ error: message }), {
     status,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store, private',
-      'X-Content-Type-Options': 'nosniff',
-      'Referrer-Policy': 'no-referrer',
-      'Cross-Origin-Resource-Policy': 'same-origin'
-    }
+    headers: jsonHeaders()
   });
 }
