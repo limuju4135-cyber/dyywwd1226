@@ -183,54 +183,124 @@
     section.classList.toggle('is-admin', enabled);
   }
 
-  async function requestMessageAdminMode() {
-    const pin = window.prompt('관리자 PIN을 입력하세요.');
-    if (pin === null) return;
+  function openMessageAdminModal() {
+    const modal = $('#messageAdminModal');
+    const input = $('#messageAdminPinInput');
+    const error = $('#messageAdminError');
 
-    const normalized = String(pin).trim();
+    if (!modal || !input) return;
 
-    if (!/^\d{6}$/.test(normalized)) {
-      window.alert('6자리 PIN을 입력해주세요.');
-      return;
-    }
+    if (error) error.textContent = '';
+    input.value = '';
+    modal.hidden = false;
+    modal.classList.add('is-open');
 
-    try {
-      const valid = await verifyMessageAdminPin(normalized);
-
-      if (!valid) {
-        window.alert('PIN이 올바르지 않습니다.');
-        return;
+    window.setTimeout(() => {
+      try {
+        input.focus({ preventScroll: true });
+      } catch {
+        input.focus();
       }
+    }, 30);
+  }
 
-      setMessageAdminMode(true, normalized);
-    } catch (error) {
-      console.warn('[Message admin verify]', error);
-      window.alert('관리자 인증에 실패했습니다. 잠시 후 다시 시도해주세요.');
-    }
+  function closeMessageAdminModal() {
+    const modal = $('#messageAdminModal');
+    const input = $('#messageAdminPinInput');
+    const error = $('#messageAdminError');
+
+    if (!modal) return;
+
+    modal.classList.remove('is-open');
+    if (input) input.value = '';
+    if (error) error.textContent = '';
+
+    window.setTimeout(() => {
+      modal.hidden = true;
+    }, 180);
   }
 
   function initMessageAdmin() {
     const section = $('#specialMessages');
     const title = $('#specialMessageTitle');
+    const modal = $('#messageAdminModal');
+    const form = $('#messageAdminForm');
+    const input = $('#messageAdminPinInput');
+    const error = $('#messageAdminError');
+    const submit = $('#messageAdminSubmit');
 
-    if (!section || !title) return;
+    if (!section || !title || !modal || !form || !input || !submit) return;
 
-    title.addEventListener('pointerup', event => {
+    function registerSecretTap(event) {
       if (!isSpecial() || section.classList.contains('is-admin')) return;
-      if (typeof event.button === 'number' && event.button !== 0) return;
+
+      const target = event.target instanceof Element
+        ? event.target.closest('#specialMessageTitle')
+        : null;
+
+      if (!target) return;
 
       adminTitleTapCount += 1;
 
       clearTimeout(adminTitleTapTimer);
       adminTitleTapTimer = window.setTimeout(() => {
         adminTitleTapCount = 0;
-      }, 3200);
+      }, 7000);
 
       if (adminTitleTapCount < 5) return;
 
       adminTitleTapCount = 0;
       clearTimeout(adminTitleTapTimer);
-      requestMessageAdminMode();
+      openMessageAdminModal();
+    }
+
+    // Capture-phase pointerdown is more reliable than click/pointerup on iOS,
+    // especially because this page also suppresses double-tap zoom.
+    document.addEventListener('pointerdown', registerSecretTap, true);
+
+    modal.addEventListener('click', event => {
+      if (event.target.closest('[data-admin-close]')) {
+        closeMessageAdminModal();
+      }
+    });
+
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '').slice(0, 6);
+      if (error) error.textContent = '';
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+
+      const normalized = input.value.trim();
+
+      if (!/^\d{6}$/.test(normalized)) {
+        if (error) error.textContent = '6자리 PIN을 입력해주세요.';
+        input.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = '확인 중...';
+
+      try {
+        const valid = await verifyMessageAdminPin(normalized);
+
+        if (!valid) {
+          if (error) error.textContent = 'PIN이 올바르지 않습니다.';
+          input.select();
+          return;
+        }
+
+        setMessageAdminMode(true, normalized);
+        closeMessageAdminModal();
+      } catch (verifyError) {
+        console.warn('[Message admin verify]', verifyError);
+        if (error) error.textContent = '인증에 실패했습니다. 다시 시도해주세요.';
+      } finally {
+        submit.disabled = false;
+        submit.textContent = '확인';
+      }
     });
 
     section.addEventListener('click', async event => {
@@ -271,7 +341,7 @@
 
         if (response.status === 403) {
           setMessageAdminMode(false);
-          window.alert('관리자 인증이 만료되었습니다. 다시 인증해주세요.');
+          window.alert('관리자 인증이 풀렸습니다. 다시 제목을 5번 탭해주세요.');
           return;
         }
 
@@ -286,8 +356,8 @@
         if (scroller && !scroller.querySelector('.special-message__card')) {
           renderMessages([]);
         }
-      } catch (error) {
-        console.warn('[Message delete]', error);
+      } catch (deleteError) {
+        console.warn('[Message delete]', deleteError);
         window.alert('메시지를 삭제하지 못했습니다.');
         button.disabled = false;
         button.textContent = '삭제';
