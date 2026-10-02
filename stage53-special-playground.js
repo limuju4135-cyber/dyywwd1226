@@ -116,39 +116,13 @@
   }
 
   /* ----------------------------------------------------------
-     SPECIAL NAV
+     SPECIAL MODE DATA
      ---------------------------------------------------------- */
-  function syncSpecialNavigation() {
-    const buttons = $$('.hero__quick-btn[data-scroll-target]');
-    if (buttons.length < 3) return;
+  function syncSpecialModeData() {
+    if (!isMobileSpecial()) return;
 
-    if (isMobileSpecial()) {
-      buttons[0].textContent = '메시지함';
-      buttons[0].dataset.scrollTarget = 'specialMessages';
-      buttons[0].hidden = false;
-
-      buttons[1].textContent = '비하인드';
-      buttons[1].dataset.scrollTarget = 'gallery';
-      buttons[1].hidden = false;
-
-      buttons[2].hidden = true;
-
-      loadMessages();
-      loadSpecialGallery();
-      return;
-    }
-
-    const setup = [
-      ['연락처', 'contact'],
-      ['갤러리', 'gallery'],
-      ['오시는 길', 'location']
-    ];
-
-    buttons.slice(0, 3).forEach((button, index) => {
-      button.hidden = false;
-      button.textContent = setup[index][0];
-      button.dataset.scrollTarget = setup[index][1];
-    });
+    loadMessages();
+    loadSpecialGallery();
   }
 
   /* ----------------------------------------------------------
@@ -354,8 +328,127 @@
   }
 
   /* ----------------------------------------------------------
-     MESSAGE DETAIL
+     MESSAGE DETAIL — all messages, chronological swipe
      ---------------------------------------------------------- */
+  function chronologicalMessages() {
+    return [...messages].sort((a, b) => {
+      const aTime = Number(a?.createdAt) || 0;
+      const bTime = Number(b?.createdAt) || 0;
+
+      if (aTime !== bTime) return aTime - bTime;
+
+      return String(a?.id || '').localeCompare(String(b?.id || ''));
+    });
+  }
+
+  function createMessageSlide(item) {
+    const slide = document.createElement('section');
+    const text = document.createElement('p');
+    const meta = document.createElement('div');
+    const name = document.createElement('span');
+    const date = document.createElement('time');
+    const deleteButton = document.createElement('button');
+
+    slide.className = 'message-detail-modal__slide';
+    slide.dataset.messageId = item.id || '';
+
+    text.className = 'message-detail-modal__text';
+    text.textContent = item.message || '';
+
+    meta.className = 'message-detail-modal__meta';
+
+    name.textContent = item.name || '익명';
+    date.textContent = formatMessageDate(item.createdAt);
+
+    meta.append(name, date);
+
+    deleteButton.type = 'button';
+    deleteButton.className = 'message-detail-modal__delete';
+    deleteButton.textContent = '메시지 삭제';
+    deleteButton.setAttribute('aria-label', '현재 메시지 삭제');
+
+    slide.append(text, meta, deleteButton);
+
+    return slide;
+  }
+
+  function renderMessageCarousel(focusId = '') {
+    const track = $('#messageDetailTrack');
+    const viewport = $('#messageDetailViewport');
+
+    if (!track || !viewport) return -1;
+
+    const ordered = chronologicalMessages();
+    track.replaceChildren();
+
+    ordered.forEach(item => {
+      track.appendChild(createMessageSlide(item));
+    });
+
+    if (!ordered.length) {
+      selectedMessageId = '';
+      updateMessageCarouselCounter(0, 0);
+      return -1;
+    }
+
+    let targetIndex = ordered.findIndex(item => item.id === focusId);
+
+    if (targetIndex < 0) {
+      targetIndex = 0;
+    }
+
+    selectedMessageId = ordered[targetIndex].id;
+
+    requestAnimationFrame(() => {
+      viewport.scrollLeft = targetIndex * viewport.clientWidth;
+      updateMessageCarouselCounter(targetIndex + 1, ordered.length);
+    });
+
+    return targetIndex;
+  }
+
+  function updateMessageCarouselCounter(current, total) {
+    const counter = $('#messageDetailCounter');
+
+    if (!counter) return;
+
+    counter.textContent =
+      total > 0
+        ? current + ' / ' + total
+        : '0 / 0';
+  }
+
+  function syncSelectedMessageFromScroll() {
+    const viewport = $('#messageDetailViewport');
+    const ordered = chronologicalMessages();
+
+    if (!viewport || !ordered.length) return;
+
+    const width = Math.max(1, viewport.clientWidth);
+    const index = Math.max(
+      0,
+      Math.min(
+        ordered.length - 1,
+        Math.round(viewport.scrollLeft / width)
+      )
+    );
+
+    selectedMessageId = ordered[index].id;
+    updateMessageCarouselCounter(index + 1, ordered.length);
+  }
+
+  function scrollMessageCarouselTo(index, behavior = 'smooth') {
+    const viewport = $('#messageDetailViewport');
+
+    if (!viewport) return;
+
+    viewport.scrollTo({
+      left: index * viewport.clientWidth,
+      top: 0,
+      behavior
+    });
+  }
+
   function openMessageDetail(id) {
     const item = messageById(id);
     const modal = $('#messageDetailModal');
@@ -363,18 +456,10 @@
     if (!item || !modal) return;
 
     selectedMessageId = id;
-
-    const text = $('#messageDetailText');
-    const name = $('#messageDetailName');
-    const date = $('#messageDetailDate');
-    const deleteButton = $('#messageDetailDelete');
-
-    if (text) text.textContent = item.message || '';
-    if (name) name.textContent = item.name || '익명';
-    if (date) date.textContent = formatMessageDate(item.createdAt);
-    if (deleteButton) deleteButton.hidden = !messageAdminPin;
-
+    modal.classList.toggle('is-admin', Boolean(messageAdminPin));
     modal.hidden = false;
+
+    renderMessageCarousel(id);
 
     requestAnimationFrame(() => {
       modal.classList.add('is-open');
@@ -383,6 +468,7 @@
 
   function closeMessageDetail() {
     const modal = $('#messageDetailModal');
+
     if (!modal) return;
 
     modal.classList.remove('is-open');
@@ -395,9 +481,10 @@
 
   function initMessageDetail() {
     const modal = $('#messageDetailModal');
-    const deleteButton = $('#messageDetailDelete');
+    const viewport = $('#messageDetailViewport');
+    const track = $('#messageDetailTrack');
 
-    if (!modal) return;
+    if (!modal || !viewport || !track) return;
 
     modal.addEventListener('click', event => {
       if (event.target.closest('[data-message-detail-close]')) {
@@ -405,22 +492,42 @@
       }
     });
 
-    deleteButton?.addEventListener('click', async () => {
-      if (!selectedMessageId || !messageAdminPin) return;
+    let scrollRaf = 0;
 
-      const item = messageById(selectedMessageId);
+    viewport.addEventListener('scroll', () => {
+      cancelAnimationFrame(scrollRaf);
+
+      scrollRaf = requestAnimationFrame(() => {
+        syncSelectedMessageFromScroll();
+      });
+    }, { passive: true });
+
+    track.addEventListener('click', async event => {
+      const deleteButton = event.target.closest('.message-detail-modal__delete');
+
+      if (!deleteButton || !messageAdminPin) return;
+
+      const slide = deleteButton.closest('.message-detail-modal__slide');
+      const id = slide?.dataset.messageId || '';
+
+      if (!id) return;
+
+      const item = messageById(id);
       const preview = String(item?.message || '').slice(0, 26);
 
       if (!window.confirm('이 메시지를 삭제할까요?\n\n' + preview)) {
         return;
       }
 
+      const before = chronologicalMessages();
+      const deletedIndex = before.findIndex(message => message.id === id);
+
       deleteButton.disabled = true;
       deleteButton.textContent = '삭제 중';
 
       try {
         const response = await fetch(
-          '/api/messages/' + encodeURIComponent(selectedMessageId),
+          '/api/messages/' + encodeURIComponent(id),
           {
             method: 'DELETE',
             headers: {
@@ -442,14 +549,30 @@
           throw new Error('delete failed');
         }
 
-        messages = messages.filter(item => item.id !== selectedMessageId);
+        messages = messages.filter(message => message.id !== id);
         buildInitialTreeState();
         renderTreeState();
-        closeMessageDetail();
+
+        const ordered = chronologicalMessages();
+
+        if (!ordered.length) {
+          closeMessageDetail();
+          return;
+        }
+
+        const nextIndex = Math.max(
+          0,
+          Math.min(deletedIndex, ordered.length - 1)
+        );
+
+        renderMessageCarousel(ordered[nextIndex].id);
+
+        requestAnimationFrame(() => {
+          scrollMessageCarouselTo(nextIndex, 'auto');
+        });
       } catch (error) {
         console.warn('[Message delete]', error);
         window.alert('메시지를 삭제하지 못했습니다.');
-      } finally {
         deleteButton.disabled = false;
         deleteButton.textContent = '메시지 삭제';
       }
@@ -589,14 +712,11 @@
 
   function setMessageAdminMode(enabled, pin = '') {
     const section = $('#specialMessages');
-    const detailDelete = $('#messageDetailDelete');
+    const modal = $('#messageDetailModal');
 
     messageAdminPin = enabled ? String(pin) : '';
     section?.classList.toggle('is-admin', enabled);
-
-    if (detailDelete) {
-      detailDelete.hidden = !enabled || !selectedMessageId;
-    }
+    modal?.classList.toggle('is-admin', enabled);
   }
 
   function openMessageAdminModal() {
@@ -847,11 +967,11 @@
     initMessageDetail();
     initMessageTreeInteraction();
     initSpecialGallery();
-    syncSpecialNavigation();
+    syncSpecialModeData();
 
-    window.addEventListener('wedding-mode-change', syncSpecialNavigation);
+    window.addEventListener('wedding-mode-change', syncSpecialModeData);
 
-    const observer = new MutationObserver(syncSpecialNavigation);
+    const observer = new MutationObserver(syncSpecialModeData);
 
     observer.observe(document.body, {
       attributes: true,
