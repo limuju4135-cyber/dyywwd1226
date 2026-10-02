@@ -332,56 +332,6 @@ body.special-mode #gallery .special-gallery__title {
 }
 
 .message-tree__ornament,
-.message-tree__reserved {
-  position: absolute;
-  left: var(--slot-x);
-  top: var(--slot-y);
-  width: clamp(34px, var(--slot-size), 45px);
-  aspect-ratio: 1 / 1.15;
-  transform: translate(-50%, -50%);
-}
-
-.message-tree__ornament {
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  cursor: pointer;
-  pointer-events: auto;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.message-tree__ornament img,
-.message-tree__reserved img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 4px rgba(71,62,43,.14));
-}
-
-.message-tree__reserved {
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  pointer-events: none;
-  opacity: .17;
-  filter: grayscale(1) brightness(.72);
-  animation: stage57-reserved-breathe 3.6s ease-in-out infinite;
-}
-
-.message-tree__reserved::after {
-  content: "";
-  position: absolute;
-  inset: 9%;
-  border: 1px dashed rgba(89,99,86,.42);
-  border-radius: 50%;
-}
-
 .message-tree__ornament.is-new {
   z-index: 8;
   animation: stage57-ornament-arrive 1.22s cubic-bezier(.16,1,.3,1) both;
@@ -464,11 +414,6 @@ body.special-mode #gallery .special-gallery__title {
   color: #A18D68;
   font-size: .65rem;
   line-height: 1.5;
-}
-
-@keyframes stage57-reserved-breathe {
-  0%, 100% { opacity: .13; transform: translate(-50%, -50%) scale(.94); }
-  50% { opacity: .21; transform: translate(-50%, -50%) scale(1); }
 }
 
 @keyframes stage57-ornament-arrive {
@@ -1095,7 +1040,6 @@ body.special-mode #hero .hero__quick-btn[hidden] {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .message-tree__reserved,
   .message-tree__ornament.is-new,
   .message-tree__ornament.is-new img,
   .message-tree__sparkles i {
