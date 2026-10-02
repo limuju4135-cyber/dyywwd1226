@@ -615,7 +615,7 @@ body.special-mode #gallery #galleryRandomBtn {
 
 .special-gallery__layout {
   display: grid;
-  grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: .72rem;
   align-items: stretch;
   margin-top: 1.45rem;
@@ -892,7 +892,8 @@ body.special-mode .snowman-builder[data-stage="2"] {
   position: absolute;
   left: 50%;
   bottom: calc(var(--head-bottom) - 3px);
-  width: min(62px, calc(var(--head-size) * .90));
+  width: var(--head-size);
+  max-width: 62px;
   height: 9px;
   border-radius: 999px;
   background: var(--s53-red);
