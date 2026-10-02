@@ -786,3 +786,61 @@ body.special-mode #snowCanvas {
     transition: none !important;
   }
 }
+
+
+/* ------------------------------------------------------------
+   MESSAGE ADMIN MODE — hidden until title is tapped five times
+   ------------------------------------------------------------ */
+#specialMessageTitle {
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.special-message__card {
+  position: relative;
+}
+
+.special-message__delete {
+  display: none;
+  position: absolute;
+  top: .62rem;
+  right: .62rem;
+  min-width: 44px;
+  height: 28px;
+  padding: 0 .58rem;
+  border: 1px solid rgba(78,91,73,.34);
+  border-radius: 999px;
+  background: rgba(243,235,221,.92);
+  color: #4E5B49;
+  font-size: .64rem;
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: 0 3px 10px rgba(78,91,73,.08);
+  cursor: pointer;
+}
+
+.special-message.is-admin .special-message__delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.special-message.is-admin .special-message__card {
+  padding-top: 2.55rem;
+  border-color: rgba(78,91,73,.42);
+}
+
+.special-message.is-admin #specialMessageTitle::after {
+  content: "  ·  ADMIN";
+  color: #71806A;
+  font-size: .54em;
+  font-weight: 700;
+  letter-spacing: .12em;
+  vertical-align: .12em;
+}
+
+.special-message__delete:disabled {
+  opacity: .5;
+  cursor: default;
+}
