@@ -141,19 +141,20 @@
    제목은 정확히 중앙 고정, 랜덤 버튼만 우측 배치
    ============================================================ */
 #gallery .gallery__heading {
-  position: relative;
-  display: block;
-  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .70rem;
+  min-height: 0;
   margin-bottom: var(--spacing-lg);
 }
 
 #gallery .gallery__title {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: max-content;
+  position: static;
+  width: auto;
   margin: 0 !important;
-  transform: translate(-50%, -50%);
+  transform: none;
   text-align: center;
 }
 
@@ -161,7 +162,7 @@
   appearance: none;
   -webkit-appearance: none;
 
-  margin-left: auto;
+  margin: 0 auto;
   min-width: 102px;
   min-height: 42px;
   padding: .42rem .66rem;
@@ -275,10 +276,6 @@
 }
 
 @media (max-width: 390px) {
-  #gallery .gallery__heading {
-    min-height: 40px;
-  }
-
   #gallery .gallery__random-btn {
     min-width: 92px;
     min-height: 38px;
