@@ -7,6 +7,7 @@
 
   let accountsPromise = null;
   let galleryPromise = null;
+  let specialGalleryPromise = null;
 
   function workerUrl(path) {
     const base = MEDIA_CONFIG.workerBase.replace(/\/+$/, '');
@@ -64,10 +65,18 @@
     return galleryPromise;
   }
 
+  function getSpecialGalleryManifest() {
+    if (!specialGalleryPromise) {
+      specialGalleryPromise = fetchJson(MEDIA_CONFIG.api.specialGallery);
+    }
+    return specialGalleryPromise;
+  }
+
   window.PRIVATE_WEDDING = Object.freeze({
     init,
     mediaUrl,
     getAccounts,
-    getGalleryManifest
+    getGalleryManifest,
+    getSpecialGalleryManifest
   });
 })();
