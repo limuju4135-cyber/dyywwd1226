@@ -293,152 +293,231 @@ body.special-mode #gallery .special-gallery__title {
 }
 
 /* ------------------------------------------------------------
-   360° MESSAGE TREE
+   2D MESSAGE TREE — 15 slots / 1 always reserved
    ------------------------------------------------------------ */
 .message-tree {
-  margin-top: 1.4rem;
-}
-
-.message-tree__hint {
-  margin: 0 0 .4rem;
-  color: rgba(86,81,73,.52);
-  font-size: .68rem;
-  text-align: center;
-}
-
-.message-tree__scene {
   position: relative;
-  height: 360px;
-  perspective: 720px;
-  perspective-origin: 50% 47%;
-  overflow: hidden;
-  touch-action: pan-y;
-  cursor: grab;
-  -webkit-user-select: none;
-  user-select: none;
+  margin-top: 1.45rem;
 }
 
-.message-tree__scene.is-rotating {
-  cursor: grabbing;
+.message-tree__stage {
+  position: relative;
+  width: min(88vw, 390px);
+  margin: 0 auto;
+  aspect-ratio: 720 / 940;
+  isolation: isolate;
 }
 
-.message-tree__rotator {
-  --tree-rotation: -18deg;
+.message-tree__image {
   position: absolute;
-  left: 50%;
-  top: 52%;
-  width: 0;
-  height: 0;
-  transform-style: preserve-3d;
-  transform: rotateX(-3deg) rotateY(var(--tree-rotation));
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  filter:
+    drop-shadow(0 12px 17px rgba(70,78,69,.08))
+    saturate(.95);
 }
 
-.message-tree__foliage,
 .message-tree__ornaments {
   position: absolute;
   inset: 0;
-  transform-style: preserve-3d;
+  z-index: 3;
+  pointer-events: none;
 }
 
-.message-tree__blade {
+.message-tree__ornament,
+.message-tree__reserved {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 218px;
-  height: 274px;
-  margin-left: -109px;
-  margin-top: -145px;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  transform-origin: 50% 54%;
-  transform: rotateY(var(--blade-angle));
-  backface-visibility: visible;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(89,99,86,.94),
-      rgba(115,126,112,.96) 47%,
-      rgba(166,176,159,.94)
-    );
-  filter: brightness(.94);
-}
-
-.message-tree__trunk {
-  position: absolute;
-  left: -12px;
-  top: 104px;
-  width: 24px;
-  height: 78px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #654424, #89643A, #5A3D23);
-  transform: translateZ(0);
-}
-
-.message-tree__star {
-  position: absolute;
-  left: 0;
-  top: -158px;
-  transform: translateX(-50%) translateZ(8px);
-  color: var(--s53-gold);
-  font-size: 2.3rem;
-  line-height: 1;
-  text-shadow:
-    0 0 9px rgba(210,191,145,.72),
-    0 0 18px rgba(210,191,145,.38);
+  left: var(--slot-x);
+  top: var(--slot-y);
+  width: clamp(34px, var(--slot-size), 45px);
+  aspect-ratio: 1 / 1.15;
+  transform: translate(-50%, -50%);
 }
 
 .message-tree__ornament {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.message-tree__ornament img,
+.message-tree__reserved img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 4px rgba(71,62,43,.14));
+}
+
+.message-tree__reserved {
+  z-index: -1;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: .17;
+  filter: grayscale(1) brightness(.72);
+  animation: stage57-reserved-breathe 3.6s ease-in-out infinite;
+}
+
+.message-tree__reserved::after {
+  content: "";
+  position: absolute;
+  inset: 9%;
+  border: 1px dashed rgba(89,99,86,.42);
+  border-radius: 50%;
+}
+
+.message-tree__ornament.is-new {
+  z-index: 8;
+  animation: stage57-ornament-arrive 1.22s cubic-bezier(.16,1,.3,1) both;
+}
+
+.message-tree__ornament.is-new img {
+  animation: stage57-ornament-glow 1.65s ease-out both;
+}
+
+.message-tree__sparkles {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.message-tree__sparkles i {
+  --spark-distance: 29px;
   position: absolute;
   left: 0;
   top: 0;
-  width: var(--ornament-size);
-  height: var(--ornament-size);
-  margin: 0;
-  padding: 0;
-  border: 1px solid rgba(255,249,236,.72);
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 27%, rgba(255,255,255,.88) 0 10%, transparent 28%),
-    var(--ornament-color);
-  box-shadow:
-    0 3px 7px rgba(38,28,11,.18),
-    inset -3px -4px 6px rgba(45,28,6,.14);
+  background: #D2BF91;
+  box-shadow: 0 0 8px rgba(210,191,145,.74);
+  opacity: 0;
   transform:
-    translate(-50%, -50%)
-    translateY(var(--ornament-y))
-    rotateY(var(--ornament-angle))
-    translateZ(var(--ornament-radius));
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  cursor: pointer;
-}
-
-.message-tree__ornament::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -7px;
-  width: 1px;
-  height: 8px;
-  background: rgba(210,191,145,.92);
-  transform: translateX(-50%);
-}
-
-.message-tree__ornament-cap {
-  position: absolute;
-  left: 50%;
-  top: -3px;
-  width: 8px;
-  height: 4px;
-  border-radius: 3px 3px 1px 1px;
-  background: var(--s53-gold);
-  transform: translateX(-50%);
+    rotate(var(--spark-angle))
+    translateX(0)
+    rotate(calc(var(--spark-angle) * -1));
+  animation:
+    stage57-sparkle .9s var(--spark-delay) cubic-bezier(.16,1,.3,1) both;
 }
 
 .message-tree__empty {
-  margin: -1rem auto 0;
-  color: rgba(86,81,73,.58);
-  font-size: .76rem;
+  margin: -.2rem auto 0;
+  color: rgba(86,81,73,.54);
+  font-size: .72rem;
   text-align: center;
+}
+
+.message-tree__feedback[hidden] {
+  display: none !important;
+}
+
+.message-tree__feedback {
+  width: min(calc(100% - 2rem), 320px);
+  margin: -.1rem auto 0;
+  padding: .72rem .9rem;
+  border: 1px solid rgba(210,191,145,.46);
+  border-radius: 14px;
+  background: rgba(248,243,234,.92);
+  box-shadow: 0 8px 20px rgba(76,73,64,.06);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity .26s ease,
+    transform .3s cubic-bezier(.22,1,.36,1);
+}
+
+.message-tree__feedback.is-show {
+  opacity: 1;
+  transform: none;
+}
+
+.message-tree__feedback strong {
+  display: block;
+  color: #596356;
+  font-size: .75rem;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.message-tree__feedback span {
+  display: block;
+  margin-top: .18rem;
+  color: #A18D68;
+  font-size: .65rem;
+  line-height: 1.5;
+}
+
+@keyframes stage57-reserved-breathe {
+  0%, 100% { opacity: .13; transform: translate(-50%, -50%) scale(.94); }
+  50% { opacity: .21; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes stage57-ornament-arrive {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 34px)) scale(1.42) rotate(-8deg);
+  }
+  58% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(.94) rotate(3deg);
+  }
+  76% {
+    transform: translate(-50%, -50%) scale(1.08) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0);
+  }
+}
+
+@keyframes stage57-ornament-glow {
+  0%, 100% {
+    filter: drop-shadow(0 3px 4px rgba(71,62,43,.14));
+  }
+  36%, 68% {
+    filter:
+      drop-shadow(0 0 6px rgba(210,191,145,.92))
+      drop-shadow(0 0 13px rgba(210,191,145,.52));
+  }
+}
+
+@keyframes stage57-sparkle {
+  0% {
+    opacity: 0;
+    transform:
+      rotate(var(--spark-angle))
+      translateX(0)
+      rotate(calc(var(--spark-angle) * -1))
+      scale(.2);
+  }
+  28% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform:
+      rotate(var(--spark-angle))
+      translateX(var(--spark-distance))
+      rotate(calc(var(--spark-angle) * -1))
+      scale(.82);
+  }
 }
 
 /* ------------------------------------------------------------
@@ -707,226 +786,6 @@ body.special-mode #gallery #galleryRandomBtn {
 }
 
 /* ------------------------------------------------------------
-   SNOWMAN PLAYGROUND
-   ------------------------------------------------------------ */
-.special-snow__card {
-  padding: 1.05rem;
-  border: 1px solid rgba(166,176,159,.28);
-  border-radius: 17px;
-  background:
-    linear-gradient(145deg, rgba(255,249,236,.98), rgba(216,192,138,.14));
-  box-shadow: 0 8px 22px rgba(97,70,28,.06);
-}
-
-.special-snow__card-kicker {
-  display: block;
-  margin-bottom: .4rem;
-  color: var(--s53-gold);
-  font-size: .59rem;
-  font-weight: 700;
-  letter-spacing: .16em;
-}
-
-.special-snow__card strong {
-  display: block;
-  margin-bottom: .35rem;
-  color: var(--s53-sage-dark);
-  font-size: .91rem;
-}
-
-.special-snow__card p {
-  margin: 0;
-  color: rgba(86,81,73,.66);
-  font-size: .76rem;
-  line-height: 1.65;
-}
-
-.snow-play-canvas {
-  height: 92px !important;
-}
-
-/* Growing ball under the user's finger. */
-.snowball-roll-preview {
-  position: fixed;
-  left: var(--roll-x, 50vw);
-  top: var(--roll-y, 88vh);
-  z-index: 109;
-  width: var(--roll-size, 30px);
-  height: var(--roll-size, 30px);
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(.82);
-  background:
-    radial-gradient(circle at 33% 25%, #fff 0%, #F8F3E8 58%, #DED3BC 100%);
-  border: 1px solid rgba(166,176,159,.14);
-  box-shadow:
-    inset -7px -6px 13px rgba(110,91,56,.09),
-    0 5px 16px rgba(81,58,21,.12);
-  transition: opacity .12s ease, transform .12s ease;
-}
-
-.snowball-roll-preview.is-visible {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-}
-
-/* Finished snowman */
-.snowman-builder {
-  --body-size: 0px;
-  --head-size: 0px;
-  --head-bottom: 30px;
-  position: fixed;
-  right: max(14px, env(safe-area-inset-right, 0px));
-  bottom: max(8px, env(safe-area-inset-bottom, 0px));
-  z-index: 108;
-  width: 150px;
-  height: 220px;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity .25s ease, transform .28s cubic-bezier(.22,1,.36,1);
-  -webkit-tap-highlight-color: transparent;
-}
-
-body.special-mode .snowman-builder[data-stage="1"],
-body.special-mode .snowman-builder[data-stage="2"] {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-
-.snowman__ball {
-  position: absolute;
-  left: 50%;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 33% 24%, #fff 0%, #F8F3E8 58%, #DED3BC 100%);
-  border: 1px solid rgba(166,176,159,.13);
-  box-shadow:
-    inset -8px -7px 15px rgba(110,91,56,.09),
-    0 4px 13px rgba(81,58,21,.10);
-}
-
-.snowman__body {
-  bottom: 0;
-  width: var(--body-size);
-  height: var(--body-size);
-  transform: translateX(-50%);
-}
-
-.snowman__head {
-  bottom: var(--head-bottom);
-  width: var(--head-size);
-  height: var(--head-size);
-  opacity: 0;
-  transform: translateX(-50%);
-  transition:
-    bottom .42s cubic-bezier(.22,1,.36,1),
-    transform .42s cubic-bezier(.22,1,.36,1),
-    opacity .2s ease;
-}
-
-.snowman-builder[data-stage="2"] .snowman__head {
-  opacity: 1;
-}
-
-.snowman-builder.is-head-lifting .snowman__head {
-  transform: translateX(-50%) translateY(74px) scale(.82);
-  opacity: .70;
-}
-
-.snowman__eye {
-  position: absolute;
-  top: 34%;
-  width: 8%;
-  height: 8%;
-  min-width: 3px;
-  min-height: 3px;
-  border-radius: 50%;
-  background: #2C261B;
-}
-
-.snowman__eye--left { left: 30%; }
-.snowman__eye--right { right: 30%; }
-
-.snowman__nose {
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  width: 34%;
-  height: 13%;
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
-  background: #E57A2E;
-  transform: translateX(-4%);
-  filter: drop-shadow(1px 1px 1px rgba(83,50,12,.16));
-}
-
-.snowman__arm {
-  position: absolute;
-  top: 42%;
-  width: 48%;
-  height: 3px;
-  border-radius: 999px;
-  background: #654321;
-  transform-origin: center;
-}
-
-.snowman__arm::after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  width: 16px;
-  height: 2px;
-  background: #654321;
-  transform: rotate(34deg);
-  transform-origin: left center;
-}
-
-.snowman__arm--left {
-  left: -38%;
-  transform: rotate(-23deg);
-}
-
-.snowman__arm--left::after {
-  left: 2px;
-}
-
-.snowman__arm--right {
-  right: -38%;
-  transform: rotate(23deg);
-}
-
-.snowman__arm--right::after {
-  right: 2px;
-  transform: rotate(-34deg);
-  transform-origin: right center;
-}
-
-.snowman__scarf {
-  position: absolute;
-  left: 50%;
-  bottom: calc(var(--head-bottom) - 3px);
-  width: var(--head-size);
-  max-width: 62px;
-  height: 9px;
-  border-radius: 999px;
-  background: var(--s53-rose);
-  transform: translateX(-50%);
-  opacity: 0;
-  box-shadow: 13px 8px 0 -2px var(--s53-rose);
-}
-
-.snowman-builder[data-stage="2"] .snowman__scarf {
-  opacity: 1;
-}
-
-.snowman-builder.is-removing {
-  opacity: 0 !important;
-  transform: translateY(22px) scale(.82) rotate(5deg) !important;
-}
-
-/* ------------------------------------------------------------
    MOBILE ONLY SPECIAL
    ------------------------------------------------------------ */
 @media (min-width: 769px), (pointer: fine) {
@@ -1024,10 +883,17 @@ body.special-mode .snowman__scarf {
 /* ============================================================
    STAGE 56 — FUNCTION FIXES / COMPACT BEHIND CUT / SAFE AREAS
    ============================================================ */
-html,
+html {
+  background: #FFFFFF !important;
+  overscroll-behavior-y: none;
+}
+
+html.normal-mode {
+  background: #BE858D !important;
+}
+
 html.special-mode {
   background: #A6B09F !important;
-  overscroll-behavior-y: none;
 }
 
 body.special-mode::before,
@@ -1134,89 +1000,107 @@ body.special-mode #gallery {
   font-weight: 650 !important;
 }
 
-/* Dedicated snowman gesture zone; no competing page scroll inside it. */
-.snowman-roll-zone {
-  position: relative;
-  width: min(82vw, 330px);
-  aspect-ratio: 1.65 / 1;
-  margin: 1.15rem auto 0;
-  overflow: hidden;
-  border: 1px solid rgba(166,176,159,.34);
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 50% 78%, rgba(255,255,255,.94) 0 8%, transparent 9%),
-    linear-gradient(180deg, rgba(210,191,145,.08), rgba(166,176,159,.10)),
-    #F8F3EA;
-  box-shadow:
-    inset 0 -22px 34px rgba(216,209,194,.34),
-    0 8px 22px rgba(79,74,64,.06);
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.snowman-roll-zone__rings {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 112px;
-  height: 112px;
-  transform: translate(-50%, -50%);
-  border: 1px dashed rgba(166,176,159,.34);
-  border-radius: 50%;
-}
-
-.snowman-roll-zone__rings::before,
-.snowman-roll-zone__rings::after {
-  content: "";
-  position: absolute;
-  border: 1px dashed rgba(210,191,145,.34);
-  border-radius: 50%;
-}
-
-.snowman-roll-zone__rings::before {
-  inset: 17px;
-}
-
-.snowman-roll-zone__rings::after {
-  inset: 34px;
-}
-
-.snowman-roll-zone__label {
-  position: absolute;
-  left: 50%;
-  bottom: 14px;
-  transform: translateX(-50%);
-  color: rgba(89,99,86,.70);
-  font-size: .70rem;
-  font-weight: 650;
-  letter-spacing: .06em;
-  white-space: nowrap;
-}
-
-.snowman-roll-zone.is-rolling {
-  border-color: rgba(210,191,145,.72);
-}
-
-.snowman-roll-zone.is-retry {
-  animation: stage56-roll-retry .30s ease;
-}
-
-.snowman-roll-zone.is-complete .snowman-roll-zone__rings {
-  opacity: .22;
-}
-
-@keyframes stage56-roll-retry {
-  0%, 100% { transform: translateX(0); }
-  35% { transform: translateX(-4px); }
-  70% { transform: translateX(4px); }
-}
-
-.snowman-builder.is-head-drop .snowman__head {
-  transform: translateX(-50%) translateY(-26px) scale(.92);
-  opacity: .78;
-}
-
 body.special-mode .special-gallery__layout {
   display: none !important;
+}
+
+
+/* ============================================================
+   STAGE 57 — MODE-AWARE CHROME / RESPONSIVE BEHIND CUT
+   ============================================================ */
+html {
+  background-color: #FFFFFF !important;
+}
+
+html.normal-mode {
+  background-color: #BE858D !important;
+}
+
+html.special-mode {
+  background-color: #A6B09F !important;
+}
+
+body.special-mode #hero .hero__quick-nav {
+  justify-content: center !important;
+  gap: .58rem !important;
+}
+
+body.special-mode #hero .hero__quick-btn:not([hidden]) {
+  flex: 0 1 44% !important;
+  max-width: 154px !important;
+}
+
+body.special-mode #hero .hero__quick-btn[hidden] {
+  display: none !important;
+}
+
+.special-gallery__machine {
+  gap: 1rem !important;
+  margin-top: 1.25rem !important;
+}
+
+.special-gallery__polaroid {
+  width: min(50vw, 196px) !important;
+  padding: 8px 8px 23px !important;
+  transition:
+    width .34s cubic-bezier(.22,1,.36,1),
+    opacity .22s ease,
+    transform .34s cubic-bezier(.22,1,.36,1) !important;
+}
+
+.special-gallery__polaroid.is-portrait {
+  width: min(50vw, 196px) !important;
+}
+
+.special-gallery__polaroid.is-landscape {
+  width: min(72vw, 280px) !important;
+}
+
+.special-gallery__polaroid .special-gallery__preview {
+  aspect-ratio: 3 / 4 !important;
+  background-position: center !important;
+  background-size: cover !important;
+  transition:
+    aspect-ratio .34s ease,
+    opacity .22s ease !important;
+}
+
+.special-gallery__polaroid.is-landscape .special-gallery__preview {
+  aspect-ratio: 4 / 3 !important;
+}
+
+.special-gallery__polaroid.is-changing {
+  opacity: 0 !important;
+  transform: translateY(5px) scale(.975) rotate(-.6deg) !important;
+}
+
+.special-gallery__polaroid:not(.is-changing) {
+  opacity: 1;
+}
+
+.special-gallery__preview {
+  pointer-events: none !important;
+}
+
+@media (max-width: 390px) {
+  .message-tree__stage {
+    width: min(92vw, 365px);
+  }
+
+  .special-gallery__polaroid.is-portrait {
+    width: min(52vw, 190px) !important;
+  }
+
+  .special-gallery__polaroid.is-landscape {
+    width: min(76vw, 270px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .message-tree__reserved,
+  .message-tree__ornament.is-new,
+  .message-tree__ornament.is-new img,
+  .message-tree__sparkles i {
+    animation: none !important;
+  }
 }
