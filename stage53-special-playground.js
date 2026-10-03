@@ -1070,10 +1070,32 @@
   function renderSpecialGalleryCollection(highlightIndex = -1) {
     const grid = $('#specialGalleryCollectionGrid');
     const count = $('#specialGalleryCollectionCount');
+    const collection = $('.special-gallery-collection');
+    const collectedCount = specialGalleryCollection.size;
 
     if (count) {
       count.textContent =
-        String(specialGalleryCollection.size).padStart(2, '0');
+        String(collectedCount).padStart(2, '0');
+    }
+
+    if (collection) {
+      collection.classList.toggle('is-tier-10', collectedCount >= 10);
+      collection.classList.toggle('is-tier-20', collectedCount >= 20);
+      collection.classList.toggle('is-tier-30', collectedCount >= 30);
+
+      if (
+        highlightIndex >= 0 &&
+        (collectedCount === 10 || collectedCount === 20)
+      ) {
+        collection.classList.remove('is-milestone-hit');
+        void collection.offsetWidth;
+        collection.classList.add('is-milestone-hit');
+
+        window.clearTimeout(renderSpecialGalleryCollection.milestoneTimer);
+        renderSpecialGalleryCollection.milestoneTimer = window.setTimeout(() => {
+          collection.classList.remove('is-milestone-hit');
+        }, 1350);
+      }
     }
 
     if (!grid) return;
