@@ -1074,8 +1074,12 @@
     grid.textContent = '';
 
     for (let index = 0; index < SPECIAL_GALLERY_LIMIT; index += 1) {
-      const slot = document.createElement('div');
       const collected = specialGalleryCollection.has(index);
+      const slot = document.createElement(collected ? 'button' : 'div');
+
+      if (collected) {
+        slot.type = 'button';
+      }
 
       slot.className = 'special-gallery-collection__slot';
       slot.classList.toggle('is-collected', collected);
@@ -1084,6 +1088,20 @@
         'aria-label',
         `CUT ${String(index + 1).padStart(2, '0')} ${collected ? '수집 완료' : '미수집'}`
       );
+
+      if (collected && specialGalleryImages[index]) {
+        const thumb = document.createElement('span');
+        thumb.className = 'special-gallery-collection__thumb';
+        thumb.style.backgroundImage =
+          'url("' +
+          String(specialGalleryImages[index]).replace(/"/g, '%22') +
+          '")';
+        slot.append(thumb);
+
+        slot.addEventListener('click', () => {
+          showSpecialGalleryImage(index);
+        });
+      }
 
       const number = document.createElement('span');
       number.className = 'special-gallery-collection__number';
