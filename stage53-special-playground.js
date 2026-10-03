@@ -1044,39 +1044,48 @@
     const polaroid = $('.special-gallery__polaroid');
     const src = specialGalleryImages[index];
 
-    if (!preview || !polaroid || !src) return;
+    if (!preview || !polaroid || !src) {
+      return Promise.resolve(false);
+    }
 
-    const image = new Image();
-    image.decoding = 'async';
+    return new Promise(resolve => {
+      const image = new Image();
+      image.decoding = 'async';
 
-    image.onload = () => {
-      const landscape = image.naturalWidth > image.naturalHeight;
+      image.onload = () => {
+        const landscape = image.naturalWidth > image.naturalHeight;
 
-      // Preload first. Fade only when the next image is actually ready.
-      polaroid.classList.add('is-changing');
+        // Preload first. Fade only when the next image is actually ready.
+        polaroid.classList.add('is-changing');
 
-      window.setTimeout(() => {
-        polaroid.classList.toggle('is-landscape', landscape);
-        polaroid.classList.toggle('is-portrait', !landscape);
+        window.setTimeout(() => {
+          polaroid.classList.toggle('is-landscape', landscape);
+          polaroid.classList.toggle('is-portrait', !landscape);
 
-        preview.textContent = '';
-        preview.classList.remove('is-empty');
-        preview.style.backgroundImage =
-          'url("' + String(src).replace(/"/g, '%22') + '")';
+          preview.textContent = '';
+          preview.classList.remove('is-empty');
+          preview.style.backgroundImage =
+            'url("' + String(src).replace(/"/g, '%22') + '")';
 
-        requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            polaroid.classList.remove('is-changing');
+            requestAnimationFrame(() => {
+              polaroid.classList.remove('is-changing');
+
+              window.setTimeout(() => {
+                resolve(true);
+              }, 230);
+            });
           });
-        });
-      }, 190);
-    };
+        }, 190);
+      };
 
-    image.onerror = () => {
-      polaroid.classList.remove('is-changing');
-    };
+      image.onerror = () => {
+        polaroid.classList.remove('is-changing');
+        resolve(false);
+      };
 
-    image.src = src;
+      image.src = src;
+    });
   }
 
   function initSpecialGallery() {
@@ -1084,7 +1093,7 @@
 
     if (!button) return;
 
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       if (!specialGalleryImages.length || button.disabled) return;
 
       let index = 0;
@@ -1096,13 +1105,28 @@
       }
 
       lastSpecialGalleryIndex = index;
-      showSpecialGalleryImage(index);
 
-      button.classList.add('is-picked');
+      button.disabled = true;
+      button.classList.add('is-drawing');
+      button.classList.remove('is-picked');
 
-      window.setTimeout(() => {
-        button.classList.remove('is-picked');
-      }, 420);
+      const minimumHeartbeat = new Promise(resolve => {
+        window.setTimeout(resolve, 920);
+      });
+
+      const reveal = showSpecialGalleryImage(index);
+
+      try {
+        await Promise.all([minimumHeartbeat, reveal]);
+      } finally {
+        button.classList.remove('is-drawing');
+        button.classList.add('is-picked');
+        button.disabled = false;
+
+        window.setTimeout(() => {
+          button.classList.remove('is-picked');
+        }, 360);
+      }
     });
   }
 
