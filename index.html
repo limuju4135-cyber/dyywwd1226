@@ -78,7 +78,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage73-curtain-gauge-only">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage74-polaroid-heartbeat">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage75-normal-quick-nav">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -424,6 +424,13 @@
       <div class="hero__overlay"></div>
       <div class="hero__photo hero__photo--protected" id="heroPhoto" role="img" aria-label="웨딩 사진" data-media-source="r2"></div>
       <div class="hero__touch-shield" id="heroTouchShield" aria-hidden="true"></div>
+
+      <nav class="hero__quick-nav" aria-label="초대장 바로가기">
+        <button type="button" class="hero__quick-btn" data-scroll-target="contact">연락처</button>
+        <button type="button" class="hero__quick-btn" data-scroll-target="gallery">갤러리</button>
+        <button type="button" class="hero__quick-btn" data-scroll-target="location">오시는 길</button>
+      </nav>
+
       <div class="hero__special-badge" aria-hidden="true">
         <span class="hero__special-badge-mark">✦</span>
         <span>SPECIAL INVITATION</span>
