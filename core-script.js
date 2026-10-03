@@ -112,6 +112,38 @@
     }));
   }
 
+  function isIOSWebKit() {
+    const ua = navigator.userAgent || '';
+    const iOSDevice = /iPhone|iPad|iPod/i.test(ua);
+    const iPadDesktopMode =
+      navigator.platform === 'MacIntel' &&
+      Number(navigator.maxTouchPoints || 0) > 1;
+
+    return iOSDevice || iPadDesktopMode;
+  }
+
+  function scheduleIOSChromeHandoff(mode) {
+    if (!isIOSWebKit()) return;
+    if (window.__WEDDING_BOOT_MODE) return;
+    if (window.__WEDDING_CHROME_HANDOFF_PENDING) return;
+    if (mode !== 'normal' && mode !== 'special') return;
+
+    try {
+      sessionStorage.setItem('wedding-one-shot-mode', mode);
+    } catch {
+      return;
+    }
+
+    window.__WEDDING_CHROME_HANDOFF_PENDING = true;
+
+    // Allow the curtain transition to start first, then reload once.
+    // The head prepaint script consumes the mode before Safari paints
+    // its top/bottom browser chrome.
+    window.setTimeout(() => {
+      window.location.reload();
+    }, mode === 'special' ? 760 : 620);
+  }
+
   function initMeta() {
     if (!CONFIG.meta) return;
     document.title = CONFIG.meta.title || document.title;
@@ -146,6 +178,32 @@
     let activePointerId = null;
     let specialTriggered = false;
     let invitationOpening = false;
+
+    const bootMode =
+      window.__WEDDING_BOOT_MODE === 'special'
+        ? 'special'
+        : window.__WEDDING_BOOT_MODE === 'normal'
+          ? 'normal'
+          : '';
+
+    if (bootMode) {
+      invitationMode = bootMode;
+
+      document.body.classList.toggle('special-mode', bootMode === 'special');
+      document.body.classList.toggle('normal-mode', bootMode === 'normal');
+      document.documentElement.classList.toggle('special-mode', bootMode === 'special');
+      document.documentElement.classList.toggle('normal-mode', bootMode === 'normal');
+
+      applyBrowserTheme(bootMode);
+
+      curtain.classList.add('is-open', 'is-hidden');
+      curtain.classList.remove('is-special-unlocking');
+      document.body.classList.remove('no-scroll');
+      names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
+
+      window.__WEDDING_BOOT_MODE = '';
+      return;
+    }
 
     invitationMode = 'idle';
     applyBrowserTheme('idle');
@@ -216,6 +274,8 @@
       document.documentElement.classList.toggle('special-mode', invitationMode === 'special');
       document.documentElement.classList.toggle('normal-mode', invitationMode !== 'special');
       applyBrowserTheme(invitationMode);
+
+      scheduleIOSChromeHandoff(invitationMode);
 
       curtain.classList.add('is-open');
       document.body.classList.remove('no-scroll');
