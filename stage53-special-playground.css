@@ -1684,3 +1684,44 @@ body.normal-mode #mainContent {
 body.special-mode #mainContent {
   background: #F8F3EA !important;
 }
+
+
+/* ============================================================
+   STAGE 67 — MODE-SPECIFIC SAFARI 26 TINT
+   Safari 26 samples BODY when no qualifying edge-fixed element wins.
+   ============================================================ */
+html,
+body,
+html.normal-mode,
+body.normal-mode {
+  --browser-chrome-color: #BE858D !important;
+  background-color: #BE858D !important;
+}
+
+html.special-mode,
+body.special-mode {
+  --browser-chrome-color: #A6B09F !important;
+  background-color: #A6B09F !important;
+}
+
+/* No synthetic top/bottom color strips. */
+html::before,
+html::after,
+body::before,
+body::after,
+body.normal-mode::before,
+body.normal-mode::after,
+body.special-mode::before,
+body.special-mode::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Content paper remains independent of browser tint. */
+body.normal-mode #mainContent {
+  background: #FFFAFA !important;
+}
+
+body.special-mode #mainContent {
+  background: #F8F3EA !important;
+}
