@@ -43,12 +43,7 @@
 }
 
 #curtainBtn.is-long-pressing {
-  transform-origin: 50% 50%;
-  animation:
-    curtain-heartbeat
-    .92s
-    ease-in-out
-    infinite !important;
+  animation: none !important;
 }
 
 #curtainBtn.is-special-unlocked::before {
@@ -398,47 +393,5 @@ body.special-mode #galleryRandomBtn:not([hidden])::after {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, 0);
-  }
-}
-
-
-/* ============================================================
-   STAGE 70 — HEARTBEAT HOLD
-   Keep the 2s bottom gauge, restore the old "두근두근" button pulse.
-   ============================================================ */
-@keyframes curtain-heartbeat {
-  0%,
-  16%,
-  100% {
-    transform: scale(1);
-  }
-
-  5% {
-    transform: scale(1.032);
-  }
-
-  10% {
-    transform: scale(.992);
-  }
-
-  22% {
-    transform: scale(1.048);
-  }
-
-  30% {
-    transform: scale(1);
-  }
-}
-
-/* A little more depth without turning the whole button into a fill animation. */
-#curtainBtn.is-long-pressing {
-  box-shadow:
-    0 0 0 1px rgba(226,197,144,.12),
-    0 0 22px rgba(226,197,144,.18) !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #curtainBtn.is-long-pressing {
-    animation: none !important;
   }
 }
