@@ -78,7 +78,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage73-curtain-gauge-only">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage77-thumbnail-collection">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage78-memory-cut">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -685,6 +685,38 @@
             aria-live="polite"
           ></p>
         </div>
+
+        <section
+          class="special-memory-game"
+          id="specialMemoryGame"
+          aria-label="메모리 컷 미니게임"
+          aria-hidden="true"
+          hidden
+        >
+          <div class="special-memory-game__unlock-mark" aria-hidden="true">✦</div>
+          <p class="special-memory-game__eyebrow">UNLOCKED</p>
+          <h3 class="special-memory-game__title">MEMORY CUT</h3>
+          <p class="special-memory-game__desc">같은 비하인드컷 두 장을 찾아보세요.</p>
+
+          <div class="special-memory-game__hud" aria-live="polite">
+            <span>MATCH <strong id="specialMemoryMatches">0</strong> / 6</span>
+            <span>MOVES <strong id="specialMemoryMoves">0</strong></span>
+          </div>
+
+          <div class="special-memory-board" id="specialMemoryBoard"></div>
+
+          <p
+            class="special-memory-game__status"
+            id="specialMemoryStatus"
+            aria-live="polite"
+          ></p>
+
+          <button
+            type="button"
+            class="special-memory-game__start"
+            id="specialMemoryStart"
+          >게임 시작</button>
+        </section>
       </div>
     </section>
 
@@ -940,6 +972,6 @@
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage77-thumbnail-collection"></script>
+  <script src="stage53-special-playground.js?v=stage78-memory-cut"></script>
 </body>
 </html>
