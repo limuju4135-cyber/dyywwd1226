@@ -61,7 +61,7 @@
           ? 'normal'
           : 'idle';
 
-    const color = '#F8F3EA';
+    const color = '#BE858D';
     const root = document.documentElement;
     const body = document.body;
 
