@@ -128,19 +128,13 @@
     if (window.__WEDDING_CHROME_HANDOFF_PENDING) return;
     if (mode !== 'normal' && mode !== 'special') return;
 
-    try {
-      sessionStorage.setItem('wedding-one-shot-mode', mode);
-    } catch {
-      return;
-    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('__wmode', mode);
 
     window.__WEDDING_CHROME_HANDOFF_PENDING = true;
 
-    // Allow the curtain transition to start first, then reload once.
-    // The head prepaint script consumes the mode before Safari paints
-    // its top/bottom browser chrome.
     window.setTimeout(() => {
-      window.location.reload();
+      window.location.replace(url.toString());
     }, mode === 'special' ? 760 : 620);
   }
 
@@ -202,6 +196,17 @@
       names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
 
       window.__WEDDING_BOOT_MODE = '';
+
+      try {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('__wmode');
+        window.history.replaceState(
+          window.history.state,
+          '',
+          cleanUrl.pathname + cleanUrl.search + cleanUrl.hash
+        );
+      } catch {}
+
       return;
     }
 
