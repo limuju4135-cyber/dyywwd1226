@@ -227,11 +227,11 @@
 
       specialTriggered = true;
       invitationMode = 'special';
+
       document.body.classList.add('special-mode');
       document.body.classList.remove('normal-mode');
       document.documentElement.classList.add('special-mode');
       document.documentElement.classList.remove('normal-mode');
-      applyBrowserTheme('special');
 
       clearHoldState();
       btn.classList.add('is-special-unlocked');
@@ -243,11 +243,27 @@
       }
 
       buildSpecialParticles();
+
+      // First change the actual fixed curtain to the SPECIAL palette.
+      // Safari 26 samples visible edge elements when deciding toolbar tint,
+      // so request the browser tint only after this repaint has happened.
       curtain.classList.add('is-special-unlocking');
 
       if (specialFx) {
         specialFx.setAttribute('aria-hidden', 'false');
       }
+
+      void curtain.offsetHeight;
+
+      requestAnimationFrame(() => {
+        applyBrowserTheme('special');
+
+        // One extra paint boundary improves Safari's toolbar resampling
+        // without any reload or visible flash.
+        requestAnimationFrame(() => {
+          applyBrowserTheme('special');
+        });
+      });
 
       window.setTimeout(() => {
         openInvitation('special');
