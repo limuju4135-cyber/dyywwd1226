@@ -78,7 +78,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage73-curtain-gauge-only">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage79-milestones">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage80-collection-manager">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -674,7 +674,12 @@
 
         <div class="special-gallery-collection" aria-label="비하인드컷 컬렉션">
           <div class="special-gallery-collection__head">
-            <span class="special-gallery-collection__label">BEHIND CUT COLLECTION</span>
+            <button
+              type="button"
+              class="special-gallery-collection__label"
+              id="specialGalleryCollectionLabel"
+              aria-label="비하인드컷 컬렉션"
+            >BEHIND CUT COLLECTION</button>
             <span class="special-gallery-collection__progress">
               <strong id="specialGalleryCollectionCount">00</strong>
               <span>/ 30</span>
@@ -685,6 +690,54 @@
             id="specialGalleryCollectionGrid"
             aria-live="polite"
           ></div>
+        </div>
+
+        <div
+          class="special-collection-manager"
+          id="specialCollectionManager"
+          aria-hidden="true"
+          hidden
+        >
+          <button
+            type="button"
+            class="special-collection-manager__backdrop"
+            id="specialCollectionManagerBackdrop"
+            aria-label="닫기"
+          ></button>
+          <div
+            class="special-collection-manager__panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="specialCollectionManagerTitle"
+          >
+            <p class="special-collection-manager__eyebrow">COLLECTION CONTROL</p>
+            <h3
+              class="special-collection-manager__title"
+              id="specialCollectionManagerTitle"
+            >비하인드 수집 상태</h3>
+            <p class="special-collection-manager__desc">
+              이 기기에 저장된 수집 기록만 변경됩니다.
+            </p>
+
+            <div class="special-collection-manager__actions">
+              <button
+                type="button"
+                class="special-collection-manager__action special-collection-manager__action--reset"
+                id="specialCollectionReset"
+              >초기화</button>
+              <button
+                type="button"
+                class="special-collection-manager__action special-collection-manager__action--unlock"
+                id="specialCollectionUnlockAll"
+              >모두 해금</button>
+            </div>
+
+            <button
+              type="button"
+              class="special-collection-manager__close"
+              id="specialCollectionManagerClose"
+            >취소</button>
+          </div>
         </div>
 
         <section
@@ -973,6 +1026,6 @@
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage79-milestones"></script>
+  <script src="stage53-special-playground.js?v=stage80-collection-manager"></script>
 </body>
 </html>
