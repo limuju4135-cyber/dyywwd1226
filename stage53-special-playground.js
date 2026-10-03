@@ -1520,19 +1520,29 @@
   }
 
   function initSpecialCollectionManager() {
-    const label = $('#specialGalleryCollectionLabel');
+    const title = $('#specialGalleryTitle');
     const modal = $('#specialCollectionManager');
     const reset = $('#specialCollectionReset');
     const unlock = $('#specialCollectionUnlockAll');
     const close = $('#specialCollectionManagerClose');
     const backdrop = $('#specialCollectionManagerBackdrop');
 
-    if (!label || !modal) return;
+    if (!title || !modal) return;
 
-    label.addEventListener('click', () => {
+    // Same hidden 5-tap behavior as the message admin title.
+    document.addEventListener('pointerdown', event => {
+      if (!isMobileSpecial()) return;
+
+      const target =
+        event.target instanceof Element
+          ? event.target.closest('#specialGalleryTitle')
+          : null;
+
+      if (!target) return;
+
       specialCollectionManagerTapCount += 1;
 
-      window.clearTimeout(specialCollectionManagerTapTimer);
+      clearTimeout(specialCollectionManagerTapTimer);
       specialCollectionManagerTapTimer = window.setTimeout(() => {
         specialCollectionManagerTapCount = 0;
       }, 7000);
@@ -1540,9 +1550,9 @@
       if (specialCollectionManagerTapCount < 5) return;
 
       specialCollectionManagerTapCount = 0;
-      window.clearTimeout(specialCollectionManagerTapTimer);
+      clearTimeout(specialCollectionManagerTapTimer);
       openSpecialCollectionManager();
-    });
+    }, true);
 
     reset?.addEventListener('click', resetSpecialGalleryCollection);
     unlock?.addEventListener('click', unlockAllSpecialGalleryCollection);
