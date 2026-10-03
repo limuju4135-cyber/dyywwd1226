@@ -1864,3 +1864,24 @@ body.special-mode #curtain.curtain.is-special-unlocking .curtain__right {
       both !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 75 — RESTORE NORMAL HERO QUICK NAV
+   Normal invitation keeps the original three shortcuts.
+   SPECIAL invitation intentionally hides them.
+   ============================================================ */
+body.normal-mode #hero .hero__quick-nav {
+  display: flex !important;
+}
+
+body.normal-mode #hero .hero__quick-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+body.special-mode #hero .hero__quick-nav,
+body.special-mode #hero .hero__quick-btn {
+  display: none !important;
+}
