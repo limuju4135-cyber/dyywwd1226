@@ -67,6 +67,8 @@
   let specialGalleryCollection = new Set();
   let specialGalleryHistory = [];
   let specialGalleryDuplicateStreak = 0;
+  let specialCollectionManagerTapCount = 0;
+  let specialCollectionManagerTapTimer = null;
 
   let specialMemoryCards = [];
   let specialMemoryFirstCard = null;
@@ -1399,6 +1401,156 @@
   }
 
   /* ----------------------------------------------------------
+     COLLECTION MANAGER — hidden 5-tap control
+     ---------------------------------------------------------- */
+  function openSpecialCollectionManager() {
+    const modal = $('#specialCollectionManager');
+    if (!modal) return;
+
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+
+    requestAnimationFrame(() => {
+      modal.classList.add('is-open');
+    });
+  }
+
+  function closeSpecialCollectionManager() {
+    const modal = $('#specialCollectionManager');
+    if (!modal) return;
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+
+    window.setTimeout(() => {
+      modal.hidden = true;
+    }, 180);
+  }
+
+  function resetSpecialMemoryGameUi() {
+    const board = $('#specialMemoryBoard');
+    const status = $('#specialMemoryStatus');
+    const start = $('#specialMemoryStart');
+
+    board?.replaceChildren();
+    board?.classList.remove('is-complete');
+
+    specialMemoryCards = [];
+    specialMemoryMatchedPairs = 0;
+    specialMemoryMoves = 0;
+    resetSpecialMemorySelection();
+    updateSpecialMemoryHud();
+
+    if (status) {
+      status.textContent = '';
+      status.classList.remove('is-complete');
+    }
+
+    if (start) {
+      start.textContent = '게임 시작';
+    }
+  }
+
+  function resetSpecialGalleryPreview() {
+    const preview = $('#specialGalleryPreview');
+    const polaroid = $('.special-gallery__polaroid');
+    const feedback = $('#specialGalleryCollectionFeedback');
+
+    if (preview) {
+      preview.style.backgroundImage = '';
+      preview.classList.add('is-empty');
+      preview.textContent = '';
+
+      const placeholder = document.createElement('span');
+      placeholder.className = 'special-gallery__placeholder';
+      placeholder.setAttribute('aria-hidden', 'true');
+      placeholder.textContent = '?';
+      preview.append(placeholder);
+    }
+
+    if (polaroid) {
+      polaroid.classList.remove(
+        'is-landscape',
+        'is-changing',
+        'is-heartbeating'
+      );
+      polaroid.classList.add('is-portrait');
+    }
+
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.classList.remove('is-new', 'is-duplicate');
+    }
+  }
+
+  function resetSpecialGalleryCollection() {
+    specialGalleryCollection = new Set();
+    specialGalleryHistory = [];
+    specialGalleryDuplicateStreak = 0;
+    lastSpecialGalleryIndex = -1;
+
+    try {
+      localStorage.removeItem(SPECIAL_GALLERY_STORAGE_KEY);
+    } catch (error) {
+      console.warn('[Special gallery collection reset]', error);
+    }
+
+    renderSpecialGalleryCollection();
+    resetSpecialGalleryPreview();
+    resetSpecialMemoryGameUi();
+    syncSpecialMemoryGameUnlock(false);
+    closeSpecialCollectionManager();
+  }
+
+  function unlockAllSpecialGalleryCollection() {
+    if (specialGalleryImages.length < SPECIAL_GALLERY_LIMIT) return;
+
+    specialGalleryCollection = new Set(
+      Array.from({ length: SPECIAL_GALLERY_LIMIT }, (_, index) => index)
+    );
+    specialGalleryHistory = [];
+    specialGalleryDuplicateStreak = 0;
+    lastSpecialGalleryIndex = -1;
+
+    saveSpecialGalleryCollectionState();
+    renderSpecialGalleryCollection();
+    resetSpecialMemoryGameUi();
+    syncSpecialMemoryGameUnlock(true);
+    closeSpecialCollectionManager();
+  }
+
+  function initSpecialCollectionManager() {
+    const label = $('#specialGalleryCollectionLabel');
+    const modal = $('#specialCollectionManager');
+    const reset = $('#specialCollectionReset');
+    const unlock = $('#specialCollectionUnlockAll');
+    const close = $('#specialCollectionManagerClose');
+    const backdrop = $('#specialCollectionManagerBackdrop');
+
+    if (!label || !modal) return;
+
+    label.addEventListener('click', () => {
+      specialCollectionManagerTapCount += 1;
+
+      window.clearTimeout(specialCollectionManagerTapTimer);
+      specialCollectionManagerTapTimer = window.setTimeout(() => {
+        specialCollectionManagerTapCount = 0;
+      }, 7000);
+
+      if (specialCollectionManagerTapCount < 5) return;
+
+      specialCollectionManagerTapCount = 0;
+      window.clearTimeout(specialCollectionManagerTapTimer);
+      openSpecialCollectionManager();
+    });
+
+    reset?.addEventListener('click', resetSpecialGalleryCollection);
+    unlock?.addEventListener('click', unlockAllSpecialGalleryCollection);
+    close?.addEventListener('click', closeSpecialCollectionManager);
+    backdrop?.addEventListener('click', closeSpecialCollectionManager);
+  }
+
+  /* ----------------------------------------------------------
      MEMORY CUT — unlocked after 30 / 30 collection
      ---------------------------------------------------------- */
   function specialMemoryGameIsUnlocked() {
@@ -1629,6 +1781,7 @@
     initMessageTreeInteraction();
     initSpecialGallery();
     initSpecialMemoryGame();
+    initSpecialCollectionManager();
     syncSpecialModeData();
 
     window.addEventListener('wedding-mode-change', syncSpecialModeData);
