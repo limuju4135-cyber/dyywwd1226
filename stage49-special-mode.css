@@ -265,3 +265,13 @@ body.special-mode #snowCanvas {
     transform: none;
   }
 }
+
+
+/* Stage 67: Safari 26 browser-tint cleanup */
+.special-unlock-fx[aria-hidden="true"] {
+  display: none !important;
+}
+
+.special-unlock-fx[aria-hidden="false"] {
+  display: grid !important;
+}
