@@ -192,6 +192,7 @@
 
       curtain.classList.add('is-open', 'is-hidden');
       curtain.classList.remove('is-special-unlocking');
+      curtain.style.display = 'none';
       document.body.classList.remove('no-scroll');
       names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
 
@@ -211,6 +212,7 @@
     }
 
     invitationMode = 'idle';
+    curtain.style.display = '';
     applyBrowserTheme('idle');
     document.body.classList.remove('special-mode', 'normal-mode');
     document.documentElement.classList.remove('special-mode', 'normal-mode');
@@ -288,6 +290,7 @@
       window.setTimeout(() => {
         curtain.classList.add('is-hidden');
         curtain.classList.remove('is-special-unlocking');
+        curtain.style.display = 'none';
       }, 2200);
     }
 
