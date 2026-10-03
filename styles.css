@@ -21,6 +21,7 @@ body {
 
 /* 원본 낙화는 숨기고, 새 눈송이 캔버스를 사용 */
 .petal-canvas {
+  display: none !important;
   opacity: 0 !important;
 }
 .snow-canvas {
