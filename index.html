@@ -3,47 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <script id="wedding-mode-prepaint">
-    (() => {
-      const url = new URL(window.location.href);
-      const requestedMode = url.searchParams.get('__wmode');
-      const mode =
-        requestedMode === 'special'
-          ? 'special'
-          : requestedMode === 'normal'
-            ? 'normal'
-            : 'idle';
+  <meta name="theme-color" content="#F8F3EA">
 
-      const colors = {
-        idle: '#FFFFFF',
-        normal: '#BE858D',
-        special: '#A6B09F'
-      };
-
-      const color = colors[mode];
-      const root = document.documentElement;
-
-      window.__WEDDING_BOOT_MODE =
-        mode === 'idle' ? '' : mode;
-
-      root.dataset.invitationMode = mode;
-      root.style.setProperty('--browser-chrome-color', color);
-      root.style.setProperty('background-color', color, 'important');
-
-      // Create the theme-color meta during the first head parse, before
-      // Safari has painted its top/bottom chrome.
-      document.write(
-        '<meta name="theme-color" content="' + color + '">'
-      );
-
-      // Also make the earliest possible document background match the mode.
-      document.write(
-        '<style id="wedding-prepaint-color">' +
-        'html,body{background-color:' + color + '!important;}' +
-        '</style>'
-      );
-    })();
-  </script>
   <meta name="color-scheme" content="light">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="format-detection" content="telephone=no">
@@ -117,7 +78,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage50-copy-initial-hide">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage64-remove-fixed-curtain">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage65-neutral-chrome-no-flash">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -943,7 +904,7 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage49-special-mode"></script>
-  <script src="core-script.js?v=stage64-remove-fixed-curtain"></script>
+  <script src="core-script.js?v=stage65-neutral-chrome-no-flash"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage57-falling-snow-only-2"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
