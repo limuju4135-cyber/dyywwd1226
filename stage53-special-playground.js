@@ -1090,8 +1090,9 @@
 
   function initSpecialGallery() {
     const button = $('#specialGalleryDrawBtn');
+    const polaroid = $('.special-gallery__polaroid');
 
-    if (!button) return;
+    if (!button || !polaroid) return;
 
     button.addEventListener('click', async () => {
       if (!specialGalleryImages.length || button.disabled) return;
@@ -1107,25 +1108,33 @@
       lastSpecialGalleryIndex = index;
 
       button.disabled = true;
-      button.classList.add('is-drawing');
       button.classList.remove('is-picked');
+      polaroid.classList.remove('is-changing', 'is-heartbeating');
 
-      const minimumHeartbeat = new Promise(resolve => {
-        window.setTimeout(resolve, 920);
+      // The anticipation lives on the photo card itself:
+      // two beats, a brief pause, then reveal the next image.
+      void polaroid.offsetWidth;
+      polaroid.classList.add('is-heartbeating');
+
+      const heartbeat = new Promise(resolve => {
+        window.setTimeout(() => {
+          polaroid.classList.remove('is-heartbeating');
+          resolve();
+        }, 980);
       });
 
-      const reveal = showSpecialGalleryImage(index);
+      await heartbeat;
 
       try {
-        await Promise.all([minimumHeartbeat, reveal]);
+        await showSpecialGalleryImage(index);
       } finally {
-        button.classList.remove('is-drawing');
+        polaroid.classList.remove('is-heartbeating');
         button.classList.add('is-picked');
         button.disabled = false;
 
         window.setTimeout(() => {
           button.classList.remove('is-picked');
-        }, 360);
+        }, 320);
       }
     });
   }
