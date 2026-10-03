@@ -1725,3 +1725,36 @@ body.normal-mode #mainContent {
 body.special-mode #mainContent {
   background: #F8F3EA !important;
 }
+
+
+/* ============================================================
+   STAGE 69 — SPECIAL CURTAIN EARLY SAFARI TINT
+   Remove viewport-edge fixed layers during the SPECIAL curtain itself.
+   ============================================================ */
+body.special-mode #curtain.curtain.is-special-unlocking {
+  position: absolute !important;
+  inset: 0 auto auto 0 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100svh !important;
+  max-height: none !important;
+}
+
+body.special-mode #curtain.curtain.is-special-unlocking .special-unlock-fx {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Keep all SPECIAL unlock children contained inside the absolute curtain. */
+body.special-mode #curtain.curtain.is-special-unlocking .curtain__left,
+body.special-mode #curtain.curtain.is-special-unlocking .curtain__right {
+  top: 0 !important;
+  bottom: 0 !important;
+}
+
+/* The retired petal canvas must never participate in Safari edge sampling. */
+#petalCanvas {
+  display: none !important;
+}
