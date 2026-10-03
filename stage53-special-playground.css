@@ -1612,3 +1612,60 @@ body.normal-mode #mainContent {
 body.special-mode #mainContent {
   background: #F8F3EA !important;
 }
+
+
+/* ============================================================
+   STAGE 65 — STATIC NEUTRAL BROWSER CHROME / NO MODE FLASH
+   Browser top/bottom tint never changes between modes.
+   ============================================================ */
+html,
+html.normal-mode,
+html.special-mode,
+body,
+body.normal-mode,
+body.special-mode {
+  --browser-chrome-color: #F8F3EA !important;
+  background-color: #F8F3EA !important;
+}
+
+/* Safari may sample the very first/last viewport pixels for toolbar tint.
+   Keep those pixels permanently neutral without changing invitation content. */
+html::before,
+html::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 2147483647;
+  height: 1px;
+  background: #F8F3EA !important;
+  pointer-events: none;
+}
+
+html::before {
+  top: 0;
+}
+
+html::after {
+  bottom: 0;
+}
+
+/* Never reintroduce mode-colored fake safe-area layers. */
+body::before,
+body::after,
+body.normal-mode::before,
+body.normal-mode::after,
+body.special-mode::before,
+body.special-mode::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Invitation surfaces remain unchanged. */
+body.normal-mode #mainContent {
+  background: #FFFAFA !important;
+}
+
+body.special-mode #mainContent {
+  background: #F8F3EA !important;
+}
