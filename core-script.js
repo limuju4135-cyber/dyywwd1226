@@ -61,14 +61,7 @@
           ? 'normal'
           : 'idle';
 
-    const palette = {
-      idle: '#FFFFFF',
-      normal: '#BE858D',
-      special: '#A6B09F'
-    };
-
-    const color = palette[resolvedMode];
-
+    const color = '#F8F3EA';
     const root = document.documentElement;
     const body = document.body;
 
@@ -90,19 +83,8 @@
       document.head.appendChild(meta);
     }
 
+    // Keep browser chrome static across idle / normal / special.
     meta.setAttribute('content', color);
-
-    // Replacing the node forces Chrome/Safari to reconsider the runtime tint.
-    // This is especially useful when normal -> special changes without reload.
-    try {
-      const refreshed = meta.cloneNode(true);
-      refreshed.setAttribute('content', color);
-      meta.replaceWith(refreshed);
-    } catch {}
-
-    // Force a style flush after the class/background transition so mobile
-    // browsers sample the new root color rather than the previous mode.
-    void root.offsetHeight;
 
     window.dispatchEvent(new CustomEvent('wedding-mode-change', {
       detail: {
@@ -110,32 +92,6 @@
         browserColor: color
       }
     }));
-  }
-
-  function isIOSWebKit() {
-    const ua = navigator.userAgent || '';
-    const iOSDevice = /iPhone|iPad|iPod/i.test(ua);
-    const iPadDesktopMode =
-      navigator.platform === 'MacIntel' &&
-      Number(navigator.maxTouchPoints || 0) > 1;
-
-    return iOSDevice || iPadDesktopMode;
-  }
-
-  function scheduleIOSChromeHandoff(mode) {
-    if (!isIOSWebKit()) return;
-    if (window.__WEDDING_BOOT_MODE) return;
-    if (window.__WEDDING_CHROME_HANDOFF_PENDING) return;
-    if (mode !== 'normal' && mode !== 'special') return;
-
-    const url = new URL(window.location.href);
-    url.searchParams.set('__wmode', mode);
-
-    window.__WEDDING_CHROME_HANDOFF_PENDING = true;
-
-    window.setTimeout(() => {
-      window.location.replace(url.toString());
-    }, mode === 'special' ? 760 : 620);
   }
 
   function initMeta() {
@@ -172,44 +128,6 @@
     let activePointerId = null;
     let specialTriggered = false;
     let invitationOpening = false;
-
-    const bootMode =
-      window.__WEDDING_BOOT_MODE === 'special'
-        ? 'special'
-        : window.__WEDDING_BOOT_MODE === 'normal'
-          ? 'normal'
-          : '';
-
-    if (bootMode) {
-      invitationMode = bootMode;
-
-      document.body.classList.toggle('special-mode', bootMode === 'special');
-      document.body.classList.toggle('normal-mode', bootMode === 'normal');
-      document.documentElement.classList.toggle('special-mode', bootMode === 'special');
-      document.documentElement.classList.toggle('normal-mode', bootMode === 'normal');
-
-      applyBrowserTheme(bootMode);
-
-      curtain.classList.add('is-open', 'is-hidden');
-      curtain.classList.remove('is-special-unlocking');
-      curtain.style.display = 'none';
-      document.body.classList.remove('no-scroll');
-      names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
-
-      window.__WEDDING_BOOT_MODE = '';
-
-      try {
-        const cleanUrl = new URL(window.location.href);
-        cleanUrl.searchParams.delete('__wmode');
-        window.history.replaceState(
-          window.history.state,
-          '',
-          cleanUrl.pathname + cleanUrl.search + cleanUrl.hash
-        );
-      } catch {}
-
-      return;
-    }
 
     invitationMode = 'idle';
     curtain.style.display = '';
@@ -281,8 +199,6 @@
       document.documentElement.classList.toggle('special-mode', invitationMode === 'special');
       document.documentElement.classList.toggle('normal-mode', invitationMode !== 'special');
       applyBrowserTheme(invitationMode);
-
-      scheduleIOSChromeHandoff(invitationMode);
 
       curtain.classList.add('is-open');
       document.body.classList.remove('no-scroll');
