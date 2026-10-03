@@ -1572,3 +1572,43 @@ html.special-mode,
 body.special-mode {
   background-color: #A6B09F !important;
 }
+
+
+/* ============================================================
+   STAGE 64 — SAFARI TINT CLEANUP
+   Safari 26 samples fixed elements for browser chrome tint.
+   Keep only the actual document background after mode selection.
+   ============================================================ */
+body.normal-mode::before,
+body.normal-mode::after,
+body.special-mode::before,
+body.special-mode::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Once the opening animation is complete, remove the fixed curtain
+   entirely so WebKit cannot keep sampling the old rose curtain. */
+#curtain.curtain.is-hidden {
+  display: none !important;
+}
+
+/* Mode backgrounds are the only tint source left. */
+html.normal-mode,
+body.normal-mode {
+  background: #BE858D !important;
+}
+
+html.special-mode,
+body.special-mode {
+  background: #A6B09F !important;
+}
+
+/* Invitation paper remains independent from browser chrome. */
+body.normal-mode #mainContent {
+  background: #FFFAFA !important;
+}
+
+body.special-mode #mainContent {
+  background: #F8F3EA !important;
+}
