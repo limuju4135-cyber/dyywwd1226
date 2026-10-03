@@ -58,9 +58,15 @@
     reservedSlot: 0
   };
 
+  const SPECIAL_GALLERY_LIMIT = 30;
+  const SPECIAL_GALLERY_STORAGE_KEY = 'specialBehindCollectionV1';
+
   let specialGalleryImages = [];
   let specialGalleryLoaded = false;
   let lastSpecialGalleryIndex = -1;
+  let specialGalleryCollection = new Set();
+  let specialGalleryHistory = [];
+  let specialGalleryDuplicateStreak = 0;
 
   function isSpecial() {
     return document.body.classList.contains('special-mode');
@@ -997,8 +1003,177 @@
   }
 
   /* ----------------------------------------------------------
-     SPECIAL GALLERY — compact portrait/landscape polaroid
+     SPECIAL GALLERY — 30-cut collection + weighted draw
      ---------------------------------------------------------- */
+  function loadSpecialGalleryCollectionState() {
+    try {
+      const raw = localStorage.getItem(SPECIAL_GALLERY_STORAGE_KEY);
+      if (!raw) return;
+
+      const parsed = JSON.parse(raw);
+      const collected = Array.isArray(parsed?.collected) ? parsed.collected : [];
+      const history = Array.isArray(parsed?.history) ? parsed.history : [];
+
+      specialGalleryCollection = new Set(
+        collected
+          .map(Number)
+          .filter(index =>
+            Number.isInteger(index) &&
+            index >= 0 &&
+            index < SPECIAL_GALLERY_LIMIT
+          )
+      );
+
+      specialGalleryHistory = history
+        .map(Number)
+        .filter(index =>
+          Number.isInteger(index) &&
+          index >= 0 &&
+          index < SPECIAL_GALLERY_LIMIT
+        )
+        .slice(0, 4);
+
+      specialGalleryDuplicateStreak = Math.max(
+        0,
+        Number(parsed?.duplicateStreak) || 0
+      );
+    } catch (error) {
+      console.warn('[Special gallery collection]', error);
+      specialGalleryCollection = new Set();
+      specialGalleryHistory = [];
+      specialGalleryDuplicateStreak = 0;
+    }
+  }
+
+  function saveSpecialGalleryCollectionState() {
+    try {
+      localStorage.setItem(
+        SPECIAL_GALLERY_STORAGE_KEY,
+        JSON.stringify({
+          collected: [...specialGalleryCollection].sort((a, b) => a - b),
+          history: specialGalleryHistory.slice(0, 4),
+          duplicateStreak: specialGalleryDuplicateStreak
+        })
+      );
+    } catch (error) {
+      console.warn('[Special gallery collection save]', error);
+    }
+  }
+
+  function renderSpecialGalleryCollection(highlightIndex = -1) {
+    const grid = $('#specialGalleryCollectionGrid');
+    const count = $('#specialGalleryCollectionCount');
+
+    if (count) {
+      count.textContent =
+        String(specialGalleryCollection.size).padStart(2, '0');
+    }
+
+    if (!grid) return;
+
+    grid.textContent = '';
+
+    for (let index = 0; index < SPECIAL_GALLERY_LIMIT; index += 1) {
+      const slot = document.createElement('div');
+      const collected = specialGalleryCollection.has(index);
+
+      slot.className = 'special-gallery-collection__slot';
+      slot.classList.toggle('is-collected', collected);
+      slot.classList.toggle('is-just-collected', index === highlightIndex);
+      slot.setAttribute(
+        'aria-label',
+        `CUT ${String(index + 1).padStart(2, '0')} ${collected ? '수집 완료' : '미수집'}`
+      );
+
+      const number = document.createElement('span');
+      number.className = 'special-gallery-collection__number';
+      number.textContent = String(index + 1).padStart(2, '0');
+
+      slot.append(number);
+      grid.append(slot);
+    }
+  }
+
+  function updateSpecialGalleryDrawFeedback(isNew) {
+    const feedback = $('#specialGalleryCollectionFeedback');
+    if (!feedback) return;
+
+    feedback.classList.remove('is-new', 'is-duplicate');
+
+    if (isNew) {
+      feedback.textContent = 'NEW CUT · 새로운 순간을 발견했어요';
+      feedback.classList.add('is-new');
+    } else {
+      feedback.textContent = 'AGAIN · 다시 만난 순간이에요';
+      feedback.classList.add('is-duplicate');
+    }
+
+    window.clearTimeout(updateSpecialGalleryDrawFeedback.timer);
+    updateSpecialGalleryDrawFeedback.timer = window.setTimeout(() => {
+      feedback.textContent = '';
+      feedback.classList.remove('is-new', 'is-duplicate');
+    }, 1800);
+  }
+
+  function getUncollectedSpecialGalleryIndices() {
+    return specialGalleryImages
+      .map((_, index) => index)
+      .filter(index => !specialGalleryCollection.has(index));
+  }
+
+  function uncollectedSpecialGalleryWeight() {
+    const collected = specialGalleryCollection.size;
+
+    if (collected <= 10) return 3.2;
+    if (collected <= 22) return 2.7;
+    return 2.2;
+  }
+
+  function weightedRandomSpecialGalleryIndex() {
+    if (!specialGalleryImages.length) return -1;
+
+    const uncollected = getUncollectedSpecialGalleryIndices();
+
+    // Hidden pity rule: after four duplicate draws, guarantee a new cut.
+    if (specialGalleryDuplicateStreak >= 4 && uncollected.length) {
+      return randomFrom(uncollected);
+    }
+
+    const newWeight = uncollectedSpecialGalleryWeight();
+    const weighted = specialGalleryImages.map((_, index) => {
+      let weight = specialGalleryCollection.has(index) ? 1 : newWeight;
+      const historyPosition = specialGalleryHistory.indexOf(index);
+
+      if (historyPosition === 0) {
+        weight = 0;
+      } else if (historyPosition >= 1 && historyPosition <= 3) {
+        weight *= 0.35;
+      }
+
+      return { index, weight };
+    });
+
+    let total = weighted.reduce((sum, item) => sum + item.weight, 0);
+
+    // Single-image / defensive fallback.
+    if (total <= 0) {
+      return Math.floor(Math.random() * specialGalleryImages.length);
+    }
+
+    let cursor = Math.random() * total;
+
+    for (const item of weighted) {
+      cursor -= item.weight;
+      if (cursor <= 0 && item.weight > 0) {
+        return item.index;
+      }
+    }
+
+    return weighted.findLast?.(item => item.weight > 0)?.index ??
+      weighted.filter(item => item.weight > 0).slice(-1)[0]?.index ??
+      0;
+  }
+
   async function loadSpecialGallery() {
     if (specialGalleryLoaded || !isMobileSpecial()) return;
 
@@ -1018,13 +1193,27 @@
       }
 
       const manifest = await privateWedding.getSpecialGalleryManifest();
-      const paths = Array.isArray(manifest.images) ? manifest.images : [];
+      const paths = Array.isArray(manifest.images)
+        ? manifest.images.slice(0, SPECIAL_GALLERY_LIMIT)
+        : [];
 
       specialGalleryImages = paths.map(
         path => privateWedding.mediaUrl(path)
       );
 
       specialGalleryLoaded = true;
+
+      // Keep local collection valid if the manifest temporarily contains fewer cuts.
+      specialGalleryCollection = new Set(
+        [...specialGalleryCollection].filter(
+          index => index < specialGalleryImages.length
+        )
+      );
+      specialGalleryHistory = specialGalleryHistory.filter(
+        index => index < specialGalleryImages.length
+      );
+      saveSpecialGalleryCollectionState();
+      renderSpecialGalleryCollection();
 
       if (!specialGalleryImages.length) {
         button.disabled = true;
@@ -1088,45 +1277,64 @@
     });
   }
 
+  function recordSpecialGalleryDraw(index) {
+    const isNew = !specialGalleryCollection.has(index);
+
+    if (isNew) {
+      specialGalleryCollection.add(index);
+      specialGalleryDuplicateStreak = 0;
+    } else {
+      specialGalleryDuplicateStreak += 1;
+    }
+
+    specialGalleryHistory = [
+      index,
+      ...specialGalleryHistory.filter(item => item !== index)
+    ].slice(0, 4);
+
+    lastSpecialGalleryIndex = index;
+    saveSpecialGalleryCollectionState();
+    renderSpecialGalleryCollection(isNew ? index : -1);
+    updateSpecialGalleryDrawFeedback(isNew);
+
+    return isNew;
+  }
+
   function initSpecialGallery() {
     const button = $('#specialGalleryDrawBtn');
     const polaroid = $('.special-gallery__polaroid');
 
     if (!button || !polaroid) return;
 
+    loadSpecialGalleryCollectionState();
+    renderSpecialGalleryCollection();
+
     button.addEventListener('click', async () => {
       if (!specialGalleryImages.length || button.disabled) return;
 
-      let index = 0;
-
-      if (specialGalleryImages.length > 1) {
-        do {
-          index = Math.floor(Math.random() * specialGalleryImages.length);
-        } while (index === lastSpecialGalleryIndex);
-      }
-
-      lastSpecialGalleryIndex = index;
+      const index = weightedRandomSpecialGalleryIndex();
+      if (index < 0) return;
 
       button.disabled = true;
       button.classList.remove('is-picked');
       polaroid.classList.remove('is-changing', 'is-heartbeating');
 
-      // The anticipation lives on the photo card itself:
-      // two beats, a brief pause, then reveal the next image.
+      // Anticipation stays on the photo card: two beats, then reveal.
       void polaroid.offsetWidth;
       polaroid.classList.add('is-heartbeating');
 
-      const heartbeat = new Promise(resolve => {
+      await new Promise(resolve => {
         window.setTimeout(() => {
           polaroid.classList.remove('is-heartbeating');
           resolve();
         }, 980);
       });
 
-      await heartbeat;
-
       try {
-        await showSpecialGalleryImage(index);
+        const shown = await showSpecialGalleryImage(index);
+        if (shown) {
+          recordSpecialGalleryDraw(index);
+        }
       } finally {
         polaroid.classList.remove('is-heartbeating');
         button.classList.add('is-picked');
