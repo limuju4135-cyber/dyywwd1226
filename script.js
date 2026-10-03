@@ -323,6 +323,7 @@
         : 30;
     const SPECIAL_FLAKE_COUNT = 80;
     const FRAME_MS = 1000 / 30;
+    const SNOW_EDGE_GUTTER = 8;
 
     function isSpecialSnowMode() {
       return document.body.classList.contains('special-mode');
@@ -347,7 +348,7 @@
       const next = viewport();
 
       width = next.width;
-      height = next.height;
+      height = Math.max(1, next.height - SNOW_EDGE_GUTTER * 2);
       dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
       canvas.width = Math.round(width * dpr);
