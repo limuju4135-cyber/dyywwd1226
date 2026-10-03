@@ -1769,3 +1769,81 @@ body.special-mode #curtain.curtain.is-special-unlocking .curtain__right {
 #specialMessages .special-game__desc br {
   display: block;
 }
+
+
+/* ============================================================
+   STAGE 72 — FORCE HEARTBEAT HOLD
+   Final stylesheet wins over legacy reduced-motion/animation resets.
+   ============================================================ */
+@keyframes stage72-curtain-heartbeat {
+  0%,
+  14%,
+  34%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 1px rgba(226,197,144,.12),
+      0 0 16px rgba(226,197,144,.10);
+  }
+
+  6% {
+    transform: scale(1.055);
+    box-shadow:
+      0 0 0 1px rgba(236,211,164,.22),
+      0 0 28px rgba(236,205,144,.26);
+  }
+
+  10% {
+    transform: scale(.992);
+  }
+
+  21% {
+    transform: scale(1.075);
+    box-shadow:
+      0 0 0 1px rgba(244,218,159,.26),
+      0 0 34px rgba(236,205,144,.32);
+  }
+
+  28% {
+    transform: scale(.997);
+  }
+}
+
+#curtain #curtainBtn.is-long-pressing {
+  transform-origin: 50% 50% !important;
+  animation:
+    stage72-curtain-heartbeat
+    1.02s
+    cubic-bezier(.22,.8,.3,1)
+    infinite !important;
+  will-change: transform, box-shadow;
+}
+
+/* Keep the bottom 2-second hold gauge independently animated. */
+#curtain #curtainBtn.is-long-pressing::after {
+  animation:
+    special-hold-progress
+    2s
+    linear
+    forwards !important;
+}
+
+/* User explicitly requested the heartbeat interaction.
+   Keep a compact heartbeat even when the OS Reduce Motion flag is on. */
+@media (prefers-reduced-motion: reduce) {
+  #curtain #curtainBtn.is-long-pressing {
+    animation:
+      stage72-curtain-heartbeat
+      1.12s
+      ease-in-out
+      infinite !important;
+  }
+
+  #curtain #curtainBtn.is-long-pressing::after {
+    animation:
+      special-hold-progress
+      2s
+      linear
+      forwards !important;
+  }
+}
