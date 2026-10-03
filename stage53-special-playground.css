@@ -2525,3 +2525,168 @@ body.special-mode #hero .hero__quick-btn {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* ============================================================
+   STAGE 79 — TOP DRAW FEEDBACK + 10-CUT VISUAL MILESTONES
+   ============================================================ */
+.special-gallery__machine {
+  grid-template-rows: 22px 330px 42px !important;
+  row-gap: 8px !important;
+}
+
+.special-gallery-collection__feedback {
+  align-self: end;
+  min-height: 18px !important;
+  margin: 0 !important;
+  color: rgba(89,99,86,.58);
+  font-size: .66rem;
+  font-weight: 700;
+  line-height: 18px;
+  letter-spacing: .04em;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(3px);
+  transition:
+    opacity .2s ease,
+    transform .2s ease,
+    color .2s ease;
+}
+
+.special-gallery-collection__feedback.is-new,
+.special-gallery-collection__feedback.is-duplicate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.special-gallery-collection__feedback.is-new {
+  color: #9b824f !important;
+  text-shadow: 0 0 12px rgba(210,191,145,.22);
+}
+
+.special-gallery-collection__feedback.is-duplicate {
+  color: rgba(89,99,86,.56) !important;
+}
+
+/* 10 / 30 — champagne accents begin to appear. */
+.special-gallery-collection.is-tier-10 .special-gallery-collection__progress strong {
+  color: #9b824f;
+}
+
+.special-gallery-collection.is-tier-10 .special-gallery-collection__slot.is-collected {
+  border-color: rgba(210,191,145,.72) !important;
+  box-shadow:
+    0 0 0 1px rgba(210,191,145,.08),
+    0 4px 10px rgba(79,74,64,.08),
+    0 0 10px rgba(210,191,145,.08) !important;
+}
+
+/* 20 / 30 — stronger halo + subtle living shimmer. */
+.special-gallery-collection.is-tier-20 {
+  position: relative;
+}
+
+.special-gallery-collection.is-tier-20::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -14px -10px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(210,191,145,.16), transparent 48%),
+    radial-gradient(circle at 50% 100%, rgba(166,176,159,.10), transparent 58%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.special-gallery-collection.is-tier-20 .special-gallery-collection__label {
+  color: #8f7a50;
+}
+
+.special-gallery-collection.is-tier-20 .special-gallery-collection__grid {
+  position: relative;
+}
+
+.special-gallery-collection.is-tier-20 .special-gallery-collection__grid::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 4;
+  border-radius: 9px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      110deg,
+      transparent 24%,
+      rgba(255,248,226,0) 38%,
+      rgba(255,248,226,.28) 48%,
+      rgba(255,248,226,0) 58%,
+      transparent 74%
+    );
+  transform: translateX(-115%);
+  animation: stage79-tier20-shimmer 5.4s ease-in-out infinite;
+}
+
+/* 30 / 30 — completed tier gets the strongest static finish.
+   The transient completion wave + MEMORY CUT unlock remain in Stage 78. */
+.special-gallery-collection.is-tier-30 .special-gallery-collection__label,
+.special-gallery-collection.is-tier-30 .special-gallery-collection__progress strong {
+  color: #866f43;
+  text-shadow: 0 0 14px rgba(210,191,145,.25);
+}
+
+.special-gallery-collection.is-tier-30 .special-gallery-collection__slot.is-collected {
+  border-color: rgba(210,191,145,.88) !important;
+  box-shadow:
+    0 0 0 1px rgba(210,191,145,.12),
+    0 4px 11px rgba(79,74,64,.08),
+    0 0 13px rgba(210,191,145,.14) !important;
+}
+
+/* Brief pulse only when crossing 10 or 20 unique cuts. */
+.special-gallery-collection.is-milestone-hit {
+  animation: stage79-milestone-pulse 1.28s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes stage79-tier20-shimmer {
+  0%, 58% {
+    transform: translateX(-115%);
+    opacity: 0;
+  }
+  66% {
+    opacity: 1;
+  }
+  82%, 100% {
+    transform: translateX(115%);
+    opacity: 0;
+  }
+}
+
+@keyframes stage79-milestone-pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  38% {
+    transform: scale(1.012);
+    filter: brightness(1.08);
+  }
+  68% {
+    transform: scale(.998);
+    filter: brightness(1.02);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .special-gallery-collection.is-tier-20 .special-gallery-collection__grid::after {
+    animation: none !important;
+  }
+
+  .special-gallery-collection.is-milestone-hit {
+    animation-duration: .01ms !important;
+  }
+}
