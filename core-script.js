@@ -61,7 +61,13 @@
           ? 'normal'
           : 'idle';
 
-    const color = '#BE858D';
+    const palette = {
+      idle: '#BE858D',
+      normal: '#BE858D',
+      special: '#A6B09F'
+    };
+
+    const color = palette[resolvedMode];
     const root = document.documentElement;
     const body = document.body;
 
@@ -83,7 +89,8 @@
       document.head.appendChild(meta);
     }
 
-    // Keep browser chrome static across idle / normal / special.
+    // Android/older Safari still respect this. Safari 26 derives its tint
+    // from the body once edge-fixed elements are removed from consideration.
     meta.setAttribute('content', color);
 
     window.dispatchEvent(new CustomEvent('wedding-mode-change', {
@@ -207,6 +214,11 @@
         curtain.classList.add('is-hidden');
         curtain.classList.remove('is-special-unlocking');
         curtain.style.display = 'none';
+
+        requestAnimationFrame(() => {
+          applyBrowserTheme(invitationMode);
+          void document.body.offsetHeight;
+        });
       }, 2200);
     }
 
