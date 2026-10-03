@@ -1772,54 +1772,74 @@ body.special-mode #curtain.curtain.is-special-unlocking .curtain__right {
 
 
 /* ============================================================
-   STAGE 72 — FORCE HEARTBEAT HOLD
-   Final stylesheet wins over legacy reduced-motion/animation resets.
+   STAGE 73 — BEHIND CUT HEARTBEAT DRAW
+   Heartbeat belongs to the draw button, not the invitation curtain.
    ============================================================ */
-@keyframes stage72-curtain-heartbeat {
+@keyframes stage73-behind-heartbeat {
   0%,
-  14%,
-  34%,
+  15%,
+  36%,
   100% {
     transform: scale(1);
     box-shadow:
-      0 0 0 1px rgba(226,197,144,.12),
-      0 0 16px rgba(226,197,144,.10);
+      0 5px 14px rgba(79,74,64,.07),
+      0 0 0 rgba(210,191,145,0);
   }
 
   6% {
     transform: scale(1.055);
     box-shadow:
-      0 0 0 1px rgba(236,211,164,.22),
-      0 0 28px rgba(236,205,144,.26);
+      0 7px 18px rgba(79,74,64,.08),
+      0 0 18px rgba(210,191,145,.22);
   }
 
-  10% {
+  11% {
     transform: scale(.992);
   }
 
-  21% {
+  23% {
     transform: scale(1.075);
     box-shadow:
-      0 0 0 1px rgba(244,218,159,.26),
-      0 0 34px rgba(236,205,144,.32);
+      0 8px 20px rgba(79,74,64,.09),
+      0 0 27px rgba(210,191,145,.34);
   }
 
-  28% {
-    transform: scale(.997);
+  31% {
+    transform: scale(1);
   }
 }
 
-#curtain #curtainBtn.is-long-pressing {
-  transform-origin: 50% 50% !important;
+.special-gallery__draw.is-drawing {
+  transform-origin: 50% 50%;
   animation:
-    stage72-curtain-heartbeat
-    1.02s
+    stage73-behind-heartbeat
+    .92s
     cubic-bezier(.22,.8,.3,1)
     infinite !important;
+  border-color: rgba(210,191,145,.92) !important;
+  color: #596356 !important;
+  opacity: 1 !important;
+  cursor: wait;
   will-change: transform, box-shadow;
 }
 
-/* Keep the bottom 2-second hold gauge independently animated. */
+.special-gallery__draw.is-drawing .special-gallery__draw-label::after {
+  content: " · 두근두근";
+  color: #A18D68;
+  font-size: .68rem;
+  font-weight: 500;
+}
+
+.special-gallery__draw.is-drawing:disabled {
+  opacity: 1 !important;
+}
+
+/* Curtain long-press returns to the intended gauge-only interaction. */
+#curtain #curtainBtn.is-long-pressing {
+  animation: none !important;
+  transform: none !important;
+}
+
 #curtain #curtainBtn.is-long-pressing::after {
   animation:
     special-hold-progress
@@ -1828,22 +1848,12 @@ body.special-mode #curtain.curtain.is-special-unlocking .curtain__right {
     forwards !important;
 }
 
-/* User explicitly requested the heartbeat interaction.
-   Keep a compact heartbeat even when the OS Reduce Motion flag is on. */
 @media (prefers-reduced-motion: reduce) {
-  #curtain #curtainBtn.is-long-pressing {
+  .special-gallery__draw.is-drawing {
     animation:
-      stage72-curtain-heartbeat
-      1.12s
+      stage73-behind-heartbeat
+      1.06s
       ease-in-out
       infinite !important;
-  }
-
-  #curtain #curtainBtn.is-long-pressing::after {
-    animation:
-      special-hold-progress
-      2s
-      linear
-      forwards !important;
   }
 }
