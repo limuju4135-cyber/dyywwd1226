@@ -68,6 +68,13 @@
   let specialGalleryHistory = [];
   let specialGalleryDuplicateStreak = 0;
 
+  let specialMemoryCards = [];
+  let specialMemoryFirstCard = null;
+  let specialMemorySecondCard = null;
+  let specialMemoryBoardLocked = false;
+  let specialMemoryMatchedPairs = 0;
+  let specialMemoryMoves = 0;
+
   function isSpecial() {
     return document.body.classList.contains('special-mode');
   }
@@ -1232,6 +1239,7 @@
       );
       saveSpecialGalleryCollectionState();
       renderSpecialGalleryCollection();
+      syncSpecialMemoryGameUnlock(false);
 
       if (!specialGalleryImages.length) {
         button.disabled = true;
@@ -1314,6 +1322,9 @@
     saveSpecialGalleryCollectionState();
     renderSpecialGalleryCollection(isNew ? index : -1);
     updateSpecialGalleryDrawFeedback(isNew);
+    syncSpecialMemoryGameUnlock(
+      isNew && specialGalleryCollection.size >= SPECIAL_GALLERY_LIMIT
+    );
 
     return isNew;
   }
@@ -1366,6 +1377,227 @@
   }
 
   /* ----------------------------------------------------------
+     MEMORY CUT — unlocked after 30 / 30 collection
+     ---------------------------------------------------------- */
+  function specialMemoryGameIsUnlocked() {
+    return (
+      specialGalleryImages.length >= SPECIAL_GALLERY_LIMIT &&
+      specialGalleryCollection.size >= SPECIAL_GALLERY_LIMIT
+    );
+  }
+
+  function syncSpecialMemoryGameUnlock(celebrate = false) {
+    const game = $('#specialMemoryGame');
+    if (!game) return;
+
+    const unlocked = specialMemoryGameIsUnlocked();
+    game.hidden = !unlocked;
+    game.setAttribute('aria-hidden', String(!unlocked));
+
+    const collection = $('.special-gallery-collection');
+    collection?.classList.toggle('is-complete', unlocked);
+
+    if (!unlocked) return;
+
+    if (celebrate) {
+      collection?.classList.remove('is-completing');
+      game.classList.remove('is-unlocking');
+
+      void game.offsetWidth;
+
+      collection?.classList.add('is-completing');
+      game.classList.add('is-unlocking');
+
+      window.setTimeout(() => {
+        collection?.classList.remove('is-completing');
+        game.classList.remove('is-unlocking');
+      }, 1500);
+    }
+  }
+
+  function chooseSpecialMemoryImages() {
+    const available = specialGalleryImages
+      .map((_, index) => index)
+      .filter(index => specialGalleryCollection.has(index));
+
+    return shuffle(available).slice(0, 6);
+  }
+
+  function resetSpecialMemorySelection() {
+    specialMemoryFirstCard = null;
+    specialMemorySecondCard = null;
+    specialMemoryBoardLocked = false;
+  }
+
+  function updateSpecialMemoryHud() {
+    const matches = $('#specialMemoryMatches');
+    const moves = $('#specialMemoryMoves');
+
+    if (matches) {
+      matches.textContent = String(specialMemoryMatchedPairs);
+    }
+
+    if (moves) {
+      moves.textContent = String(specialMemoryMoves);
+    }
+  }
+
+  function completeSpecialMemoryGame() {
+    const board = $('#specialMemoryBoard');
+    const status = $('#specialMemoryStatus');
+    const start = $('#specialMemoryStart');
+
+    board?.classList.add('is-complete');
+
+    if (status) {
+      status.textContent = '모두 찾았어요';
+      status.classList.add('is-complete');
+    }
+
+    if (start) {
+      start.textContent = '다시 섞기';
+    }
+  }
+
+  function handleSpecialMemoryCard(card) {
+    if (
+      specialMemoryBoardLocked ||
+      card.classList.contains('is-flipped') ||
+      card.classList.contains('is-matched')
+    ) {
+      return;
+    }
+
+    card.classList.add('is-flipped');
+
+    if (!specialMemoryFirstCard) {
+      specialMemoryFirstCard = card;
+      return;
+    }
+
+    specialMemorySecondCard = card;
+    specialMemoryBoardLocked = true;
+    specialMemoryMoves += 1;
+    updateSpecialMemoryHud();
+
+    const firstPair = specialMemoryFirstCard.dataset.pair;
+    const secondPair = specialMemorySecondCard.dataset.pair;
+
+    if (firstPair === secondPair) {
+      window.setTimeout(() => {
+        specialMemoryFirstCard?.classList.add('is-matched');
+        specialMemorySecondCard?.classList.add('is-matched');
+        specialMemoryMatchedPairs += 1;
+        updateSpecialMemoryHud();
+
+        resetSpecialMemorySelection();
+
+        if (specialMemoryMatchedPairs >= 6) {
+          completeSpecialMemoryGame();
+        }
+      }, 300);
+
+      return;
+    }
+
+    window.setTimeout(() => {
+      specialMemoryFirstCard?.classList.remove('is-flipped');
+      specialMemorySecondCard?.classList.remove('is-flipped');
+      resetSpecialMemorySelection();
+    }, 720);
+  }
+
+  function renderSpecialMemoryBoard() {
+    const board = $('#specialMemoryBoard');
+    const status = $('#specialMemoryStatus');
+
+    if (!board) return;
+
+    board.textContent = '';
+    board.classList.remove('is-complete');
+
+    specialMemoryMatchedPairs = 0;
+    specialMemoryMoves = 0;
+    resetSpecialMemorySelection();
+    updateSpecialMemoryHud();
+
+    if (status) {
+      status.textContent = '';
+      status.classList.remove('is-complete');
+    }
+
+    const selected = chooseSpecialMemoryImages();
+
+    if (selected.length < 6) {
+      return;
+    }
+
+    specialMemoryCards = shuffle(
+      selected.flatMap(index => [
+        { pair: index, token: index + '-a' },
+        { pair: index, token: index + '-b' }
+      ])
+    );
+
+    specialMemoryCards.forEach((item, position) => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'special-memory-card';
+      card.dataset.pair = String(item.pair);
+      card.dataset.token = item.token;
+      card.setAttribute('aria-label', `메모리 카드 ${position + 1}`);
+
+      const inner = document.createElement('span');
+      inner.className = 'special-memory-card__inner';
+
+      const back = document.createElement('span');
+      back.className = 'special-memory-card__face special-memory-card__back';
+      back.setAttribute('aria-hidden', 'true');
+
+      const mark = document.createElement('span');
+      mark.className = 'special-memory-card__mark';
+      mark.textContent = '✦';
+      back.append(mark);
+
+      const front = document.createElement('span');
+      front.className = 'special-memory-card__face special-memory-card__front';
+      front.setAttribute('aria-hidden', 'true');
+      front.style.backgroundImage =
+        'url("' +
+        String(specialGalleryImages[item.pair]).replace(/"/g, '%22') +
+        '")';
+
+      inner.append(back, front);
+      card.append(inner);
+
+      card.addEventListener('click', () => {
+        handleSpecialMemoryCard(card);
+      });
+
+      board.append(card);
+    });
+  }
+
+  function startSpecialMemoryGame() {
+    if (!specialMemoryGameIsUnlocked()) return;
+
+    const start = $('#specialMemoryStart');
+    if (start) {
+      start.textContent = '다시 섞기';
+    }
+
+    renderSpecialMemoryBoard();
+  }
+
+  function initSpecialMemoryGame() {
+    const start = $('#specialMemoryStart');
+    if (!start) return;
+
+    start.addEventListener('click', startSpecialMemoryGame);
+    syncSpecialMemoryGameUnlock(false);
+  }
+
+  /* ----------------------------------------------------------
      BOOT
      ---------------------------------------------------------- */
   function init() {
@@ -1374,6 +1606,7 @@
     initMessageDetail();
     initMessageTreeInteraction();
     initSpecialGallery();
+    initSpecialMemoryGame();
     syncSpecialModeData();
 
     window.addEventListener('wedding-mode-change', syncSpecialModeData);
