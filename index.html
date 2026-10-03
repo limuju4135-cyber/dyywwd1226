@@ -6,6 +6,43 @@
   <meta name="theme-color" content="#FFFFFF">
   <meta name="color-scheme" content="light">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <script id="wedding-mode-prepaint">
+    (() => {
+      const key = 'wedding-one-shot-mode';
+      const colors = {
+        normal: '#BE858D',
+        special: '#A6B09F'
+      };
+
+      let mode = '';
+
+      try {
+        mode = sessionStorage.getItem(key) || '';
+        sessionStorage.removeItem(key);
+      } catch {}
+
+      if (mode !== 'normal' && mode !== 'special') {
+        window.__WEDDING_BOOT_MODE = '';
+        return;
+      }
+
+      const color = colors[mode];
+      const root = document.documentElement;
+      const meta = document.querySelector('meta[name="theme-color"]');
+
+      window.__WEDDING_BOOT_MODE = mode;
+
+      root.classList.add(mode + '-mode');
+      root.dataset.invitationMode = mode;
+      root.style.setProperty('--browser-chrome-color', color);
+      root.style.setProperty('background-color', color, 'important');
+
+      if (meta) {
+        meta.setAttribute('content', color);
+      }
+    })();
+  </script>
   <meta name="format-detection" content="telephone=no">
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
 
@@ -903,7 +940,7 @@
 
   <!-- 원본 동작 유지 -->
   <script src="private-data-loader.js?v=stage49-special-mode"></script>
-  <script src="core-script.js?v=stage61-unified-browser-chrome"></script>
+  <script src="core-script.js?v=stage62-ios-static-chrome-handoff"></script>
   <!-- 커스텀 작업: 낙화 숨김 + 눈송이 효과 -->
   <script src="script.js?v=stage57-falling-snow-only-2"></script>
   <!-- Stage 32: 타이핑 / 진행바 / 티맵 / 엔딩사진 -->
