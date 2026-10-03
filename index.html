@@ -78,7 +78,7 @@
   <link rel="stylesheet" href="stage50-special-enhancements.css?v=stage73-curtain-gauge-only">
   <link rel="stylesheet" href="stage51-special-gold-blizzard.css?v=stage51-special-gold-blizzard-1">
   <link rel="stylesheet" href="stage52-special-snow-playground.css?v=stage52b-hero-gold-hard">
-  <link rel="stylesheet" href="stage53-special-playground.css?v=stage75-normal-quick-nav">
+  <link rel="stylesheet" href="stage53-special-playground.css?v=stage76-behind-collection">
   <style id="stage40-gallery-critical">
     /* Empty gallery must always render as a deliberate Coming soon card,
        even if an external stylesheet is stale or delayed in an in-app browser. */
@@ -665,6 +665,26 @@
             <span class="special-gallery__draw-label">한 장 뽑기</span>
           </button>
         </div>
+
+        <div class="special-gallery-collection" aria-label="비하인드컷 컬렉션">
+          <div class="special-gallery-collection__head">
+            <span class="special-gallery-collection__label">BEHIND CUT COLLECTION</span>
+            <span class="special-gallery-collection__progress">
+              <strong id="specialGalleryCollectionCount">00</strong>
+              <span>/ 30</span>
+            </span>
+          </div>
+          <div
+            class="special-gallery-collection__grid"
+            id="specialGalleryCollectionGrid"
+            aria-live="polite"
+          ></div>
+          <p
+            class="special-gallery-collection__feedback"
+            id="specialGalleryCollectionFeedback"
+            aria-live="polite"
+          ></p>
+        </div>
       </div>
     </section>
 
@@ -920,6 +940,6 @@
   <script src="stage34-fixes.js?v=stage34-1-media-hotfix"></script>
   <script src="stage35-fixes.js?v=stage35-hero-ios-spacing-1"></script>
   <script src="stage39-desktop-interactions.js?v=stage39-drag-1"></script>
-  <script src="stage53-special-playground.js?v=stage74-polaroid-heartbeat"></script>
+  <script src="stage53-special-playground.js?v=stage76-behind-collection"></script>
 </body>
 </html>
