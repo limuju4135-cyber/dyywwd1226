@@ -142,7 +142,10 @@
     document.body.classList.remove('special-mode', 'normal-mode');
     document.documentElement.classList.remove('special-mode', 'normal-mode');
     curtain.classList.remove('is-special-unlocking');
-    names.textContent = `${CONFIG.groom.name} & ${CONFIG.bride.name}`;
+    // Keep the HTML fallback visible immediately, before private data arrives.
+    if (!names.textContent.trim()) {
+      names.textContent = `${CONFIG.groom?.name || '도영'} & ${CONFIG.bride?.name || '여울'}`;
+    }
 
     if (CONFIG.useCurtain === false) {
       curtain.style.display = 'none';
@@ -448,6 +451,13 @@
     }
 
     if (!parents) return;
+
+    // Never display empty parent relations when the private API is unavailable.
+    if (!CONFIG.groom?.father && !CONFIG.groom?.mother &&
+        !CONFIG.bride?.father && !CONFIG.bride?.mother) {
+      parents.replaceChildren();
+      return;
+    }
 
     const g = CONFIG.groom;
     const b = CONFIG.bride;
@@ -1252,32 +1262,39 @@
   }
 
   async function init() {
-    try {
-      await PRIVATE_WEDDING.init();
-    } catch (error) {
-      console.warn('[Private wedding data]', error);
-      const toast = document.getElementById('toast');
-      if (toast) {
-        toast.textContent = '초대장 정보를 불러오지 못했습니다.';
-        toast.classList.add('is-visible');
-      }
-      return;
-    }
+    // Public names are only temporary fallbacks for a disconnected first visit.
+    // PRIVATE_WEDDING.init() replaces them with the actual invitation data.
+    CONFIG.groom = { name: '도영', ...CONFIG.groom };
+    CONFIG.bride = { name: '여울', ...CONFIG.bride };
 
+    // Do not block the opening button on network requests to the R2 API.
     initMeta();
     initCurtain();
     initHero();
     initCountdown();
-    initGreeting();
-    initContacts();
     initCalendar();
     initPhotoModal();
     initLocation();
     initAccounts();
-    initFooter();
     initScrollAnimations();
 
-    // Gallery only. Story dependencies are intentionally gone.
+    let privateDataLoaded = false;
+    try {
+      if (typeof PRIVATE_WEDDING === 'undefined') {
+        throw new Error('Private data loader unavailable');
+      }
+      await PRIVATE_WEDDING.init();
+      privateDataLoaded = true;
+    } catch (error) {
+      console.warn('[Private wedding data]', error);
+      showToast('일부 정보를 불러오지 못했습니다. 새로고침해 주세요.');
+    }
+
+    initGreeting();
+    if (privateDataLoaded) initContacts();
+    initFooter();
+
+    // Gallery failure is intentionally non-fatal and displays Coming soon.
     await initGallery();
   }
 
